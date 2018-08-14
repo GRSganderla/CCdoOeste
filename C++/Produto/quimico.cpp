@@ -25,3 +25,8 @@ void Quimico::toString()
     if(this->inflamavel == true)
         cout << "Inflamavel!" << endl;
 }
+
+Quimico::~Quimico()
+{
+
+}

@@ -43,7 +43,9 @@ int entrada(char s[], AFD *afds)
         if(memcmp(linha, "alfabeto={", 10) == 0)
         {
             for(i = 0; linha[i+5] != '}' ; i+=2)
-                sscanf(linha+10+i,"%c", &afds->alfa[i]);
+                afds->alfa[i] = linha[i+10];
+            printf("%c", afds->alfa[0]);
+            printf("%c", afds->alfa[1]);
         }
         else if(memcmp(linha, "inicial=", 8) == 0)
         {

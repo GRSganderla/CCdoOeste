@@ -18,6 +18,7 @@ int main()
     i->toString();
 
     delete a;
+    delete i;
 
     return 0;
 }
