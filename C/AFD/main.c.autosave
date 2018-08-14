@@ -43,13 +43,9 @@ int entrada(char s[], AFD *afds)
         if(memcmp(linha, "alfabeto={", 10) == 0)
         {
             for(i = 0; linha[i+10] != '}' ; i++)
-            {
                 if(linha[i+10] != ',')
-                {
                     afds->alfa[i] = linha[i+10];
-                    printf("%c", afds->alfa[i]);
-                }
-            }
+                 
         }
         else if(memcmp(linha, "inicial=", 8) == 0)
         {
