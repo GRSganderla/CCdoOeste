@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     produto.cpp \
-    quimico.cpp
+    quimico.cpp \
+    usaproduto.cpp
 
 HEADERS += \
     produto.h \
-    quimico.h
+    quimico.h \
+    usaproduto.h

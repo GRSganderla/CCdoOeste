@@ -21,7 +21,6 @@ bool Quimico::getInfla()
 
 void Quimico::toString()
 {
-    this->printProd();
     if(this->inflamavel == true)
         cout << "Inflamavel!" << endl;
 }

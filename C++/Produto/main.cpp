@@ -1,24 +1,15 @@
 #include <iostream>
-#include "produto.h"
-#include "quimico.h"
+#include "usaproduto.h"
 
 using namespace std;
 
 int main()
 {
-    Produto *a = new Produto();
-    Quimico *i = new Quimico(true);
+    UsaProduto* a = new UsaProduto("Alvejante", 151, 14.95, 2, true);
 
-    a->setCodigo(151);
-    a->setNome("Alvejante");
-    a->setPreco(14.95);
-    a->setQuant(2);
-
-    a->printProd();
-    i->toString();
+    a->mostraDados();
 
     delete a;
-    delete i;
 
     return 0;
 }
