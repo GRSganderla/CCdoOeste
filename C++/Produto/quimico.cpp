@@ -4,7 +4,17 @@
 
 using namespace std;
 
-Quimico::Quimico(bool inflamavel) : Produto()
+Quimico::Quimico(bool inflamavel)
+{
+    this->inflamavel = inflamavel;
+}
+
+Quimico::Quimico(bool inflamavel) : Produto(int codigo)
+{
+    this->inflamavel = inflamavel;
+}
+
+Quimico::Quimico(bool inflamavel) : Produto(int codigo, float preco, char nome[], int quantidade)
 {
     this->inflamavel = inflamavel;
 }
