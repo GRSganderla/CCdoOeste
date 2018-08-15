@@ -23,7 +23,7 @@ public:
     int getQuant();
     float getPreco();
     void upPreco(int porcentagem);
-    void toString(int* codigo, float* preco, char nome[], int* quantidade, float* total);
+    void tostring(int* codigo, float* preco, char nome[], int* quantidade, float* total);
     void printProd();
     ~Produto();
 };

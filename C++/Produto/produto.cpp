@@ -9,7 +9,7 @@ Produto::Produto()
     this->codigo = 0;
     this->quantidade = 0;
     this->preco = 0.0;
-    this->nome[50] = {};
+    this->nome[0] = '\0';
 }
 
 Produto::Produto(int codigo)
@@ -17,7 +17,7 @@ Produto::Produto(int codigo)
     this->codigo = codigo;
     this->quantidade = 0;
     this->preco = 0.0;
-    this->nome[50] = {};
+    this->nome[0] = '\0';
 }
 
 Produto::Produto(int codigo, float preco, char nome[], int quantidade)
@@ -45,7 +45,8 @@ void Produto::setQuant(int quantidade)
 
 void Produto::printProd()
 {
-    cout << this->nome << ":" << endl;
+    cout << "Produto: " << endl;
+    cout << "Nome: " << this->nome << endl;
     cout << "Codigo: " << this->codigo << endl;
     cout << "Preco: " << this->preco << endl;
     cout << "Quantidade: " << this->quantidade << endl;
@@ -88,7 +89,7 @@ float Produto::totaliza()
     return (this->preco * this->quantidade);
 }
 
-void Produto::toString(int* codigo, float* preco, char nome[], int* quantidade, float *total)
+void Produto::tostring(int* codigo, float* preco, char nome[], int* quantidade, float *total)
 {
     *codigo = this->codigo;
     *preco = this->preco;

@@ -1,22 +1,23 @@
 #include "quimico.h"
 #include<iostream>
 #include "produto.h"
+#include<string>
 
 using namespace std;
 
-Quimico::Quimico(bool inflamavel)
+Quimico::Quimico()
 {
-    this->inflamavel = inflamavel;
+    this->inflamavel = false;
 }
 
-Quimico::Quimico(bool inflamavel) : Produto(int codigo)
+Quimico::Quimico( int codigo) : Produto(codigo)
 {
-    this->inflamavel = inflamavel;
+    this->inflamavel = false;
 }
 
-Quimico::Quimico(bool inflamavel) : Produto(int codigo, float preco, char nome[], int quantidade)
+Quimico::Quimico(int codigo, float preco, char nome[], int quantidade) : Produto(codigo, preco, nome, quantidade)
 {
-    this->inflamavel = inflamavel;
+    this->inflamavel = false;
 }
 
 void Quimico::setInfla(bool inflamavel)
@@ -31,8 +32,12 @@ bool Quimico::getInfla()
 
 void Quimico::toString()
 {
-    if(this->inflamavel == true)
-        cout << "Inflamavel!" << endl;
+    this->printProd();
+
+    if(this->inflamavel == false)
+        cout << "Nao ";
+    cout << "Inflamavel!" << endl;
+    cout << endl;
 }
 
 Quimico::~Quimico()
