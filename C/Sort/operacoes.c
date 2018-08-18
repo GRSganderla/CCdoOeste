@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <string.h>
+#include "operacoes.h"
 #include <stdlib.h>
-#include "operacao.c"
+#include <string.h>
 
 ArgumentosCMD* inicializa()
 {
@@ -44,21 +43,36 @@ ArgumentosCMD* linhaDeArgumentos(ArgumentosCMD* args, char const *argv[], int ar
     return args;
 }
 
-int main(int argc, const char *argv[])
+void limpaArg(ArgumentosCMD *arg)
 {
-    ArgumentosCMD* args = inicializa();
-    args = linhaDeArgumentos(args, argv, argc);
-    printf("%c\n", args->tipoDado);
-    printf("%d\n", args->quantN);
-    printf("%s\n", args->arqEntrada);
-    printf("%s\n", args->tipoSort);
-    printf("%s\n", args->arqSaida);
-    return 0;
+    arg->tipoDado = '\0';
+
+    if(arg->arqEntrada)
+        free(arg->arqEntrada);
+
+    if(arg->arqSaida)
+        free(arg->arqSaida);
+
+    if(arg->tipoSort)
+        free(arg->tipoSort);
+
+    if(arg->quantN)
+        arg->quantN = 0;
+
+    free(arg);
 }
 
-/*selectionSort(v, 10);
-insertionSort(v2, 10);
-bubbleSort(v3, 10);
-mergeSort(v4, 0, 10);
-quickSort(v5, 0, 9);
-heapSort(10, v6-1);*/
+void determinaOp(ArgumentosCMD* arg)
+{
+    if(arg->quantN > 0 && (arg->tipoDado == 'N' || arg->tipoDado == 'n'))
+    {
+        int vetN[arg->quantN];
+        criaVetor(vetN, arg->quantN);
+
+    }
+    else if((arg->tipoDado == 'C' || arg->tipoDado == 'c'))
+    {
+        char vetC;
+        abreArq;
+    }
+}

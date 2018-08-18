@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "ordenacao.h"
 
 void selectionSortN(int v[], int n)
 {
