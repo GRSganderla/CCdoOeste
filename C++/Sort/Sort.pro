@@ -4,7 +4,10 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.c \
-    sorts.c
+    sorts.c \
+    operacao.c \
+    operacao.c
 
 HEADERS += \
-    sorts.h
+    sorts.h \
+    operacao.h
