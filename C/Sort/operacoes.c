@@ -88,7 +88,7 @@ void determinaOp(ArgumentosCMD* arg)
     else if(arg->tipoDado == 'C' || arg->tipoDado == 'c')
     {
         char **vetC;
-        //abreArq(vetC, arg->arqEntrada);
-        //fazOpC(vetC, arg);
+        abreArq(vetC, arg->arqEntrada);
+        fazOpC(vetC, arg);
     }
 }

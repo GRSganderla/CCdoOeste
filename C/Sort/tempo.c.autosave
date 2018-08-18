@@ -108,7 +108,7 @@ void fazTodasOrdN(int vet[], int tam)
 
 char** leArq(FILE* f, int *tam)
 {
-    int i, tamCadeia;
+    int i;
     tamCadeia = 2;
     char *c[100];
     char v[300];
