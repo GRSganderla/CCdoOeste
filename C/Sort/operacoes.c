@@ -1,6 +1,8 @@
 #include "operacoes.h"
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#define MAXINT 2147483647
 
 ArgumentosCMD* inicializa()
 {
@@ -62,17 +64,27 @@ void limpaArg(ArgumentosCMD *arg)
     free(arg);
 }
 
+void criaVetor(int vet[], int tam)
+{
+    int i;
+    for(i = 0; i < tam; i++)
+    {
+        vet[i] = rand()%MAXINT;
+    }
+}
+
 void determinaOp(ArgumentosCMD* arg)
 {
     if(arg->quantN > 0 && (arg->tipoDado == 'N' || arg->tipoDado == 'n'))
     {
         int vetN[arg->quantN];
         criaVetor(vetN, arg->quantN);
-
+        fazOpN(vetN, arg);
     }
-    else if((arg->tipoDado == 'C' || arg->tipoDado == 'c'))
+    else if(arg->tipoDado == 'C' || arg->tipoDado == 'c')
     {
-        char vetC;
-        abreArq;
+        char **vetC;
+        //abreArq(vetC, arg->arqEntrada);
+        //fazOpC(vetC, arg);
     }
 }

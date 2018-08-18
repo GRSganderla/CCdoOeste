@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.c \
     ordenacao.c \
-    operacoes.c
+    operacoes.c \
+    tempo.c
 
 HEADERS += \
     ordenacao.h \
-    operacoes.h
+    operacoes.h \
+    tempo.h
