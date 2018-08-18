@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define MAXINT 2147483647
+#define MAXINT 100000
 
 ArgumentosCMD* inicializa()
 {
@@ -64,21 +64,25 @@ void limpaArg(ArgumentosCMD *arg)
     free(arg);
 }
 
-void criaVetor(int vet[], int tam)
+int* criaVetor(int tam)
 {
     int i;
+    int *vet = (int*)malloc(sizeof(int)*tam);
+
     for(i = 0; i < tam; i++)
     {
-        vet[i] = rand()%MAXINT;
+        vet[i] = rand() % MAXINT;
     }
+
+    return vet;
 }
 
 void determinaOp(ArgumentosCMD* arg)
 {
     if(arg->quantN > 0 && (arg->tipoDado == 'N' || arg->tipoDado == 'n'))
     {
-        int vetN[arg->quantN];
-        criaVetor(vetN, arg->quantN);
+        int* vetN;
+        vetN = criaVetor(arg->quantN);
         fazOpN(vetN, arg);
     }
     else if(arg->tipoDado == 'C' || arg->tipoDado == 'c')

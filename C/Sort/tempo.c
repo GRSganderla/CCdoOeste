@@ -8,7 +8,7 @@
 float ordN(int vet[], char *tipoSort, int tam)
 {
     clock_t tempo;
-    int vAux[tam];
+    int *vAux =(int*)malloc(sizeof(int)*tam);
 
     copiaVet(vet, vAux, tam);
 
@@ -77,21 +77,32 @@ void fazTodasOrdN(int vet[], int tam)
 {
     float tempo;
 
-    tempo = ordN(vet, "INSERTIONSORT", tam);
+    int *vet1 = (int*)malloc(sizeof(int)*tam);
+    int *vet2 = (int*)malloc(sizeof(int)*tam);
+    int *vet3 = (int*)malloc(sizeof(int)*tam);
+    int *vet4 = (int*)malloc(sizeof(int)*tam);
+    int *vet5 = (int*)malloc(sizeof(int)*tam);
+
+    copiaVet(vet,vet1, tam);
+    copiaVet(vet,vet2, tam);
+    copiaVet(vet,vet3, tam);
+    copiaVet(vet,vet4, tam);
+    copiaVet(vet,vet5, tam);
+
+    tempo = ordN(vet1, "insertionsort", tam);
     printf("Insertion Sort levou %.4f\n", tempo);
 
-    tempo = ordN(vet, "SELECTIONSORT", tam);
+    tempo = ordN(vet2, "selectionsort", tam);
     printf("Selection Sort levou %.4f\n", tempo);
 
-    tempo = ordN(vet, "MERGESORT", tam);
+    tempo = ordN(vet3, "mergesort", tam);
     printf("Merge Sort levou %.4f\n", tempo);
 
-    tempo = ordN(vet, "QUICKSORT", tam);
+    tempo = ordN(vet4, "quicksort", tam);
     printf("Quick Sort levou %.4f\n", tempo);
 
-    tempo = ordN(vet, "HEAPSORT", tam);
+    tempo = ordN(vet5, "heapsort", tam);
     printf("Heap Sort levou %.4f\n", tempo);
-
 }
 
 void copiaVet(int vet[], int vAux[], int tam)
