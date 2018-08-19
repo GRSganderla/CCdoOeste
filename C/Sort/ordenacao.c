@@ -210,21 +210,21 @@ void intercalaC(char* vet[],int inicio, int meio, int fim)
     while( i < meio && j < fim)
     {
         if(strcmp(vet[i], vet[j]) <= 0)
-            vet_aux[k++] = vet[i++];
+            *vet_aux[k++] = vet[i++];
         else
-            vet_aux[k++] = vet[j++];
+            *vet_aux[k++] = vet[j++];
     }
 
     while (i < meio)
-        vet_aux[k++] = vet[i++];
+        *vet_aux[k++] = vet[i++];
 
     while (j < fim)
-        vet_aux[k++] = vet[j++];
+        *vet_aux[k++] = vet[j++];
 
     for(i = inicio; i < fim; i++)
-        vet[i] = vet_aux[i-inicio];
+        *vet[i] = vet_aux[i-inicio];
 
-    free(vet_aux);
+    free(*vet_aux);
 }
 
 void mergeSortC(char* v[], int inicio, int fim)

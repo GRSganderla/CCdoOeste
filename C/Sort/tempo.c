@@ -81,11 +81,7 @@ void fazTodasOrdN(int vet[], int tam)
 {
     float tempo1, tempo2, tempo3, tempo4, tempo5;
 
-    int *vet1 = (int*)malloc(sizeof(int)*tam);
-    int *vet2 = (int*)malloc(sizeof(int)*tam);
-    int *vet3 = (int*)malloc(sizeof(int)*tam);
-    int *vet4 = (int*)malloc(sizeof(int)*tam);
-    int *vet5 = (int*)malloc(sizeof(int)*tam);
+    int vet1[tam], vet2[tam], vet3[tam], vet4[tam], vet5[tam];
 
     copiaVet(vet,vet1, tam);
     copiaVet(vet,vet2, tam);
@@ -99,31 +95,34 @@ void fazTodasOrdN(int vet[], int tam)
     tempo4 = ordN(vet4, "quicksort", tam);
     tempo5 = ordN(vet5, "heapsort", tam);
 
-    printf("Insertion Sort levou %.4f\n", tempo1);
-    printf("Selection Sort levou %.4f\n", tempo2);
-    printf("Merge Sort levou %.4f\n", tempo3);
-    printf("Quick Sort levou %.4f\n", tempo4);
-    printf("Heap Sort levou %.4f\n", tempo5);
+    printf("Insertion Sort\t->\t%.4f\n", tempo1);
+    printf("Selection Sort\t->\t%.4f\n", tempo2);
+    printf("Merge Sort\t->\t%.4f\n", tempo3);
+    printf("Quick Sort\t->\t%.4f\n", tempo4);
+    printf("Heap Sort\t->\t%.4f\n", tempo5);
+
+    free(vet1);
+    free(vet2);
+    free(vet3);
+    free(vet4);
+    free(vet5);
 }
 
-char** leArq(FILE* f, int *tam)
+void leArq(FILE* f, int *tam, char** vet)
 {
-    int i, tamCadeia;
-    tamCadeia = 2;
-    char *c[100];
+    int i;
     char v[300];
 
     for(i = 0; !feof(f); i++)
     {
         fscanf(f, "%[^\n]%*c", v);
-        c[i] = strcpy(c[i], v);
+        vet[i] = v;
     }
 
     *tam = i;
-    return c;
 }
 
-void abreArq(char* v[], char* nome)
+void abreArq(char* v[], char* nome, int *tam)
 {
     FILE* f = fopen(nome, "r");
 
@@ -133,14 +132,100 @@ void abreArq(char* v[], char* nome)
         return;
     }
 
-    int tam = 0;
-    v = leArq(f, &tam);
+    leArq(f, tam, v);
+}
 
+void copiaVetC(char* v[], char* vet[], int tam)
+{
+    int i;
+
+    for(i = 0; i < tam; i++)
+        vet[i] = v[i];
+}
+
+float tempoC(char* v[], char* tipoSort, int tam)
+{
+    char** vAux = (char**)malloc(sizeof(char*)*tam);
+
+    copiaVetC(v, vAux, tam);
+
+    clock_t tempo;
+    float tempoGasto;
+    tempo = clock();
+
+    if(!strcmp(tipoSort, "insertionsort") || !strcmp(tipoSort, "INSERTIONSORT"))
+        insertionSortC(vAux, tam);
+
+    else if(!strcmp(tipoSort, "selectionsort") || !strcmp(tipoSort, "SELECTIONSORT"))
+        selectionSortC(vAux, tam);
+
+    else if(!strcmp(tipoSort, "mergesort") || !strcmp(tipoSort, "MERGESORT"))
+        mergeSortC(vAux, 0, tam);
+
+    else if(!strcmp(tipoSort, "quicksort") || !strcmp(tipoSort, "QUICKSORT"))
+        quickSortC(vAux, 0, tam-1);
+
+    else if(!strcmp(tipoSort, "heapsort") || !strcmp(tipoSort, "HEAPSORT"))
+        heapSortC(tam, vAux-1);
+    else
+    {
+        printf("Algoritmo de Ordenacao nao correto = %s\n", tipoSort);
+    }
+
+    tempo = clock() - tempo;
+
+    tempoGasto = ((float)tempo)/CLOCKS_PER_SEC;
+
+    copiaVetC(vAux, v, tam);
+    free(vAux);
+    return tempoGasto;
+}
+
+void comparaTempo(char *vet[], int tam)
+{
+    float tempo1, tempo2, tempo3, tempo4, tempo5;
+
+    char *vet1[tam], *vet2[tam], *vet3[tam], *vet4[tam], *vet5[tam];
+
+    copiaVetC(vet,vet1, tam);
+    copiaVetC(vet,vet2, tam);
+    copiaVetC(vet,vet3, tam);
+    copiaVetC(vet,vet4, tam);
+    copiaVetC(vet,vet5, tam);
+
+    tempo1 = tempoC(vet1, "insertionsort", tam);
+    tempo2 = tempoC(vet2, "selectionsort", tam);
+    tempo3 = tempoC(vet3, "mergesort", tam);
+    tempo4 = tempoC(vet4, "quicksort", tam);
+    tempo5 = tempoC(vet5, "heapsort", tam);
+
+    printf("Insertion Sort\t->\t%.4f\n", tempo1);
+    printf("Selection Sort\t->\t%.4f\n", tempo2);
+    printf("Merge Sort\t->\t%.4f\n", tempo3);
+    printf("Quick Sort\t->\t%.4f\n", tempo4);
+    printf("Heap Sort\t->\t%.4f\n", tempo5);
+
+    free(vet1);
+    free(vet2);
+    free(vet3);
+    free(vet4);
+    free(vet5);
 }
 
 void fazOpC(char* v[], ArgumentosCMD* a)
 {
-
+    if(a->tipoSort == NULL)
+        comparaTempo(v, a->quantN);
+    else
+    {
+        if(a->arqSaida == NULL)
+        {
+            printf("Arquivo de saida nao escolhido!\n");
+            return;
+        }
+        //else
+            //opeArq(v, a->quantN);
+    }
 }
 
 void copiaVet(int vet[], int vAux[], int tam)
