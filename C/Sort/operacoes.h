@@ -18,7 +18,11 @@ char* pegarArg(char const *argv[]);
 
 ArgumentosCMD* linhaDeArgumentos(ArgumentosCMD* args, char const *argv[], int argc);
 
-void limpaArg(ArgumentosCMD* arg);
+char pegaTipo(char const *argv[]);
+
+void limpaArg(ArgumentosCMD *arg);
+
+int* criaVetor(int tam);
 
 void determinaOp(ArgumentosCMD* arg);
 

@@ -67,7 +67,7 @@ void limpaArg(ArgumentosCMD *arg)
 int* criaVetor(int tam)
 {
     int i;
-    int *vet = (int*)malloc(sizeof(int)*tam*tam);
+    int *vet = (int*)malloc(sizeof(int)*tam);
 
     for(i = 0; i < tam; i++)
     {
@@ -87,8 +87,8 @@ void determinaOp(ArgumentosCMD* arg)
     }
     else if(arg->tipoDado == 'C' || arg->tipoDado == 'c')
     {
-        char **vetC;
-        abreArq(vetC, arg->arqEntrada, &arg->quantN);
-        fazOpC(vetC, arg);
+        char** vet;
+        vet = lerArq(arg->arqEntrada, &arg->quantN);
+        fazOpC(vet, arg);
     }
 }

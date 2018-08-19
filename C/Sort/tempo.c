@@ -108,31 +108,35 @@ void fazTodasOrdN(int vet[], int tam)
     free(vet5);
 }
 
-void leArq(FILE* f, int *tam, char** vet)
+char** lerArq(char* nome, int *tam)
 {
-    int i;
-    char v[300];
+    int i, tamC;
+    FILE* arq = fopen(nome, "r");
+    if(arq == NULL) return NULL;
 
-    for(i = 0; !feof(f); i++)
+    char** c;
+    char v[256];
+
+    tamC= 2;
+    c = (char**)malloc(sizeof(char*) * tamC);
+
+    for(i = 0; !feof(arq); i++)
     {
-        fscanf(f, "%[^\n]%*c", v);
-        vet[i] = v;
+        if(i+1 > tamC)
+        {
+            tamC *= 2;
+            c = (char**)realloc(c, sizeof(char*) * tamC);
+        }
+
+        fscanf(arq, "%[^\n]%*c", v);
+        c[i] = strcpy(malloc(sizeof(char) * strlen(v) + 1), v);
     }
 
-    *tam = i;
-}
+    tamC = i;
+    c = (char**)realloc(c, sizeof(char*) * tamC);
 
-void abreArq(char* v[], char* nome, int *tam)
-{
-    FILE* f = fopen(nome, "r");
-
-    if(f == NULL)
-    {
-        printf("Arquivo de Entrada vazio\n");
-        return;
-    }
-
-    leArq(f, tam, v);
+    *tam = tamC;
+    return c;
 }
 
 void copiaVetC(char* v[], char* vet[], int tam)
@@ -185,19 +189,23 @@ void comparaTempo(char *vet[], int tam)
 {
     float tempo1, tempo2, tempo3, tempo4, tempo5;
 
-    char *vet1[tam], *vet2[tam], *vet3[tam], *vet4[tam], *vet5[tam];
+    char** vetAUX1 = (char**)malloc(sizeof(char*)*tam);
+    char** vetAUX2 = (char**)malloc(sizeof(char*)*tam);
+    char** vetAUX3 = (char**)malloc(sizeof(char*)*tam);
+    char** vetAUX4 = (char**)malloc(sizeof(char*)*tam);
+    char** vetAUX5 = (char**)malloc(sizeof(char*)*tam);
 
-    copiaVetC(vet,vet1, tam);
-    copiaVetC(vet,vet2, tam);
-    copiaVetC(vet,vet3, tam);
-    copiaVetC(vet,vet4, tam);
-    copiaVetC(vet,vet5, tam);
+    copiaVetC(vet,vetAUX1, tam);
+    copiaVetC(vet,vetAUX2, tam);
+    copiaVetC(vet,vetAUX3, tam);
+    copiaVetC(vet,vetAUX4, tam);
+    copiaVetC(vet,vetAUX5, tam);
 
-    tempo1 = tempoC(vet1, "insertionsort", tam);
-    tempo2 = tempoC(vet2, "selectionsort", tam);
-    tempo3 = tempoC(vet3, "mergesort", tam);
-    tempo4 = tempoC(vet4, "quicksort", tam);
-    tempo5 = tempoC(vet5, "heapsort", tam);
+    tempo1 = tempoC(vetAUX1, "insertionsort", tam);
+    tempo2 = tempoC(vetAUX2, "selectionsort", tam);
+    tempo3 = tempoC(vetAUX3, "mergesort", tam);
+    tempo4 = tempoC(vetAUX4, "quicksort", tam);
+    tempo5 = tempoC(vetAUX5, "heapsort", tam);
 
     printf("Insertion Sort\t->\t%.4f\n", tempo1);
     printf("Selection Sort\t->\t%.4f\n", tempo2);
@@ -205,11 +213,27 @@ void comparaTempo(char *vet[], int tam)
     printf("Quick Sort\t->\t%.4f\n", tempo4);
     printf("Heap Sort\t->\t%.4f\n", tempo5);
 
-    free(vet1);
-    free(vet2);
-    free(vet3);
-    free(vet4);
-    free(vet5);
+    free(vetAUX1);
+    free(vetAUX2);
+    free(vetAUX3);
+    free(vetAUX4);
+    free(vetAUX5);
+}
+
+void opeArq(char* v[], ArgumentosCMD* a)
+{
+    FILE* saida = fopen(a->arqSaida, "w+");
+
+    float ab = tempoC(v, a->tipoSort, a->quantN);
+
+    fprintf(saida, "%s:\n", a->tipoSort);
+    fprintf(saida, "Tempo para Ordenar: %.4f\n{", ab);
+
+    int i;
+    for(i = 0; i < a->quantN; i++)
+    {
+        fprintf(saida, "%s\n", v[i]);
+    }
 }
 
 void fazOpC(char* v[], ArgumentosCMD* a)
@@ -223,8 +247,8 @@ void fazOpC(char* v[], ArgumentosCMD* a)
             printf("Arquivo de saida nao escolhido!\n");
             return;
         }
-        //else
-            //opeArq(v, a->quantN);
+        else
+            opeArq(v, a);
     }
 }
 

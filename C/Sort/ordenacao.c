@@ -198,33 +198,34 @@ void insertionSortC(char* vet[], int n)
         vet[i+1] = temp;
     }
 }
+
 void intercalaC(char* vet[],int inicio, int meio, int fim)
 {
     int i, j, k;
     char **vet_aux;
 
-    vet_aux = malloc((fim-inicio)*sizeof(char));
+    vet_aux = malloc((fim-inicio)*sizeof(char*));
 
     i = inicio; j = meio; k = 0;
 
     while( i < meio && j < fim)
     {
         if(strcmp(vet[i], vet[j]) <= 0)
-            *vet_aux[k++] = vet[i++];
+            vet_aux[k++] = vet[i++];
         else
-            *vet_aux[k++] = vet[j++];
+            vet_aux[k++] = vet[j++];
     }
 
     while (i < meio)
-        *vet_aux[k++] = vet[i++];
+        vet_aux[k++] = vet[i++];
 
     while (j < fim)
-        *vet_aux[k++] = vet[j++];
+        vet_aux[k++] = vet[j++];
 
     for(i = inicio; i < fim; i++)
-        *vet[i] = vet_aux[i-inicio];
+        vet[i] = vet_aux[i-inicio];
 
-    free(*vet_aux);
+    free(vet_aux);
 }
 
 void mergeSortC(char* v[], int inicio, int fim)

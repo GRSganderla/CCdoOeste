@@ -15,5 +15,6 @@ int main(int argc, const char *argv[])
     determinaOp(args);
 
     limpaArg(args);
-    return 0;
+
+    return 0;s
 }
