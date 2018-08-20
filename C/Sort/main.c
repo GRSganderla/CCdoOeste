@@ -12,9 +12,9 @@ int main(int argc, const char *argv[])
 
     args = linhaDeArgumentos(args, argv, argc);
 
-    determinaOp(args);
+    determinaDado(args);
 
     limpaArg(args);
 
-    return 0;s
+    return 0;
 }
