@@ -1,6 +1,7 @@
-quicksort:
-Tempo para Ordenar: 0.0000
-{Aaren
+mergesort:
+Tempo para Ordenar: 0.0020
+{
+Aaren
 Aarika
 Abagael
 Abagail
