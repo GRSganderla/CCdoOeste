@@ -35,7 +35,7 @@ int alfabetoCMP(AFD afd, char terminal)
 /// \pre nenhuma
 /// \post nenhum
 ///
-Estado* fazerTransicao( Estado* atual, char terminal)
+Estado* fazerTransicao(Estado* atual, char terminal)
 {
     int i;
     //percorre ate o tamanho total de transições
