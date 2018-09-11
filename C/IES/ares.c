@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Windows.h>
+#include <windows.h>
+#include <conio.h>
 #define MAX 50
 
 float versao = 1.0;
@@ -32,6 +33,12 @@ typedef struct menu
 	Playlist play[100];
 	int quantPlay;
 }Menu;
+
+typedef struct tempo
+{
+	int min;
+	int sec;
+}Duracao;
 
 void gotoXY(int x, int y){
 	
@@ -81,21 +88,27 @@ void printaInferior2()
 	printf("|_______________________________________________________________________________________________________|\n");
 }
 
-void printaEspaco(int esp, int tam)
+void printaEstrelas(int avaliacao)
 {
-	int j;
-	
-	for(j = 0; j < (esp - tam); j++)
+	int i = 10 - avaliacao;
+
+	while(avaliacao)
+	{
+		printf("*");
+		avaliacao--;
+	}
+
+	while(i)
 	{
 		printf(" ");
+		i--;
 	}
+	printf(":\n");
 }
 
 void consulList(Playlist play){
 
 	int i, opcao, j = 0;;
-
-	system("CLS");
 
 	do{
 	printaSuperior();
@@ -106,11 +119,12 @@ void consulList(Playlist play){
 	printf(":                    [2] - Consultar a capa e a playlist                  :\n");
 	printf(":                    [3] - Filtrar por autor                              :\n");
 	printf(":                    [4] - Filtrar por genero                             :\n");
+	printf(":                    [0] - Voltar                                         :\n");
 	printf(":                                                                         :\n");
 	printf(":                        Opcao:                                           :\n");
 	printaInferior();
 	
-	gotoXY(32, 13);
+	gotoXY(32, 14);
 	
 	scanf("%d%*c", &opcao);
 
@@ -143,7 +157,7 @@ void consulList(Playlist play){
 		printf(": |_______|  Duracao total: %.2f                                                                        :\n", play.duracaoTotal);
 		printf(":                                                                                                       :\n");
 		printf(": Musicas:                                                                                              :\n");
-		printf(": Nome                   Autor                 Cantor                Genero      Ano  Duracao Avaliacao :\n");
+		printf(": Nome                   Autor                Cantor               Genero      Ano   Duracao  Avaliacao :\n");
 	
 		for(i=0; i< play.quantMus+1; i++)
 		{
@@ -152,17 +166,17 @@ void consulList(Playlist play){
 
 				printf(": %-23s", play.musicas[i].tituloMus);
 				
-				printf("%-22s", play.musicas[i].autorMus);		
+				printf("%-21s", play.musicas[i].autorMus);		
 				
-				printf("%-22s", play.musicas[i].cantor);	
+				printf("%-21s", play.musicas[i].cantor);	
 				
 				printf("%-12s", play.musicas[i].genero);	
 
 				printf("%-5d ", play.musicas[i].ano);
 
-				printf("%-11.2f", play.musicas[i].duracao);
+				printf("%-9.2f", play.musicas[i].duracao);
 				
-				printf("%-5d :\n", play.musicas[i].avaliacao);
+				printaEstrelas(play.musicas[i].avaliacao);
 			}	
 		}
 		printaInferior2();
@@ -202,17 +216,17 @@ void consulList(Playlist play){
 			{ 
 				if(play.musicas[i].ocupado)
 				{
-					printf(": %-35s", play.musicas[i].tituloMus);
+					printf(": %-31s", play.musicas[i].tituloMus);
 
 					printf("%-22s", play.musicas[i].cantor);	
 					
-					printf("%-12s", play.musicas[i].genero);
+					printf("%-14s", play.musicas[i].genero);
 
-					printf("%-7d", play.musicas[i].ano);
+					printf("%-9d", play.musicas[i].ano);
 
-					printf("%-7.2f", play.musicas[i].duracao);
+					printf("%-16.2f", play.musicas[i].duracao);
 					
-					printf("%-2d:\n", play.musicas[i].avaliacao);
+					printaEstrelas(play.musicas[i].avaliacao);
 				}	
 			}
 			i++;
@@ -255,17 +269,17 @@ void consulList(Playlist play){
 			{ 
 				if(play.musicas[i].ocupado)
 				{
-					printf(": %-30s", play.musicas[i].tituloMus);
+					printf(": %-27s", play.musicas[i].tituloMus);
 
 					printf("%-23s", play.musicas[i].cantor);	
 					
-					printf("%-12s", play.musicas[i].autorMus);
+					printf("%-15s", play.musicas[i].autorMus);
 
-					printf("%-7d", play.musicas[i].ano);
+					printf("%-11d", play.musicas[i].ano);
 
-					printf("%-7.2f", play.musicas[i].duracao);
+					printf("%-16.2f", play.musicas[i].duracao);
 					
-					printf("%-2d:\n", play.musicas[i].avaliacao);
+					printaEstrelas(play.musicas[i].avaliacao);
 				}
 			}
 			i++;
@@ -274,45 +288,25 @@ void consulList(Playlist play){
 		printaInferior2();
 	}
 
-	char escolha;
-	
-	system("pause");
-	
-	printaSuperior();
-	printf(":                                                                         :\n");
-	printf(":                          Deseja continuar consultando?                  :\n");
-	printf(":                                                                         :\n");
-	printf(":                             Sim(S)  |  Nao(N)                           :\n");
-	printf(":                                                                         :\n");
-	printf(":                                                                         :\n");
-	printf(":                             R:                                          :\n");
-	printaInferior();
-	
-	gotoXY(33, 11);
-	
-	scanf("%c%*c", &escolha);
-	
-	if(escolha == 'N' || escolha == 'n')
-		j++;
-	}while(j < 1);
+	getch();
+
+	}while(opcao);
 }
 
-void printaNaoExistente()
+void printaNaoExistente(char *s)
 {
 	printaSuperior();
 	printf(":                                                                         :\n");
-	printf(":                     Playlist nao existente                              :\n");
+	printf(":                     %-7s nao existente                            :\n", s);
 	printf(":                                                                         :\n");
 	printf(":                                                                         :\n");
 	printf(":                                                                         :\n");
 	printaInferior();
 }
 
-Playlist removeMusica(Playlist* play)
+void removeMusica(Playlist* play)
 {
 	char removeMus[256];
-	
-	system("CLS");
 		
 	printaSuperior();
 	printf(":                                                                         :\n");
@@ -326,9 +320,9 @@ Playlist removeMusica(Playlist* play)
 	
 	scanf("%[^\n]%*c", removeMus);
 
-	int i;
+	int i, j;
 	
-	for(i = 0; i < play->quantMus; i++)
+	for(i = j = 0; i < play->quantMus; i++)
 	{
 		if(!strcmp(removeMus, play->musicas[i].tituloMus))
 		{
@@ -337,27 +331,26 @@ Playlist removeMusica(Playlist* play)
 				play->musicas[i].ocupado = 0;
 				play->duracaoTotal -= play->musicas[i].duracao;
 				play->quantMus--;
-				return *play;
+				j++;
 			}
 		}
 	}
 	
-	printaNaoExistente();
-	system("pause");
-
-	return *play;
+	if(j)
+		printaNaoExistente("Musica");
+	getch();
 }
 
-Playlist adicionaMusica(Playlist play){
+Playlist adicionaMusica(Playlist *play){
 
 	char escolha;
 	int i;
-	play.duracaoTotal = 0;
-	play.quantMus = 0;
+	play->duracaoTotal = 0;
+	play->quantMus = 0;
 
 	for(i=0; i<MAX; i++){
 
-		if(play.musicas[i].ocupado == 0)
+		if(play->musicas[i].ocupado == 0)
 		{
 
 			printaSuperior();
@@ -370,7 +363,7 @@ Playlist adicionaMusica(Playlist play){
 			
 			gotoXY(30, 9);
 			
-			scanf("%[^\n]%*c", play.musicas[i].tituloMus);
+			scanf("%[^\n]%*c", play->musicas[i].tituloMus);
 			
 			printaSuperior();
 			printf(":                                                                         :\n");
@@ -382,7 +375,7 @@ Playlist adicionaMusica(Playlist play){
 			
 			gotoXY(24, 9);
 			
-			scanf("%[^\n]%*c", play.musicas[i].cantor);
+			scanf("%[^\n]%*c", play->musicas[i].cantor);
 	
 			printaSuperior();
 			printf(":                                                                         :\n");
@@ -394,7 +387,7 @@ Playlist adicionaMusica(Playlist play){
 			
 			gotoXY(25, 9);
 			
-			scanf("%[^\n]%*c", play.musicas[i].autorMus);
+			scanf("%[^\n]%*c", play->musicas[i].autorMus);
 
 			printaSuperior();
 			printf(":                                                                         :\n");
@@ -406,7 +399,7 @@ Playlist adicionaMusica(Playlist play){
 			
 			gotoXY(29, 9);
 			
-			scanf("%d%*c", &play.musicas[i].ano);
+			scanf("%d%*c", &play->musicas[i].ano);
 			
 			printaSuperior();
 			printf(":                                                                         :\n");
@@ -418,35 +411,61 @@ Playlist adicionaMusica(Playlist play){
 
 			gotoXY(31, 9);
 						
-			scanf("%[^\n]%*c", play.musicas[i].genero);
+			scanf("%[^\n]%*c", play->musicas[i].genero);
 			
 			printaSuperior();
 			printf(":                                                                         :\n");
 			printf(":                     Entre com a duracao da musica                       :\n");
 			printf(":                                                                         :\n");
+			printf(":                          Formato 99:99                                  :\n");
 			printf(":                                                                         :\n");
 			printf(":                     Duracao:                                            :\n");
 			printaInferior();
 
 			gotoXY(31 ,9);
-						
-			scanf("%f%*c", &play.musicas[i].duracao);
+			
+			int min, seg;
+			scanf("%d:%d%*c", 
+
+			play->musicas[i].duracao);
 			
 			printaSuperior();
 			printf(":                                                                         :\n");
 			printf(":                    Entre com a avaliacao da musica                      :\n");
 			printf(":                                                                         :\n");
+			printf(":                      	      De 0 a 5                                    :\n");
 			printf(":                                                                         :\n");
 			printf(":                    Avaliacao:                                           :\n");
 			printaInferior();
 			
-			gotoXY(32, 9);
-						
-			scanf("%d%*c", &play.musicas[i].avaliacao);
+			gotoXY(32, 10);
+			int ava;						
+			scanf("%d%*c", &ava);
 
-			play.quantMus++;
-			play.duracaoTotal += play.musicas[i].duracao;
-			play.musicas[i].ocupado = 1;
+			if(ava =>0 && ava <= 5)
+				play->musicas[i].avaliacao = ava;
+			else
+			{
+				while(ava < 0 && ava > 5)
+				{
+					printaSuperior();
+					printf(":                                                                         :\n");
+					printf(":                    Entre com a avaliacao valida                         :\n");
+					printf(":                                                                         :\n");
+					printf(":                            De 0 a 5                                     :\n");
+					printf(":                                                                         :\n");
+					printf(":                    Avaliacao:                                           :\n");
+					printaInferior();
+					
+					gotoXY(32, 10);
+					int ava;						
+					scanf("%d%*c", &ava);
+				}
+			}
+
+			play->quantMus++;
+			play->duracaoTotal += play->musicas[i].duracao;
+			play->musicas[i].ocupado = 1;
 				
 			printaSuperior();
 			printf(":                                                                         :\n");
@@ -469,8 +488,6 @@ Playlist adicionaMusica(Playlist play){
 			}
 		} 
 	}
-
-	return play;
 }
 
 Musica inicializaMusica()
@@ -535,8 +552,6 @@ void adicionaEremove(Menu *menu)
 	{
 		int i = 0;
 		
-		system("CLS");
-		
 		printaSuperior();
 		printf(":                       Escolha uma das opcoes:                           :\n");
 		printf(":                                                                         :\n");
@@ -556,11 +571,11 @@ void adicionaEremove(Menu *menu)
 		switch(opcao){
 
 			case 1: 
-				menu->play[i] = adicionaMusica(menu->play[i]); 
+				adicionaMusica(&menu->play[i]); 
 				break;
 				
 			case 2:
-				menu->play[i] = removeMusica(&menu->play[i]);
+				removeMusica(&menu->play[i]);
 				break;
 			default:
 				break;
@@ -568,11 +583,22 @@ void adicionaEremove(Menu *menu)
 
 		continua = opcao;
 	}
+
+	getch();
 }
 
 void mudaNome(char mudar[])
 {
-	printf("Novo nome: ");
+
+	printaSuperior();
+	printf(":                                                                         :\n");
+	printf(":                          Novo nome?                                     :\n");
+	printf(":                                                                         :\n");
+	printf(":                                                                         :\n");
+	printf(":                        R:                                               :\n");
+	printaInferior();
+
+	gotoXY(28, 9);
 	char nome[100];
 
 	scanf("%[^\n]%*c", nome);
@@ -580,24 +606,37 @@ void mudaNome(char mudar[])
 	strcpy(mudar, nome);
 }
 
-int mudaInt()
+void mudaInt(int *a)
 {
-	printf("Novo: ");
+	printaSuperior();
+	printf(":                                                                         :\n");
+	printf(":                          Novo:                                          :\n");
+	printf(":                                                                         :\n");
+	printaInferior();
+
+	gotoXY(33, 6);
 	int novo;
 	
 	scanf("%d%*c", &novo);
 	
-	return novo;
+	*a = novo;
 }
 
-float mudaDur()
+void mudaDur(float *dura)
 {
 	float dur;
-	printf("Nova duracao: ");
+
+	printaSuperior();
+	printf(":                                                                         :\n");
+	printf(":                          Nova duracao:                                  :\n");
+	printf(":                                                                         :\n");
+	printaInferior();
+
+	gotoXY(41, 6);
 	
 	scanf("%f", &dur);
 	
-	return dur;
+	*dura = dur;
 }
 
 void editMusica(Musica* alvo)
@@ -605,19 +644,19 @@ void editMusica(Musica* alvo)
 	printaSuperior();
 	printf(":                                Editar:                                  :\n");
 	printf(":                                                                         :\n");
-	printf(":               [1]    Titulo:%-44s:\n", alvo->tituloMus);
-	printf(":				[2]    Cantor:%-44s:\n", alvo->cantor);
-	printf(":				[3]	    Autor:%-44s:\n", alvo->autorMus);
-	printf(":				[4]       Ano:%-44d:\n", alvo->ano);
-	printf(":				[5]   Duracao:%-44.2f:\n", alvo->duracao);
-	printf(":				[6]    Genero:%-44s:\n", alvo->genero);
-	printf(":				[7] Avaliacao:%-44s:\n", alvo->genero);
+	printf(":               [1]    Titulo:%s %-30s:\n", alvo->tituloMus, ' ');
+	printf(":				[2]    Cantor:%s %-30s:\n", alvo->cantor, ' ');
+	printf(":				[3]	    Autor:%s %-30s:\n", alvo->autorMus, ' ');
+	printf(":				[4]       Ano:%d %-30s:\n", alvo->ano, ' ');
+	printf(":				[5]   Duracao:%.2f %-30s:\n", alvo->duracao, ' ');
+	printf(":				[6]    Genero:%s %-30s:\n", alvo->genero, ' ');
+	printf(":				[7] Avaliacao:%s %-30s:\n", alvo->genero, ' ');
 	printf(":				[0] 		  Voltar\n");
 	printf(":                                                                         :\n");
 	printf(":                       Opcao:                                            :\n");
 	printaInferior();
 	
-	gotoXY(20, 9);
+	gotoXY(34, 16);
 	
 	int opcao;
 	scanf("%d%*c", opcao);
@@ -634,20 +673,22 @@ void editMusica(Musica* alvo)
 			mudaNome(alvo->autorMus);
 			break;
 		case 4:
-			alvo->ano = mudaInt();
+			mudaInt(&alvo->ano);
 			break;
 		case 5:
-			alvo->duracao = mudaDur();
+			mudaDur(&alvo->duracao);
 			break;
 		case 6:
 			mudaNome(alvo->genero);
 			break;
 		case 7:
-			alvo->avaliacao = mudaInt();
+			mudaInt(&alvo->avaliacao);
 			break;
-		default:
+		case 0:
 			break;
 	}
+
+	getch();
 }
 
 void editar(Playlist* lista)
@@ -655,27 +696,40 @@ void editar(Playlist* lista)
 	int i;
 	char nome[100];
 
-	printf("Musica a ser editada: ");
+	printaSuperior();
+	printf(":                                                                         :\n");
+	printf(":          Musica a ser editada:                                          :\n");
+	printf(":                                                                         :\n");
+	printaInferior();
+
+	gotoXY(33, 6);
+
+	int achou = 0;
+
 	scanf("%[^\n]%*c", nome);
 
 	for(i = 0; i < lista->quantMus; i++)
 	{
 		if(!strcmp(lista->musicas[i].tituloMus, nome))
 			if(lista->musicas[i].ocupado)
+			{
+				achou = 1;
 				editMusica(&lista->musicas[i]);
+			}
 	}
 
-	printf("Musica nao pertencente a playlist\n");
+	if(!achou)
+		printaNaoExistente("Musica");
 }
 
-Playlist editPlay(Playlist lista)
+void editPlay(Playlist* lista)
 {
 	int i = 0;
 	while(i < 1)
 	{
 		printaSuperior();
 		printf(":                                                                         :\n");
-		printf(":                             %-44s:\n", lista.tituloLista);
+		printf(":                             %-44s:\n", lista->tituloLista);
 		printf(":                                                                         :\n");
 		printf(":                       [1] - Mudar nome da Playlist                      :\n");
 		printf(":                       [2] - Remover uma musica                          :\n");
@@ -686,7 +740,7 @@ Playlist editPlay(Playlist lista)
 		printf(":                       Opcao:                                            :\n");
 		printaInferior();
 		
-		gotoXY(20, 9);
+		gotoXY(31, 14);
 		
 		int opcao;
 		scanf("%d%*c", &opcao);
@@ -694,16 +748,16 @@ Playlist editPlay(Playlist lista)
 		switch(opcao)
 		{
 			case 1:
-				mudaNome(lista.tituloLista);
+				mudaNome(lista->tituloLista);
 				break;
 			case 2:
-				lista = removeMusica(&lista);
+				removeMusica(lista);
 				break;
 			case 3:
-				lista = adicionaMusica(lista);
+				adicionaMusica(lista);
 				break;
 			case 4:
-				editar(&lista);
+				editar(lista);
 				break;
 			default:
 				i = 1;
@@ -723,7 +777,7 @@ Playlist editPlay(Playlist lista)
 			printf(":                             R:                                          :\n");
 			printaInferior();
 			
-			gotoXY(20, 9);
+			gotoXY(33, 11);
 			
 			scanf("%c%*c", &escolha);
 
@@ -731,12 +785,13 @@ Playlist editPlay(Playlist lista)
 				i++;
 		}
 	}
+
+	getch();
 }
 
 int main()
 {
 	Menu* menu = inicializaMenu();
-	printf("a\n");
 	int escolha = 1, i;
 
 	while(escolha != 0)
@@ -777,7 +832,7 @@ int main()
 				
 				scanf("%[^\n]%*c", menu->play[i].tituloLista);
 				
-				system("pause");
+				getch();
 				
 				printaSuperior();
 				printf(":                                                                         :\n");
@@ -812,11 +867,11 @@ int main()
 			printf(":          Nome:                                                          :\n");
 			printaInferior();
 			
-			gotoXY(15, 9);
+			gotoXY(16, 9);
 			
 			scanf("%s%*c", nomePlay);
 			
-			int i;
+			int i, achou = 0;
 
 			for(i = 0; i < 100; i++)
 			{
@@ -824,8 +879,15 @@ int main()
 				{
 					menu->play[i] = removePlaylist(menu->play[i]);
 					menu->quantPlay--;
+					achou = 1;
 				}
 			}
+
+			if(!achou)
+			{
+				printaNaoExistente("Playlist");
+			}
+
 		}
 		else if(escolha == 3)
 		{
@@ -858,13 +920,22 @@ int main()
 
 			if(!achou)
 			{
-				printaNaoExistente();
+				printaNaoExistente("Playlist");
 			}
 		}
 		else if(escolha == 4)
 		{
 			int achou = 0;
-			printf("Nome da Playlist: ");
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                          Playlist a ser editada?                        :\n");
+			printf(":                                                                         :\n");\
+			printf(":                                                                         :\n");
+			printf(":                             R:                                          :\n");
+			printaInferior();
+
+			gotoXY(33, 9);
+
 			char playlistAlvo[100];
 			scanf("%[^\n]%*c", playlistAlvo);
 
@@ -873,13 +944,13 @@ int main()
 				if(!strcmp(menu->play[i].tituloLista, playlistAlvo))
 				{
 					achou = 1;
-					menu->play[i] = editPlay(menu->play[i]);
+					editPlay(&menu->play[i]);
 				}
 			}
 
 			if(!achou)
 			{
-				printaNaoExistente();
+				printaNaoExistente("Playlist");
 			}
 
 		}
@@ -897,15 +968,14 @@ int main()
 			printf(":                             R:                                          :\n");
 			printaInferior();
 			
-			gotoXY(20, 9);
+			gotoXY(33, 11);
 			
 			scanf("%c%*c", &c);
 			if(c == 'S' || c == 's')
 				break;
 		}
-
-		system("pause");
 	}
 
+	system("CLS");
 	return 0;
 }
