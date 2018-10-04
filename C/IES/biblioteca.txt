@@ -1,0 +1,25 @@
+$--
+Nome: Goner
+Cantor: Twenty One Pilots
+Autor: Twenty One Pilots
+Genero: Pop Rock
+Ano: 2015
+Duracao: 3:57
+Avaliacao: 5
+--
+Nome: Stressed Out
+Cantor: Twenty One Pilots
+Autor: Twenty One Pilots
+Genero: Pop Rock
+Ano: 2015
+Duracao: 3:22
+Avaliacao: 5
+--
+Nome: Heavydirtysoul
+Cantor: Twenty One Pilots
+Autor: Twenty One Pilots
+Genero: Pop Rock
+Ano: 2015
+Duracao: 3:55
+Avaliacao: 5
+--$
