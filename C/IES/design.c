@@ -109,9 +109,9 @@ void printaEstrelas(int avaliacao)
 	printf(":\n");
 }
 
-void printaEstrelas2(int avaliacao)
+void printaEstrelas2(int avaliacao, int alvo)
 {
-	int i = 43 - avaliacao;
+	int i = alvo - avaliacao;
 
 	while(avaliacao)
 	{
@@ -181,7 +181,7 @@ void consulList(Playlist play){
 		printf(": Musicas:                                                                                              :\n");
 		printf(": Nome                   Autor                Cantor               Genero      Ano   Duracao  Avaliacao :\n");
 	
-		for(i=0; i< play.quantMus+1; i++)
+		for(i=0; i < play.quantMus; i++)
 		{
 			if(play.musicas[i].ocupado)
 			{
@@ -199,9 +199,9 @@ void consulList(Playlist play){
 				if(play.musicas[i].duracao.min < 10)
 				{
 					if(play.musicas[i].duracao.seg < 10)
-						printf("0%-2d:0%-3d", play.musicas[i].duracao.min, play.musicas[i].duracao.seg);
+						printf("0%-2d:0%-4d", play.musicas[i].duracao.min, play.musicas[i].duracao.seg);
 					else 
-						printf("0%-2d:%-4d", play.musicas[i].duracao.min, play.musicas[i].duracao.seg);
+						printf("0%-2d:%-5d", play.musicas[i].duracao.min, play.musicas[i].duracao.seg);
 				}
 				else 
 					printf("%-3d:%-6d", play.musicas[i].duracao.min, play.musicas[i].duracao.seg);
@@ -241,10 +241,12 @@ void consulList(Playlist play){
 		printf(": Nome                           Cantor                Genero        Ano      Duracao         Avaliacao :\n");
 
 		int i=0, j = 0, existe = 0;
+		char *s1 = strupr(play.musicas[i].autorMus), *s2 = strupr(nomeAutor);
 		
 		for(; j < MAX; j++)
 		{
-			if(!strcmp(play.musicas[i].autorMus, nomeAutor))
+			s1 = strupr(play.musicas[j].autorMus);
+			if(!strcmp(s1, s2))
 				existe = 1;	
 		}
 
@@ -253,7 +255,8 @@ void consulList(Playlist play){
 			i = 0;
 			while(i < MAX)
 			{ 
-				if(!strcmp(play.musicas[i].autorMus, nomeAutor))
+				s1 = strupr(play.musicas[i].autorMus); 
+				if(!strcmp(s1, s2))
 				{ 
 					if(play.musicas[i].ocupado)
 					{
@@ -316,19 +319,22 @@ void consulList(Playlist play){
 		printf(": Nome                       Cantor                 Autor          Ano        Duracao         Avaliacao :\n");
 		
 		int i=0, existe = 0, j = 0;
+		char *s1, *s2 = strupr(nomeAutor);
 		
 		for(; j < MAX; j++)
 		{
-			if(!strcmp(play.musicas[i].genero, nomeAutor))
+			s1 = strupr(play.musicas[j].genero);
+			if(!strcmp(s1, s2))
 				existe = 1;
 		}
 
 		if(existe)
 		{
 			i = 0;
-			while( i < MAX)
+			while(i < play.quantMus)
 			{ 
-				if(!strcmp(play.musicas[i].genero, nomeAutor))
+				s1 = strupr(play.musicas[i].genero);
+				if(!strcmp(s1, s2))
 				{ 
 					if(play.musicas[i].ocupado)
 					{
@@ -366,13 +372,13 @@ void consulList(Playlist play){
 
 	if(opcao == 0)
 		break;
-
-	getch();
+	else
+		getch();
 
 	}while(opcao);
 }
 
-void printaNaoExistente(char *s)
+void printaNaoExistenteMusica(char *s)
 {
 	printaSuperior2();
 	printf(". .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .\n");
@@ -382,7 +388,22 @@ void printaNaoExistente(char *s)
 	printf(":                                              |(| @ |)|                                                :\n");
 	printf(":                                              |_______|                                                :\n");
 	printf(":                                                                                                       :\n");
-	printf(":                                              %-7s nao existente :(                          :\n", s);
+	printf(":                                       Musica nao existente :(                                         :\n");
+	printf(":                                                                                                       :\n");
+	printaInferior2();
+}
+
+void printaNaoExistentePlaylist(char *s)
+{
+	printaSuperior2();
+	printf(". .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .\n");
+	printf(":                                               _______                                                 :\n");
+	printf(":                                              |  ___  |                                                :\n");
+	printf(":                                              | (*^*) |                                                :\n");
+	printf(":                                              |(| @ |)|                                                :\n");
+	printf(":                                              |_______|                                                :\n");
+	printf(":                                                                                                       :\n");
+	printf(":                                      Playlist nao existente :(                                        :\n");
 	printf(":                                                                                                       :\n");
 	printaInferior2();
 }

@@ -64,26 +64,27 @@ void removeMusica(Playlist* play)
 
 	for(int i = 0; i < play->quantMus; i++)
 	{
-		printf(":              [%d] %-53s:\n", i+1, play->musicas[i].tituloMus);
+		if(play->musicas[i].ocupado)
+			printf(":              [%d] %-55s:\n", i+1, play->musicas[i].tituloMus);
 	}
 
 	printf(":                                                                         :\n");
 	printf(":             Opcao:                                                      :\n");
 	printaInferior();
 	
-	gotoXY(22, 9);
+	gotoXY(22, 9+play->quantMus);
 	
 	char c = getch();
-	int escolha = charToNum(c) - 1;
+	int escolha = charToNum(c);
 
 	int i, achou = 0;
 	
-	if(play->musicas[escolha].ocupado && escolha >= 0 && escolha <= play->quantMus)
+	if(play->musicas[escolha-1].ocupado && escolha >= 0 && escolha <= play->quantMus)
 	{
-		play->musicas[i].ocupado = 0;
+		play->musicas[escolha-1].ocupado = 0;
 		
-		play->duracaoTotal.min -= play->musicas[i].duracao.min;
-		play->duracaoTotal.seg -= play->musicas[i].duracao.seg;
+		play->duracaoTotal.min -= play->musicas[escolha-1].duracao.min;
+		play->duracaoTotal.seg -= play->musicas[escolha-1].duracao.seg;
 
 		if(play->duracaoTotal.seg < 0)
 		{
@@ -94,8 +95,7 @@ void removeMusica(Playlist* play)
 		play->quantMus--;
 	}
 	else
-		printaNaoExistente("Musica");
-	getch();
+		printaNaoExistenteMusica();
 }
 
 int cmp(Musica mus, Playlist* play)
@@ -135,23 +135,23 @@ Playlist adicionaMusica(Playlist *play)
 		printaSuperior();
 		for(int j = 0; j < biblioteca.quantMus; j++)
 		{
-			printaSuperior();
 			printf(":                                                                         :\n");
-			printf(": [%d]                                                                    :\n", j);
-			printf(": Nome: %s                                                                :\n", biblioteca.musicas[j].tituloMus);
-			printf(": Cantor: %s                                                              :\n", biblioteca.musicas[j].cantor);
-			printf(": Autor: %s                                                               :\n", biblioteca.musicas[j].autorMus);
-			printf(": Genero: %s                                                              :\n", biblioteca.musicas[j].genero);
-			printf(": Duracao: %d:%d                                                          :\n", biblioteca.musicas[j].duracao.min, biblioteca.musicas[j].duracao.seg);
-			printf(": Avaliacao: %d                                                           :\n", biblioteca.musicas[j].avaliacao);
-			printf(":                                                                         :\n");			
+			printf(": [%d]                                                                     :\n", j);
+			printf(": Nome: %-66s:\n", biblioteca.musicas[j].tituloMus);
+			printf(": Cantor: %-64s:\n", biblioteca.musicas[j].cantor);
+			printf(": Autor: %-65s:\n", biblioteca.musicas[j].autorMus);
+			printf(": Genero: %-64s:\n", biblioteca.musicas[j].genero);
+			printf(": Duracao: %4d:%-58d:\n", biblioteca.musicas[j].duracao.min, biblioteca.musicas[j].duracao.seg);
+			printf(": Avaliacao: ");
+			printaEstrelas2(biblioteca.musicas[j].avaliacao, 61);
 		}
 
+		printf(":                                                                         :\n");			
 		printf(": Escolha:                                                                :\n");
 		printf(":                                                                         :\n");
 		printaInferior();
 
-		gotoXY(10, 15*(biblioteca.quantMus * 9));
+		gotoXY(11, 6+(biblioteca.quantMus * 8));
 		scanf("%d%*c", &opcao);
 
 		aux = biblioteca.musicas[opcao];
@@ -305,7 +305,9 @@ void adicionaEremove(Menu *menu)
 				break;
 		}
 
+		if(escolha == 0)
+			break;
+
 		continua = escolha;
 	}
-
 }

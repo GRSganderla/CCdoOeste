@@ -7,7 +7,9 @@
 
 void mudaNome(char mudar[]);
 
-void mudaInt(int *a);
+void mudaAva(int *a);
+
+void mudaAno(int *a);
 
 void mudaDur(Duracao *dura);
 

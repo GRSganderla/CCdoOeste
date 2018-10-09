@@ -50,8 +50,10 @@ void printaInferior2();
 
 void printaEstrelas(int avaliacao);
 
-void printaEstrelas2(int avaliacao);
+void printaEstrelas2(int avaliacao, int alvo);
 
 void consulList(Playlist play);
 
-void printaNaoExistente(char *s);
+void printaNaoExistenteMusica();
+
+void printaNaoExistentePlaylist();

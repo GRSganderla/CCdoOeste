@@ -24,11 +24,11 @@ void mudaNome(char mudar[])
 	strcpy(mudar, nome);
 }
 
-void mudaInt(int *a)
+void mudaAva(int *a)
 {
 	printaSuperior();
 	printf(":                                                                         :\n");
-	printf(":                          Novo:                                          :\n");
+	printf(":                Nova Avaliacao:                                          :\n");
 	printf(":                                                                         :\n");
 	printaInferior();
 
@@ -37,7 +37,61 @@ void mudaInt(int *a)
 	
 	scanf("%d%*c", &novo);
 	
-	*a = novo;
+	if(novo >= 0 && novo <= 5)
+		*a = novo;
+	else
+	{
+		while(novo < 0 && novo > 5)
+		{
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                Nova Avaliacao:                                          :\n");
+			printf(":                                                                         :\n");
+			printaInferior();
+
+			gotoXY(33, 6);
+			int novo;
+		
+			scanf("%d%*c", &novo);
+		}
+
+		*a = novo;
+	}
+}
+
+void mudaAno(int *a)
+{
+	printaSuperior();
+	printf(":                                                                         :\n");
+	printf(":                      Novo Ano:                                          :\n");
+	printf(":                                                                         :\n");
+	printaInferior();
+
+	gotoXY(33, 6);
+	int novo;
+	
+	scanf("%d%*c", &novo);
+	
+	if(novo <= 2018)
+		*a = novo;
+	else
+	{
+		while(novo > 2018)
+		{
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                      Novo Ano:                                          :\n");
+			printf(":                                                                         :\n");
+			printaInferior();
+
+			gotoXY(33, 6);
+			int novo;
+			
+			scanf("%d%*c", &novo);
+		}
+
+		*a = novo;
+	}
 }
 
 void mudaDur(Duracao *dura)
@@ -78,7 +132,7 @@ void editMusica(Musica* alvo)
 		printf(":               [5]   Duracao: %-2d:%-40d:\n", alvo->duracao.min, alvo->duracao.seg);
 		printf(":               [6]    Genero: %-43s:\n", alvo->genero);
 		printf(":               [7] Avaliacao: ");
-		printaEstrelas2(alvo->avaliacao);
+		printaEstrelas2(alvo->avaliacao, 43);
 		printf(":               [0]    Voltar                                             :\n");
 		printf(":                                                                         :\n");
 		printf(":                      Opcao:                                             :\n");
@@ -101,7 +155,7 @@ void editMusica(Musica* alvo)
 				mudaNome(alvo->autorMus);
 				break;
 			case 4:
-				mudaInt(&alvo->ano);
+				mudaAno(&alvo->ano);
 				break;
 			case 5:
 				mudaDur(&alvo->duracao);
@@ -110,7 +164,7 @@ void editMusica(Musica* alvo)
 				mudaNome(alvo->genero);
 				break;
 			case 7:
-				mudaInt(&alvo->avaliacao);
+				mudaAva(&alvo->avaliacao);
 				break;
 			default:
 				break;
@@ -136,9 +190,12 @@ void editar(Playlist* lista)
 
 	scanf("%[^\n]%*c", nome);
 
+	char *s = strupr(nome);
+
 	for(i = 0; i < lista->quantMus; i++)
 	{
-		if(!strcmp(lista->musicas[i].tituloMus, nome))
+		char *s2 = strupr(lista->musicas[i].tituloMus);
+		if(!strcmp(s2, s))
 			if(lista->musicas[i].ocupado)
 			{
 				achou = 1;
@@ -147,7 +204,7 @@ void editar(Playlist* lista)
 	}
 
 	if(!achou)
-		printaNaoExistente("Musica");
+		printaNaoExistenteMusica();
 	getch();
 }
 
@@ -191,7 +248,8 @@ void editPlay(Playlist* lista)
 			default:
 				break;
 		}
-	}
 
-	getch();
+		if(opcao == 0)
+			break;
+	}
 }

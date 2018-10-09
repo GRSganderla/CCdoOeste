@@ -14,7 +14,7 @@ int main()
     atributos = consoleInfo.wAttributes;
 	
 	Menu* menu = inicializaMenu();
-	int escolha = 1, i;
+	int escolha = 1, i, final = 0;
 
 	while(escolha != 0)
 	{
@@ -105,14 +105,15 @@ int main()
 
 			for (int i = 0; i < menu->quantPlay; ++i)
 			{
-				printf(":              [%d] %-53s:\n", i+1, menu->play[i].tituloLista);
+				if(menu->play[i].ativa)
+					printf(":              [%d] %-55s:\n", i+1, menu->play[i].tituloLista);
 			}
 
 			printf(":                                                                         :\n");
 			printf(":           Opcao:                                                        :\n");
 			printaInferior();
 			
-			gotoXY(16, 9+menu->quantPlay);
+			gotoXY(19, 9+menu->quantPlay);
 			
 			char c = getch();
 			int nomePlay = charToNum(c);
@@ -126,7 +127,7 @@ int main()
 					menu->quantPlay--;
 			}
 			else
-				printaNaoExistente("Playlist");
+				printaNaoExistentePlaylist();
 		}
 		else if(escolha == 3)
 		{
@@ -137,7 +138,8 @@ int main()
 			
 			for(i = 0; i < menu->quantPlay; i++)
 			{
-				printf(":              [%d] %-55s:\n", i+1, menu->play[i].tituloLista);
+				if(menu->play[i].ativa)
+					printf(":              [%d] %-55s:\n", i+1, menu->play[i].tituloLista);
 			}
 			
 			printf(":                                                                         :\n");
@@ -159,7 +161,7 @@ int main()
 			}
 
 			else
-				printaNaoExistente("Playlist");
+				printaNaoExistentePlaylist();
 		}
 		else if(escolha == 4)
 		{
@@ -171,7 +173,8 @@ int main()
 
 			for(i = 0; i < menu->quantPlay; i++)
 			{
-				printf(":                [%d] %-53s:\n", i+1, menu->play[i].tituloLista);
+				if(menu->play[i].ativa)
+					printf(":                [%d] %-53s:\n", i+1, menu->play[i].tituloLista);
 			}
 
 			printf(":                                                                         :\n");
@@ -188,7 +191,7 @@ int main()
 				if(menu->play[playlistAlvo-1].ativa)
 					editPlay(&menu->play[playlistAlvo-1]);
 			else 
-				printaNaoExistente("Playlist");
+				printaNaoExistentePlaylist();
 
 		}
 		else if(escolha == 0)
@@ -209,10 +212,11 @@ int main()
 			
 			scanf("%c%*c", &c);
 			if(c == 'S' || c == 's')
-				break;
+				final = 1;
 		}
 
-		getch();
+		if(final == 1)
+			break;
 	}
 
 	system("CLS");
