@@ -5,8 +5,22 @@
 
 Cadastro* inicializaCadastro();
 
+///
+/// \brief overflow, funcao que testa se o nó atual 
+/// \param 
+/// \return 
+/// \pre nenhuma
+/// \post nenhuma
+///
 int overflow(ArvoreB* r);
 
+///
+/// \brief 
+/// \param 
+/// \return 
+/// \pre nenhuma
+/// \post nenhuma
+///
 int vazia(ArvoreB* r);
 
 ArvoreB* split(ArvoreB* x, int *m);

@@ -16,9 +16,9 @@ typedef struct cadastro
 {
 	int codigo;
 	char *nome;
-	char sexo;
+	char *sexo;
 	char *cpf;
-	int crm;
+	char *crm;
 	char *especialidade;
 	char *rg;
 	char *telefone;
@@ -44,7 +44,11 @@ typedef struct nohLivre
 
 void liberaNoh(ArvoreB* alvo);
 
-Cadastro* lerArqEntrada();
+Cadastro* lerArquivo();
+
+void printaCadastro(Cadastro* medicos);
+
+Cadastro* inicializaCadastro();
 
 void criaIndicesArq(FILE *binario);
 

@@ -5,7 +5,7 @@
 
 int overflow(ArvoreB* r)
 {
-	return (r->numChaves == ORDEM)? 1:0;
+	return (r->numChaves == ORDEM);
 }
 
 int vazia(ArvoreB* r)
@@ -17,8 +17,8 @@ ArvoreB* split(ArvoreB* x, int *m)
 {
 	ArvoreB* nova = inicializaArvore();
 
-	int q = x->numChaves/2;
-	nova->numChaves = x->numChaves - q - 1;
+	int q = ORDEM/2;
+	nova->numChaves =  q;
 	x->numChaves = q;
 	
 	*m = x->chave[q]; // chave mediana
@@ -79,9 +79,7 @@ void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, int info)
 		}
 		else 
 		{
-			int alvo = r->filho[pos];
-			
-			ArvoreB* aux = leituraDoNoh(registros, alvo); 
+			ArvoreB* aux = leituraDoNoh(registros, r->filho[pos]); 
 			insere_aux(registros, indice, aux, info);
 			
 			if(overflow(aux))
@@ -123,6 +121,7 @@ void insere(FILE* registros, int info)
 		{
 			int m;
 			novo = split(raiz, &m);
+
 			ArvoreB* novaRaiz = inicializaArvore();
 
 			novaRaiz->chave[0] = m;
@@ -135,7 +134,7 @@ void insere(FILE* registros, int info)
 			liberaNoh(novo);	
 			liberaNoh(novaRaiz);
 		}
-
+		
 		escreveArvore(registros, raiz, indice);
 	}
 
@@ -154,41 +153,38 @@ void printaArvore(FILE* registros)
 	Fila* fileira = start();
 	enqueue(fileira, raiz);
 
-	int n = fileira->n;
-
+	int n;
+	n = fileira->n;
 	while(n)
 	{
-		for(; n > 0; n--)
+		while( n)
 		{
 			No* noh = dequeue(fileira);
 
 			ArvoreB* nova = (ArvoreB*)noh->info;
 
 			printf("[");
-			for(int i = 0; i < ORDEM; i++)
+			for(int i = 0; i < nova->numChaves - 1; i++)
 				printf(" %d", nova->chave[i]);
+			printf(" %d", nova->chave[nova->numChaves-1]);
 			printf("] ");
 
 			int j;
-			printf("%d\n", nova->numChaves);
 			for(j = 0; j <= nova->numChaves; j++)
 			{
-				printf("%d %d\n",j, nova->filho[j]);
 				if(nova->filho[j] != -1)
 				{
-					printf("aaaa\n");
 					enqueue(fileira, leituraDoNoh(registros, nova->filho[j]));
 				}
 			}
-
-			printf("bbbb\n");
-			n--;				
+			n--;
 			free(noh);
 			liberaNoh(nova);
 		}
-		printf("\n");
 		n = fileira->n;
+		printf("\n");
 	}
+
 	liberaNoh(raiz);
 	clean(fileira);
 }

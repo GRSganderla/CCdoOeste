@@ -1,52 +1,116 @@
 #include<stdio.h>
 #include "Arquivos.h"
+#define MAX 100
 
-Cadastro* lerArqEntrada()
+Cadastro* lerArquivo(char* nome)
 {
-	FILE *texto = fopen("cadastros.txt", "r");
-
-	Cadastro *arquivo = (Cadastro*)malloc(sizeof(Cadastro)*10);
-
-	int i, n, temp;
-
-	for(i = 0; !feof(texto); i++)
+	int n = 0, temp = 0;
+	FILE* texto = fopen(nome, "r+");
+	if(!texto)
 	{
-		printf("%d\n", i);
-		fscanf(texto, "%d[^:]", &arquivo[i].codigo);
-		printf("%d\n", arquivo[i].codigo);
+		printf("Arquivo Vazio!\n");
+		return NULL;
+	}
+	Cadastro *medicos = inicializaCadastro();
+
+	for(int i = 0; !feof(texto); i++)
+	{
+		fscanf(texto, "%d[^:]", &medicos[i].codigo);
 		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]", arquivo[i].nome);
-		printf("%s\n", arquivo[i].nome);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%c[^:]", &arquivo[i].sexo);
-		printf("%c\n", arquivo[i].sexo);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", arquivo[i].cpf);
-		printf("%s\n", arquivo[i].cpf);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", &arquivo[i].crm);
-		printf("%d\n", arquivo[i].crm);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", arquivo[i].especialidade);
-		printf("%s\n", arquivo[i].especialidade);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", arquivo[i].rg);
-		printf("%s\n", arquivo[i].rg);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", arquivo[i].telefone);
-		printf("%s\n", arquivo[i].telefone);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", arquivo[i].celular);
-		printf("%s\n", arquivo[i].celular);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^:]*c", arquivo[i].email);
-		printf("%s\n", arquivo[i].email);
-		fseek(texto, +1, SEEK_CUR);
-		fscanf(texto, "%[^\n]*c", arquivo[i].endereco);
-		printf("%s\n", arquivo[i].endereco);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].nome);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].sexo);
+	    fseek(texto, +1, SEEK_CUR);
+	   
+	    fscanf(texto, "%[^:]", medicos[i].cpf);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].crm);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].especialidade);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].rg);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].telefone);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].celular);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].email);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^:]", medicos[i].endereco);
+	    fseek(texto, +1, SEEK_CUR);
+	    
+	    fscanf(texto, "%[^\n]", medicos[i].nascimento);
+	}
+    
+   return medicos;
+}
+
+void printaCadastro(Cadastro* medicos)
+{
+	int i;
+	for(i = 0; i < MAX; i++)
+	{
+		if(medicos[i].codigo == -1)
+			break;
+
+	    printf("//----------------------------------------//\n");
+		printf("Medico[%d]\n", i);
+		printf("Codigo: %d\n", medicos[i].codigo);
+		
+	    printf("Nome: %s\n", medicos[i].nome);
+	    
+	    printf("Sexo: %s\n", medicos[i].sexo);
+	   
+	    printf("CPF: %s\n", medicos[i].cpf);
+	    
+	    printf("CRM: %s\n", medicos[i].crm);
+	    
+	    printf("Especialidade: %s\n", medicos[i].especialidade);
+	    
+	    printf("RG: %s\n", medicos[i].rg);
+	    
+	    printf("Telefone: %s\n", medicos[i].telefone);
+	    
+	    printf("Celular: %s\n", medicos[i].celular);
+	    
+	    printf("Email: %s\n", medicos[i].email);
+	    
+	    printf("Endereco: %s\n", medicos[i].endereco);
+	    
+	    printf("Data de Nascimento: %s\n", medicos[i].nascimento);
+	}
+}
+
+Cadastro* inicializaCadastro()
+{
+	Cadastro* novo = (Cadastro*)malloc(sizeof(Cadastro)*MAX);
+
+	for(int i = 0; i < MAX; i++)
+	{
+		novo[i].codigo = -1;
+	    novo[i].nome = (char*)malloc(sizeof(char)*256);
+	    novo[i].sexo = (char*)malloc(sizeof(char)*256);
+	    novo[i].cpf = (char*)malloc(sizeof(char)*256);
+	    novo[i].crm = (char*)malloc(sizeof(char)*256);
+	    novo[i].especialidade = (char*)malloc(sizeof(char)*256);
+	    novo[i].rg = (char*)malloc(sizeof(char)*256);
+	    novo[i].telefone = (char*)malloc(sizeof(char)*256);
+	    novo[i].celular = (char*)malloc(sizeof(char)*256);
+	    novo[i].email = (char*)malloc(sizeof(char)*256);
+	    novo[i].endereco = (char*)malloc(sizeof(char)*256);
+	    novo[i].nascimento = (char*)malloc(sizeof(char)*256);
 	}
 
-	return arquivo;
+	return novo;
 }
 
 void criaIndicesArq(FILE *binario)
@@ -134,13 +198,9 @@ int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice)
 
 	if(!indice || !galho) return -1;
 
-	posicao = galho->posicao;
-
-	if(posicao == -1)
+	if((posicao = galho->posicao) == -1)
 	{
-		posicao = indice->quantidadeLivre;
-		
-		if(posicao == -1)
+		if(posicao = indice->nohsLivre == -1)
 			posicao = indice->quantidade++;
 		else
 		{
@@ -149,7 +209,7 @@ int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice)
 			free(novo);
 		}
 	}
-
+	
 	galho->posicao = posicao;
 
 	fseek(registros, sizeof(Cabecalho) + sizeof(ArvoreB) * posicao, SEEK_SET);

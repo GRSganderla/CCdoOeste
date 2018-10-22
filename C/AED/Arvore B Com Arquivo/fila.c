@@ -8,6 +8,7 @@ Fila* start()
 
 	aux->final = NULL;
 	aux->inicio = NULL;
+	aux->n = 0;
 
 	return aux;
 }
@@ -23,6 +24,7 @@ No* criaNo(void* dados)
 
 	aux->info = dados;
 	aux->prox = NULL;
+	aux->ant = NULL;
 
 	return aux;
 }
@@ -42,44 +44,35 @@ Fila* clean(Fila* fileira)
 	}
 }
 
-int tamanho(Fila* f)
-{
-	if(empty(f)) return -1;
-	No* aux = f->inicio;
-	int n = 0;
-	while(aux)
-	{
-		n++;
-		aux = aux->prox;
-	}
-	return n;
-}
-
 void enqueue(Fila* f, void* dados)
 {
+	if(!f)return;
+
 	No* auxf = criaNo(dados);
 
-	if(f->final == NULL)
-		f->inicio = auxf;
+	if(!f->inicio)
+		f->inicio = f->final = auxf;
 	else{
-		struct no* aux = f->inicio;
-		while(aux)
-			aux = aux->prox;
-		aux = auxf;
+		auxf->ant = f->final;
+		f->final->prox = auxf;
+		f->final = auxf;
 	}
 	f->n++;
-	f->final = auxf;
 }
 
 No *dequeue(Fila* f)
 {
 	if(empty(f)) return NULL;
+	if(f->inicio == NULL) return NULL;
 
 	No* aux = f->inicio;
-	f->inicio = f->inicio->prox;
+	f->inicio = aux->prox;
 	
-	if(!f->inicio)
+	if(f->inicio)
 	{
+		f->inicio->ant = NULL;
+	}
+	else{
 		f->final = NULL;
 	}
 

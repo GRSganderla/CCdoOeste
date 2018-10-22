@@ -4,7 +4,7 @@
 typedef struct no
 {
 	void* info;
-	struct no* prox;
+	struct no* prox, *ant;
 }No;
 
 typedef struct fila

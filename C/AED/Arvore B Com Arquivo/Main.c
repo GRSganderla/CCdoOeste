@@ -1,29 +1,23 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<conio.h>
 #include "ArvoreB.h"
 
 int main()
 {	
 	int opcao;
+	char *arquivo;
 
-	FILE* asod = fopen("arvores.bin", "wb+");
+	FILE* nova = fopen("arvores.bin", "wb+");
 
-	criaIndicesArq(asod);
+	criaIndicesArq(nova);
 
-	for(int i = 1; i < 10; i++)
-		insere(asod, i);
-
-	printaArvore(asod);
-
-	//printaB(asod);
-
-	/*ArvoreB* nova = inicializaArvore();
-	nova = insere(nova, hospital[0].codigo);
-	nova = insere(nova, hospital[1].codigo);
-	nova = insere(nova, hospital[2].codigo);
+	for(int i = 1; i < 100; i++)
+		insere(nova, i);
 
 	do{
+		system("CLS");
 		printf("[1] - Carregar arquivos de inicializacao\n");
 		printf("[2] - Inserir Medico\n");
 		printf("[3] - Alterar Medico\n");
@@ -31,7 +25,7 @@ int main()
 		printf("[5] - Remover Medico\n");
 		printf("[6] - Imprimir Cadastro\n");
 		printf("[7] - Imprimir a Arvore-B\n");
-		printf("[0] - Fechar\n", );
+		printf("[0] - Fechar\n");
 		printf("    Opcao: ");
 
 		scanf("%d", &opcao);
@@ -39,7 +33,10 @@ int main()
 		switch(opcao)
 		{
 			case 1:
-			//em construcao
+				printf("Arquivo de entrada: ");
+				//scanf("%[^\n]%*c", arquivo);
+				Cadastro* medicos = lerArquivo("cadastros.txt");
+				break;
 			case 2:
 			//em construcao
 			case 3:
@@ -49,14 +46,18 @@ int main()
 			case 5:
 			//em construcao
 			case 6:
-			//em construcao
+				printaCadastro(medicos);
+				break;
 			case 7:
-				printaPorNivelB(nova);
+				printaArvore(nova);
+				break;
 			default:
 				break;
 		}
 
-	}while(opcao);*/
+		getch();
+
+	}while(opcao);
 
 	return 0;
 }
