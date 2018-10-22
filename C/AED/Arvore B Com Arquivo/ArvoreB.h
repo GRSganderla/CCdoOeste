@@ -98,3 +98,7 @@ void insere(FILE* registros, int info, int pos);
 void printaArvore(FILE* registros);
 
 Livres* criaNohLivre();
+
+void lerArquivo(FILE* dados, FILE* arvore, char* nome);
+
+CabecalhoDados* leCabecalhoDat(FILE* dados);

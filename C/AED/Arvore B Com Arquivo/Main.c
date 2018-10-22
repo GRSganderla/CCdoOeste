@@ -15,9 +15,6 @@ int main()
 	criaIndicesArq(registroArv);
 	criaIndicesArqDat(registroDados);
 
-	for(int i = 1; i < 21; i++)
-		insere(registroArv, i, 0);
-
 	do{
 		system("CLS");
 		printf("[1] - Carregar arquivos de inicializacao\n");
@@ -48,7 +45,7 @@ int main()
 			case 5:
 			//em construcao
 			case 6:
-				//printaCadastro(medicos);
+				printaCadastro(medicos);
 				break;
 			case 7:
 				printaArvore(registroArv);
