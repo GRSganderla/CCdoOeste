@@ -2,11 +2,25 @@
 #include "Arquivos.h"
 #define MAX 100
 
+int soNumero(char *s)
+{
+	int len = strlen(s);
+
+	int i;
+	for(i = 0; i < len; i++)
+	{
+		if((s[i] < '0' || s[i] > '9') && s[i] != '-')
+			return 1;
+	}
+
+	return 0;
+}
+
 Cadastro* lerArquivo(char* nome)
 {
 	int n = 0, temp = 0;
 	FILE* texto = fopen(nome, "r+");
-	if(!texto)
+	if(texto == NULL)
 	{
 		printf("Arquivo Vazio!\n");
 		return NULL;
@@ -16,30 +30,71 @@ Cadastro* lerArquivo(char* nome)
 	for(int i = 0; !feof(texto); i++)
 	{
 		fscanf(texto, "%d[^:]", &medicos[i].codigo);
+		if(medicos[i].codigo == -1)
+		{
+			printf("Codigo Vazio\n");
+			return NULL;
+		}
+
 		fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].nome);
+	    if(!medicos[i].nome)
+	    {
+	    	printf("Nome Vazio!\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].sexo);
+	    if(!medicos[i].sexo)
+	    {
+	    	printf("Sexo Vazio!\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	   
 	    fscanf(texto, "%[^:]", medicos[i].cpf);
+	    if(!medicos[i].cpf || soNumero(medicos[i].cpf))
+	    {
+	    	printf("CPF Nao cumpre requisitos\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].crm);
+	    if(!medicos[i].crm)
+	    {
+	    	printf("CRM Vazio!\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].especialidade);
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].rg);
+	    if(!medicos[i].rg)
+	    {
+	    	printf("RG Vazio!\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].telefone);
+	    if(soNumero(medicos[i].telefone))
+	    {
+	    	printf("Telefone nao cumpre requisitos!\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].celular);
+	    if(soNumero(medicos[i].celular))
+	    {
+	    	printf("Celular nao cumpre requisitos\n");
+	    	return NULL;
+	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].email);
@@ -49,6 +104,11 @@ Cadastro* lerArquivo(char* nome)
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^\n]", medicos[i].nascimento);
+	    if(!medicos[i].nascimento)
+	    {
+	    	printf("Data de Nascimento Vazia!\n");
+	    	return NULL;
+	    }
 	}
     
    return medicos;
@@ -57,10 +117,11 @@ Cadastro* lerArquivo(char* nome)
 void printaCadastro(Cadastro* medicos)
 {
 	int i;
+	system("CLS");
 	for(i = 0; i < MAX; i++)
 	{
-		if(medicos[i].codigo == -1)
-			break;
+		//if(medicos[i].codigo == -1)
+		//break;
 
 	    printf("//----------------------------------------//\n");
 		printf("Medico[%d]\n", i);

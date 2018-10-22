@@ -7,7 +7,7 @@
 int main()
 {	
 	int opcao;
-	char *arquivo;
+	char arquivo[100];
 
 	FILE* nova = fopen("arvores.bin", "wb+");
 
@@ -28,14 +28,14 @@ int main()
 		printf("[0] - Fechar\n");
 		printf("    Opcao: ");
 
-		scanf("%d", &opcao);
+		scanf("%d%*c", &opcao);
 
 		switch(opcao)
 		{
 			case 1:
 				printf("Arquivo de entrada: ");
-				//scanf("%[^\n]%*c", arquivo);
-				Cadastro* medicos = lerArquivo("cadastros.txt");
+				scanf("%[^\n]%*c", arquivo);
+				Cadastro* medicos = lerArquivo(arquivo);
 				break;
 			case 2:
 			//em construcao
