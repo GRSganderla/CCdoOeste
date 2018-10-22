@@ -2,38 +2,30 @@
 #include<stdlib.h>
 #include<string.h>
 #include "fila.h"
+#include "Cadastro.h"
 #define ORDEM 5
 
+//estrutura para o cabecalho do arquivo
 typedef struct noBArq
 {
-	int cabecalho;
+	//variaves da cabeca do arquivo, sendo a raiz do arquivo, a quantidade de nós, a raiz dos nós livres e sua quantidade
+	int topo;
 	int quantidade;
 	int nohsLivre;
 	int quantidadeLivre;
 }Cabecalho;
 
-typedef struct cadastro
+typedef struct registros
 {
 	int codigo;
-	char *nome;
-	char *sexo;
-	char *cpf;
-	char *crm;
-	char *especialidade;
-	char *rg;
-	char *telefone;
-	char *celular;
-	char *email;
-	char *endereco;
-	char *nascimento;
-}Cadastro;
+	int registroPos;
+}RegistrosDat;
 
 typedef struct arvoreB
 {
 	int numChaves;
 	int posicao;
-	int chave[ORDEM];
-	int dados[ORDEM];
+	RegistrosDat chave[ORDEM];
 	int filho[ORDEM];
 }ArvoreB;
 
@@ -43,12 +35,6 @@ typedef struct nohLivre
 }Livres;
 
 void liberaNoh(ArvoreB* alvo);
-
-Cadastro* lerArquivo();
-
-void printaCadastro(Cadastro* medicos);
-
-Cadastro* inicializaCadastro();
 
 void criaIndicesArq(FILE *binario);
 

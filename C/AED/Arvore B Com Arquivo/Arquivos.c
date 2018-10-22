@@ -2,143 +2,11 @@
 #include "Arquivos.h"
 #define MAX 100
 
-int soNumero(char *s)
-{
-	int len = strlen(s);
-
-	int i;
-	for(i = 0; i < len; i++)
-	{
-		if((s[i] < '0' || s[i] > '9') && s[i] != '-')
-			return 1;
-	}
-
-	return 0;
-}
-
-Cadastro* lerArquivo(char* nome)
-{
-	int n = 0, temp = 0;
-	FILE* texto = fopen(nome, "r+");
-	if(texto == NULL)
-	{
-		printf("Arquivo Vazio!\n");
-		return NULL;
-	}
-	Cadastro *medicos = inicializaCadastro();
-
-	for(int i = 0; !feof(texto); i++)
-	{
-		fscanf(texto, "%d[^:]", &medicos[i].codigo);
-		fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].nome);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].sexo);
-	    fseek(texto, +1, SEEK_CUR);
-	   
-	    fscanf(texto, "%[^:]", medicos[i].cpf);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].crm);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].especialidade);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].rg);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].telefone);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].celular);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].email);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^:]", medicos[i].endereco);
-	    fseek(texto, +1, SEEK_CUR);
-	    
-	    fscanf(texto, "%[^\n]", medicos[i].nascimento);
-	    if(!medicos[i].rg || medicos[i].codigo == -1 || !medicos[i].nome || !medicos[i].sexo || !medicos[i].cpf || soNumero(medicos[i].cpf) || !medicos[i].crm || soNumero(medicos[i].telefone) || soNumero(medicos[i].celular) || !medicos[i].nascimento)
-	    {
-	    	printf("Linha nao cumpre requisitos\n");
-	    	i--;
-	    }
-	    
-	}
-    
-   return medicos;
-}
-
-void printaCadastro(Cadastro* medicos)
-{
-	int i;
-	system("CLS");
-	for(i = 0; i < MAX; i++)
-	{
-		if(medicos[i].codigo == -1)
-			break;
-
-	    printf("//----------------------------------------//\n");
-		printf("Medico[%d]\n", i);
-		printf("Codigo: %d\n", medicos[i].codigo);
-		
-	    printf("Nome: %s\n", medicos[i].nome);
-	    
-	    printf("Sexo: %s\n", medicos[i].sexo);
-	   
-	    printf("CPF: %s\n", medicos[i].cpf);
-	    
-	    printf("CRM: %s\n", medicos[i].crm);
-	    
-	    printf("Especialidade: %s\n", medicos[i].especialidade);
-	    
-	    printf("RG: %s\n", medicos[i].rg);
-	    
-	    printf("Telefone: %s\n", medicos[i].telefone);
-	    
-	    printf("Celular: %s\n", medicos[i].celular);
-	    
-	    printf("Email: %s\n", medicos[i].email);
-	    
-	    printf("Endereco: %s\n", medicos[i].endereco);
-	    
-	    printf("Data de Nascimento: %s\n", medicos[i].nascimento);
-	}
-}
-
-Cadastro* inicializaCadastro()
-{
-	Cadastro* novo = (Cadastro*)malloc(sizeof(Cadastro)*MAX);
-
-	for(int i = 0; i < MAX; i++)
-	{
-		novo[i].codigo = -1;
-	    novo[i].nome = (char*)malloc(sizeof(char)*256);
-	    novo[i].sexo = (char*)malloc(sizeof(char)*256);
-	    novo[i].cpf = (char*)malloc(sizeof(char)*256);
-	    novo[i].crm = (char*)malloc(sizeof(char)*256);
-	    novo[i].especialidade = (char*)malloc(sizeof(char)*256);
-	    novo[i].rg = (char*)malloc(sizeof(char)*256);
-	    novo[i].telefone = (char*)malloc(sizeof(char)*256);
-	    novo[i].celular = (char*)malloc(sizeof(char)*256);
-	    novo[i].email = (char*)malloc(sizeof(char)*256);
-	    novo[i].endereco = (char*)malloc(sizeof(char)*256);
-	    novo[i].nascimento = (char*)malloc(sizeof(char)*256);
-	}
-
-	return novo;
-}
-
 void criaIndicesArq(FILE *binario)
 {
 	Cabecalho indice;
 
-	indice.cabecalho = -1;
+	indice.topo = -1;
 	indice.quantidade = 0;
 	indice.nohsLivre = -1;
 	indice.quantidadeLivre = 0;
@@ -163,9 +31,9 @@ ArvoreB* inicializaArvore()
 
 	for(i = 0; i < ORDEM; i++)
 	{
-		new->chave[i] = 0;
+		new->chave[i].codigo = 0;
+		new->chave[i].registroPos = -1;
 		new->filho[i] = -1;
-		new->dados[i] = -1;
 	}
 	
 	return new;
@@ -232,6 +100,7 @@ int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice)
 	}
 	
 	galho->posicao = posicao;
+	escreveCabecalho(registros, indice);
 
 	fseek(registros, sizeof(Cabecalho) + sizeof(ArvoreB) * posicao, SEEK_SET);
 	fwrite(galho, sizeof(ArvoreB), 1, registros);

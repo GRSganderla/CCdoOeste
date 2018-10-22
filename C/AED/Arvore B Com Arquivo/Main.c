@@ -9,12 +9,14 @@ int main()
 	int opcao;
 	char arquivo[100];
 
-	FILE* nova = fopen("arvores.bin", "wb+");
+	FILE* registroArv = fopen("arvores.bin", "wb+");
+	FILE* registroDados = fopen("dados.bin", "wb+");
 
-	criaIndicesArq(nova);
+	criaIndicesArq(registroArv);
+	criaIndicesArqDat(registroDados);
 
-	for(int i = 1; i < 100; i++)
-		insere(nova, i);
+	for(int i = 1; i < 21; i++)
+		insere(registroArv, i);
 
 	do{
 		system("CLS");
@@ -46,10 +48,10 @@ int main()
 			case 5:
 			//em construcao
 			case 6:
-				printaCadastro(medicos);
+				//printaCadastro(medicos);
 				break;
 			case 7:
-				printaArvore(nova);
+				printaArvore(registroArv);
 				break;
 			default:
 				break;

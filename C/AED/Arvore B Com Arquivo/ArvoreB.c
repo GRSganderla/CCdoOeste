@@ -21,7 +21,7 @@ ArvoreB* split(ArvoreB* x, int *m)
 	nova->numChaves =  q;
 	x->numChaves = q;
 	
-	*m = x->chave[q]; // chave mediana
+	*m = x->chave[q].codigo;
 	int i = 0;
 	
 	nova->filho[0] = x->filho[q+1];
@@ -39,9 +39,9 @@ int buscaPos(ArvoreB* r, int info, int * pos)
 {
 	for((*pos)=0; (*pos) < r->numChaves; (*pos)++)
 	{
-		if(info == r->chave[(*pos)])
+		if(info == r->chave[(*pos)].codigo)
 			return 1;
-		else if(info < r->chave[(*pos)])
+		else if(info < r->chave[(*pos)].codigo)
 			break;
 	}
 
@@ -53,9 +53,10 @@ int eh_folha(ArvoreB* r)
 	return (r->filho[0] == -1);
 }
 
-void adicionaDireita(ArvoreB* r, int pos, int k, int p)
+void adicionaDireita(ArvoreB* r, int pos, RegistrosDat* k, int p)
 {
 	int i;
+
 	for(i=r->numChaves; i>pos; i--)
 	{
 		r->chave[i] = r->chave[i-1];
@@ -67,11 +68,11 @@ void adicionaDireita(ArvoreB* r, int pos, int k, int p)
 	r->numChaves++;
 }
 
-void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, int info)
+void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, RegistrosDat info)
 {
 	int pos = 0;
 
-	if(!buscaPos(r, info, &pos))
+	if(!buscaPos(r, info.codigo, &pos))
 	{
 		if(eh_folha(r)) 
 		{
@@ -97,11 +98,15 @@ void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, int info)
 	escreveArvore(registros, r, indice);
 }
 
-void insere(FILE* registros, int info)
+void insere(FILE* registros, int dado, int pos)
 {
+	RegistrosDat *info = (RegistrosDat*)malloc(sizeof(RegistrosDat));
+	info->codigo = dado;
+	info->registroPos = pos;
+
 	Cabecalho *indice = leituraDoCabecalho(registros);
 
-	ArvoreB* raiz = leituraDoNoh(registros, indice->cabecalho);
+	ArvoreB* raiz = leituraDoNoh(registros, indice->topo);
 	ArvoreB* novo;
 
 	if(!raiz) 
@@ -111,7 +116,7 @@ void insere(FILE* registros, int info)
 		raiz->chave[0] = info;
 		raiz->numChaves = 1;
 
-		indice->cabecalho = escreveArvore(registros, raiz, indice);
+		indice->topo = escreveArvore(registros, raiz, indice);
 	}
 	else 
 	{
@@ -125,11 +130,11 @@ void insere(FILE* registros, int info)
 			ArvoreB* novaRaiz = inicializaArvore();
 
 			novaRaiz->chave[0] = m;
-			novaRaiz->filho[0] = indice->cabecalho;
+			novaRaiz->filho[0] = indice->topo;
 			novaRaiz->numChaves = 1;
 			novaRaiz->filho[1] = escreveArvore(registros, novo, indice);
 
-			indice->cabecalho = escreveArvore(registros, novaRaiz, indice);
+			indice->topo = escreveArvore(registros, novaRaiz, indice);
 
 			liberaNoh(novo);	
 			liberaNoh(novaRaiz);
@@ -148,7 +153,7 @@ void printaArvore(FILE* registros)
 {
 	Cabecalho* indice = leituraDoCabecalho(registros);
 
-	ArvoreB* raiz = leituraDoNoh(registros, indice->cabecalho);
+	ArvoreB* raiz = leituraDoNoh(registros, indice->topo);
 
 	Fila* fileira = start();
 	enqueue(fileira, raiz);
