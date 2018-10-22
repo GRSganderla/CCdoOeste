@@ -1,5 +1,6 @@
 #include<stdio.h>
 #define MAX 100
+#define ORDEM 5
 
 typedef struct cadastro
 {
@@ -23,6 +24,35 @@ typedef struct noBArqDat
 	int topo;
 	int nohsLivre;
 }CabecalhoDados;
+
+//estrutura para o cabecalho do arquivo
+typedef struct noBArq
+{
+	//variaves da cabeca do arquivo, sendo a raiz do arquivo, a quantidade de nós, a raiz dos nós livres e sua quantidade
+	int topo;
+	int quantidade;
+	int nohsLivre;
+	int quantidadeLivre;
+}Cabecalho;
+
+typedef struct registros
+{
+	int codigo;
+	int registroPos;
+}RegistrosDat;
+
+typedef struct arvoreB
+{
+	int numChaves;
+	int posicao;
+	RegistrosDat chave[ORDEM];
+	int filho[ORDEM];
+}ArvoreB;
+
+typedef struct nohLivre
+{
+	int prox;
+}Livres;
 
 void escreveCabecalhoDat(FILE* registros, CabecalhoDados* indice);
 

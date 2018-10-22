@@ -14,6 +14,17 @@ void escreveCabecalhoDat(FILE* registros, CabecalhoDados* indice)
 	fwrite(indice, sizeof(CabecalhoDados), 1, registros);
 }
 
+CabecalhoDados* leCabecalhoDat(FILE* dados)
+{
+	CabecalhoDados* indice;
+
+	fseek(dados, 0, SEEK_SET);
+
+	fread(indice, sizeof(CabecalhoDados), 1, dados);
+
+	return indice;
+}
+
 void criaIndicesArqDat(FILE *binario)
 {
 	CabecalhoDados indice;
@@ -38,7 +49,7 @@ int soNumero(char *s)
 	return 0;
 }
 
-Cadastro* lerArquivo(char* nome)
+void lerArquivo(FILE* dados, FILE* arvore, char* nome)
 {
 	int n = 0, temp = 0;
 	FILE* texto = fopen(nome, "r+");
@@ -47,56 +58,94 @@ Cadastro* lerArquivo(char* nome)
 		printf("Arquivo Vazio!\n");
 		return NULL;
 	}
-	Cadastro *medicos = (Cadastro*)malloc(sizeof(Cadastro));
+
+	Cadastro medicos = inicializaCadastro();
 
 	while(!feof(texto))
 	{
-		fscanf(texto, "%d :", &medicos->codigo);
+		fscanf(texto, "%d :", &medicos.codigo);
 		fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->nome);
+	    fscanf(texto, "%[^:]", medicos.nome);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->sexo);
+	    fscanf(texto, "%[^:]", medicos.sexo);
 	    fseek(texto, +1, SEEK_CUR);
 	   
-	    fscanf(texto, "%[^:]", medicos->cpf);
+	    fscanf(texto, "%[^:]", medicos.cpf);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->crm);
+	    fscanf(texto, "%[^:]", medicos.crm);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->especialidade);
+	    fscanf(texto, "%[^:]", medicos.especialidade);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->rg);
+	    fscanf(texto, "%[^:]", medicos.rg);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->telefone);
+	    fscanf(texto, "%[^:]", medicos.telefone);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->celular);
+	    fscanf(texto, "%[^:]", medicos.celular);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->email);
+	    fscanf(texto, "%[^:]", medicos.email);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^:]", medicos->endereco);
+	    fscanf(texto, "%[^:]", medicos.endereco);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^\n]", medicos->nascimento);
+	    fscanf(texto, "%[^\n]", medicos.nascimento);
 
-	    if(!medicos->rg || medicos->codigo == -1 || !medicos->nome || !medicos->sexo || !medicos->cpf || soNumero(medicos->cpf) || !medicos->crm || soNumero(medicos->telefone) || soNumero(medicos->celular) || !medicos->nascimento)
+	    if(!medicos.rg || medicos.codigo == -1 || !medicos.nome || !medicos.sexo || !medicos.cpf || soNumero(medicos.cpf) || !medicos.crm || soNumero(medicos.telefone) || soNumero(medicos.celular) || !medicos.nascimento)
 	    {
 	    	printf("Cadastro Invalido!\n");
 	    }
-    	//printaArqCadastro(Cadastro);
+    	int pos = escreverRegistro(dados, medicos);
+    	insere(arvore, medicos.codigo, pos);
 	}
     
    return medicos;
 }
 
-void printaCadastro(Cadastro* medicos)
+void escreverRegistro(FILE* dados, CabecalhoDados* indice, Cadastro medico)
+{
+	int pos = 0;
+
+	if(!indice || !medico)
+		return;
+
+	pos = indice->nohsLivre;
+
+	if(pos == -1)
+	{
+		pos = indice->topo;
+	}
+	else
+	{
+		Livres *novo = leLivres(registros, posicao);
+		indice->nohsLivre = novo->prox;
+		free(novo);
+	}
+
+	fseek(dados, sizeof(CabecalhoDados) + sizeof(Cadastro)*pos, SEEK_SET);
+
+	fwrite(medico->codigo, sizeof(int), 1, dados);
+	fwrite(medico->nome, sizeof(char)* 100, 1, dados);
+	fwrite(medico->sexo, sizeof(char), 1, dados);
+	fwrite(medico->cpf, sizeof(char)* 12, 1, dados);
+	fwrite(medico->crm, sizeof(char)* 20, 1, dados);
+	fwrite(medico->especialidade, sizeof(char)* 100, 1, dados);
+	fwrite(medico->rg, sizeof(char)* 12, 1, dados);
+	fwrite(medico->telefone, sizeof(char)* 13, 1, dados);
+	fwrite(medico->celular, sizeof(char)* 14, 1, dados);
+	fwrite(medico->email, sizeof(char)* 100, 1, dados);
+	fwrite(medico->endereco, sizeof(char)* 100, 1, dados);
+	fwrite(medico->nascimento, sizeof(char)* 11, 1, dados);
+}
+
+void printaCadastro(FILE* dados)
 {
 	int i;
 	system("CLS");

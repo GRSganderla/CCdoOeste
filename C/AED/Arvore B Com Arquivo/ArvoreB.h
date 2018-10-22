@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include "Arquivos.h"
 
+
 ///
 /// \brief overflow, funcao que testa se o nó atual esta com o numero de chaves com o maximo possivel de chaves
 /// \param r, nó atual que contem o numero de chaves
@@ -30,7 +31,7 @@ int vazia(ArvoreB* r);
 /// \pre nenhuma
 /// \post nenhuma
 ///
-ArvoreB* split(ArvoreB* x, int *m);
+ArvoreB* split(ArvoreB* x, RegistrosDat *m);
 
 
 ///
@@ -64,7 +65,7 @@ int eh_folha(ArvoreB* r);
 /// \pre nenhuma
 /// \post nenhuma
 ///
-void adicionaDireita(ArvoreB* r, int pos, int k, int p);
+void adicionaDireita(ArvoreB* r, int pos, RegistrosDat k, int p);
 
 
 ///
@@ -76,7 +77,7 @@ void adicionaDireita(ArvoreB* r, int pos, int k, int p);
 /// \pre nenhuma
 /// \post nenhuma
 ///
-void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, int info);
+void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, RegistrosDat info);
 
 
 ///
@@ -86,7 +87,7 @@ void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, int info);
 /// \pre nenhuma
 /// \post nenhuma
 ///
-void insere(FILE* registros, int info);
+void insere(FILE* registros, int info, int pos);
 
 ///
 /// \brief printaArvore, busca os dados do arquivo e imprime na tela 
@@ -95,3 +96,5 @@ void insere(FILE* registros, int info);
 /// \post nenhuma
 ///
 void printaArvore(FILE* registros);
+
+Livres* criaNohLivre();

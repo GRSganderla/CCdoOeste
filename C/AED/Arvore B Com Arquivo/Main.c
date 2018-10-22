@@ -16,7 +16,7 @@ int main()
 	criaIndicesArqDat(registroDados);
 
 	for(int i = 1; i < 21; i++)
-		insere(registroArv, i);
+		insere(registroArv, i, 0);
 
 	do{
 		system("CLS");
@@ -37,7 +37,7 @@ int main()
 			case 1:
 				printf("Arquivo de entrada: ");
 				scanf("%[^\n]%*c", arquivo);
-				Cadastro* medicos = lerArquivo(arquivo);
+				Cadastro* medicos = lerArquivo(registroDados, registroArv, arquivo);
 				break;
 			case 2:
 			//em construcao

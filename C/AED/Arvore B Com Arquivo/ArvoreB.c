@@ -13,15 +13,15 @@ int vazia(ArvoreB* r)
 	return (r == NULL);
 }
 
-ArvoreB* split(ArvoreB* x, int *m) 
+ArvoreB* split(ArvoreB* x, RegistrosDat *m) 
 {
 	ArvoreB* nova = inicializaArvore();
 
-	int q = ORDEM/2;
+	int q = (ORDEM-1)/2;
 	nova->numChaves =  q;
 	x->numChaves = q;
 	
-	*m = x->chave[q].codigo;
+	*m = x->chave[q];
 	int i = 0;
 	
 	nova->filho[0] = x->filho[q+1];
@@ -53,7 +53,7 @@ int eh_folha(ArvoreB* r)
 	return (r->filho[0] == -1);
 }
 
-void adicionaDireita(ArvoreB* r, int pos, RegistrosDat* k, int p)
+void adicionaDireita(ArvoreB* r, int pos, RegistrosDat info, int p)
 {
 	int i;
 
@@ -63,7 +63,7 @@ void adicionaDireita(ArvoreB* r, int pos, RegistrosDat* k, int p)
 		r->filho[i+1] = r->filho[i];
 	}
 	
-	r->chave[pos] = k;
+	r->chave[pos] = info;
 	r->filho[pos+1] = p;
 	r->numChaves++;
 }
@@ -85,7 +85,7 @@ void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, RegistrosDat inf
 			
 			if(overflow(aux))
 			{
-				int m;
+				RegistrosDat m;
 				ArvoreB* pai = split(aux, &m);
 				adicionaDireita(r, pos, m, escreveArvore(registros, pai, indice));
 				escreveArvore(registros, aux, indice);
@@ -100,9 +100,9 @@ void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, RegistrosDat inf
 
 void insere(FILE* registros, int dado, int pos)
 {
-	RegistrosDat *info = (RegistrosDat*)malloc(sizeof(RegistrosDat));
-	info->codigo = dado;
-	info->registroPos = pos;
+	RegistrosDat info;
+	info.codigo = dado;
+	info.registroPos = pos;
 
 	Cabecalho *indice = leituraDoCabecalho(registros);
 
@@ -124,7 +124,7 @@ void insere(FILE* registros, int dado, int pos)
 
 		if(overflow(raiz))
 		{
-			int m;
+			RegistrosDat m;
 			novo = split(raiz, &m);
 
 			ArvoreB* novaRaiz = inicializaArvore();

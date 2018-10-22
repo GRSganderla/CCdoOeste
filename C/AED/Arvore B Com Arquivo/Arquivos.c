@@ -14,6 +14,15 @@ void criaIndicesArq(FILE *binario)
 	escreveCabecalho(binario, &indice);
 }
 
+Livres* criaNohLivre()
+{
+	Livres* novo = (Livres*)malloc(sizeof(Livres));
+
+	novo->prox = -1;
+
+	return novo;
+}
+
 void liberaNoh(ArvoreB* alvo)
 {
 	if(alvo)
@@ -100,7 +109,6 @@ int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice)
 	}
 	
 	galho->posicao = posicao;
-	escreveCabecalho(registros, indice);
 
 	fseek(registros, sizeof(Cabecalho) + sizeof(ArvoreB) * posicao, SEEK_SET);
 	fwrite(galho, sizeof(ArvoreB), 1, registros);
@@ -117,4 +125,26 @@ Cabecalho* leituraDoCabecalho(FILE* binario)
     fread(cabeca, sizeof(Cabecalho), 1, binario);
 
     return cabeca;
+}
+
+void escreveNosLivres(FILE* registros, Cabecalho* indice, ArvoreB* raiz)
+{
+	if(!indice)
+		return;
+
+	int pos;
+
+	pos = raiz->posicao;
+	Livres* nos = criaNohLivre();
+
+	nos->prox = indice->nohsLivre;
+	indice->nohsLivre = pos;
+
+	indice->quantidadeLivre++;
+
+	fseek(registros, sizeof(Cabecalho)+sizeof(ArvoreB)*pos, SEEK_SET);
+
+	fwrite(nos, sizeof(Livres), 1, registros);
+
+	free(nos);
 }
