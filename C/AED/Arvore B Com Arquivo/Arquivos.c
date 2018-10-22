@@ -30,71 +30,30 @@ Cadastro* lerArquivo(char* nome)
 	for(int i = 0; !feof(texto); i++)
 	{
 		fscanf(texto, "%d[^:]", &medicos[i].codigo);
-		if(medicos[i].codigo == -1)
-		{
-			printf("Codigo Vazio\n");
-			return NULL;
-		}
-
 		fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].nome);
-	    if(!medicos[i].nome)
-	    {
-	    	printf("Nome Vazio!\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].sexo);
-	    if(!medicos[i].sexo)
-	    {
-	    	printf("Sexo Vazio!\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	   
 	    fscanf(texto, "%[^:]", medicos[i].cpf);
-	    if(!medicos[i].cpf || soNumero(medicos[i].cpf))
-	    {
-	    	printf("CPF Nao cumpre requisitos\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].crm);
-	    if(!medicos[i].crm)
-	    {
-	    	printf("CRM Vazio!\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].especialidade);
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].rg);
-	    if(!medicos[i].rg)
-	    {
-	    	printf("RG Vazio!\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].telefone);
-	    if(soNumero(medicos[i].telefone))
-	    {
-	    	printf("Telefone nao cumpre requisitos!\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].celular);
-	    if(soNumero(medicos[i].celular))
-	    {
-	    	printf("Celular nao cumpre requisitos\n");
-	    	return NULL;
-	    }
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos[i].email);
@@ -104,11 +63,12 @@ Cadastro* lerArquivo(char* nome)
 	    fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^\n]", medicos[i].nascimento);
-	    if(!medicos[i].nascimento)
+	    if(!medicos[i].rg || medicos[i].codigo == -1 || !medicos[i].nome || !medicos[i].sexo || !medicos[i].cpf || soNumero(medicos[i].cpf) || !medicos[i].crm || soNumero(medicos[i].telefone) || soNumero(medicos[i].celular) || !medicos[i].nascimento)
 	    {
-	    	printf("Data de Nascimento Vazia!\n");
-	    	return NULL;
+	    	printf("Linha nao cumpre requisitos\n");
+	    	i--;
 	    }
+	    
 	}
     
    return medicos;
@@ -120,8 +80,8 @@ void printaCadastro(Cadastro* medicos)
 	system("CLS");
 	for(i = 0; i < MAX; i++)
 	{
-		//if(medicos[i].codigo == -1)
-		//break;
+		if(medicos[i].codigo == -1)
+			break;
 
 	    printf("//----------------------------------------//\n");
 		printf("Medico[%d]\n", i);
