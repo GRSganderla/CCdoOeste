@@ -37,7 +37,7 @@ int main()
 			case 1:
 				printf("Arquivo de entrada: ");
 				scanf("%[^\n]%*c", arquivo);
-				Cadastro* medicos = lerArquivo(registroDados, registroArv, arquivo);
+				lerArquivo(registroDados, registroArv, arquivo);
 				break;
 			case 2:
 			//em construcao
