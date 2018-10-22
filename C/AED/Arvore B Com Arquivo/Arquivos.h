@@ -65,8 +65,6 @@ int soNumero(char *s);
 
 void lerArquivo(FILE* dados, FILE* arvore, char* nome);
 
-void printaCadastro(FILE* medicos);
-
 ///
 /// \brief inicializaCadastro, aloca e inicializa as variaveis da estrutura Cadastro
 /// \return uma estrutura de dados do tipo Cadastro alocada

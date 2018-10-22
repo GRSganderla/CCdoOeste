@@ -45,7 +45,7 @@ int main()
 			case 5:
 			//em construcao
 			case 6:
-				//printaCadastro(registroDados);
+				imprimeCadastro(registroArv, registroDados);
 				break;
 			case 7:
 				printaArvore(registroArv);

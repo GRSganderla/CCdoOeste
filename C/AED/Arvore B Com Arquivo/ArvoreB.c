@@ -12,11 +12,86 @@ Cadastro* leDados(FILE* dados, int indice)
 
 	novo = (Cadastro*)malloc(sizeof(Cadastro));
 
-	fseek(dados, sizeof(CabecalhoDados) + sizeof(Cadastro)*posicao, SEEK_SET);
+	fseek(dados, sizeof(CabecalhoDados) + sizeof(Cadastro)*indice, SEEK_SET);
 
-	fread(novo, sizeof(Cadastro), 1, dados);
+	fread(&novo->codigo, sizeof(int), 1, dados);
+	fread(&novo->nome, sizeof(char)* 100, 1, dados);
+	fread(&novo->sexo, sizeof(char), 1, dados);
+	fread(&novo->cpf, sizeof(char)* 12, 1, dados);
+	fread(&novo->crm, sizeof(char)* 20, 1, dados);
+	fread(&novo->especialidade, sizeof(char)* 100, 1, dados);
+	fread(&novo->rg, sizeof(char)* 12, 1, dados);
+	fread(&novo->telefone, sizeof(char)* 13, 1, dados);
+	fread(&novo->celular, sizeof(char)* 14, 1, dados);
+	fread(&novo->email, sizeof(char)* 100, 1, dados);
+	fread(&novo->endereco, sizeof(char)* 100, 1, dados);
+	fread(&novo->nascimento, sizeof(char)* 11, 1, dados);
 
 	return novo;
+}
+
+ArvoreB* leituraDoNoh(FILE* binario, int posicao)
+{
+    ArvoreB* nois;
+
+	if(posicao == -1)
+		return NULL;
+
+    nois = (ArvoreB*)malloc(sizeof(ArvoreB));
+
+    fseek(binario, sizeof(Cabecalho) + sizeof(ArvoreB)*posicao , SEEK_SET);
+
+    fread(nois, sizeof(ArvoreB), 1, binario);
+
+    return nois;
+}
+
+void printaRegistros(FILE* dados, RegistrosDat info)
+{
+	printf("%d\n", info.registroPos);
+	Cadastro* medico = leDados(dados, info.registroPos);
+
+	printf("Codigo: %d\n", medico->codigo);
+	printf("Nome: %s\n", medico->nome);
+	printf("Sexo: %c\n", medico->sexo);
+	printf("CPF: %s\n", medico->cpf);
+	printf("CRM: %s\n", medico->crm);
+	printf("Especialidade: %s\n", medico->especialidade);
+	printf("RG: %s\n", medico->rg);
+	printf("Telefone: %s\n", medico->telefone);
+	printf("Celular: %s\n", medico->celular);
+	printf("Email: %s\n", medico->email);
+	printf("Endereco: %s\n", medico->endereco);
+	printf("Data de Nascimento: %s\n", medico->nascimento);
+}
+
+void inOrdem(FILE* dados, FILE* registros, ArvoreB *raiz)
+{
+    int i;
+    ArvoreB *proximo = (ArvoreB*)malloc(sizeof(ArvoreB));
+
+    if(!raiz) return;
+
+    for(i = 0; i < raiz->numChaves; i++) 
+    {
+        inOrdem(dados, registros, proximo = leituraDoNoh(registros, raiz->filho[i]));
+        printaRegistros(registros, raiz->chave[i]);
+
+        liberaNoh(proximo);
+    }
+    inOrdem(dados, registros, proximo = leituraDoNoh(registros, raiz->filho[raiz->numChaves]));
+    liberaNoh(proximo);
+}
+
+void imprimeCadastro(FILE* registros, FILE* dados)
+{
+	Cabecalho* indice = leituraDoCabecalho(registros);
+	ArvoreB* raiz = leituraDoNoh(registros, indice->topo);
+	printf("%d\n", raiz->chave[0].codigo);
+
+	inOrdem(dados, registros, raiz);
+
+	liberaNoh(raiz);
 }
 
 int soNumero(char *s)

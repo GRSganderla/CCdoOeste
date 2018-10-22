@@ -102,3 +102,7 @@ Livres* criaNohLivre();
 void lerArquivo(FILE* dados, FILE* arvore, char* nome);
 
 CabecalhoDados* leCabecalhoDat(FILE* dados);
+
+void imprimeCadastro(FILE* registros, FILE* dados);
+
+void inOrdem(FILE* dados, FILE* registros, ArvoreB *raiz);

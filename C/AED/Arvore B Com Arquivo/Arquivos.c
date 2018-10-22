@@ -61,22 +61,6 @@ ArvoreB* inicializaArvore()
 	return new;
 }
 
-ArvoreB* leituraDoNoh(FILE* binario, int posicao)
-{
-    ArvoreB* nois;
-
-	if(posicao == -1)
-		return NULL;
-
-    nois = (ArvoreB*)malloc(sizeof(ArvoreB));
-
-    fseek(binario, sizeof(Cabecalho) + sizeof(ArvoreB)*posicao , SEEK_SET);
-
-    fread(nois, sizeof(ArvoreB), 1, binario);
-
-    return nois;
-}
-
 Cabecalho* leituraDoCabecalho(FILE* binario)
 {
     Cabecalho* cabeca = (Cabecalho*)malloc(sizeof(Cabecalho));
