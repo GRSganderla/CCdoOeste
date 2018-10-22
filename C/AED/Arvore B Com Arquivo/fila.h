@@ -27,5 +27,3 @@ int tamanho(Fila* f);
 void enqueue(Fila* f, void* dados);
 
 No* dequeue(Fila* f);
-
-void imprime(Fila* f);

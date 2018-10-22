@@ -3,6 +3,22 @@
 #include<stdlib.h>
 #include "ArvoreB.h"
 
+Cadastro* leDados(FILE* dados, int indice)
+{
+	Cadastro* novo;
+
+	if(indice == -1)
+		return NULL;
+
+	novo = (Cadastro*)malloc(sizeof(Cadastro));
+
+	fseek(dados, sizeof(CabecalhoDados) + sizeof(Cadastro)*posicao, SEEK_SET);
+
+	fread(novo, sizeof(Cadastro), 1, dados);
+
+	return novo;
+}
+
 int soNumero(char *s)
 {
 	int len = strlen(s);
@@ -374,9 +390,11 @@ void lerArquivo(FILE* dados, FILE* arvore, char* nome)
 	    {
 	    	printf("Cadastro Invalido!\n");
 	    }
-	    printf("psos\n");
-    	int pos = escreverRegistro(dados, indice, medicos);
-    	insere(arvore, medicos.codigo, pos);
-    	printf("dasdasdsada\n");
+	    else
+	    {
+    		int pos = escreverRegistro(dados, indice, medicos);
+    		insere(arvore, medicos.codigo, pos);
+    		printaArvore(arvore);
+    	}
 	}
 }
