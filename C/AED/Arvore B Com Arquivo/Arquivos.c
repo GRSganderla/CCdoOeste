@@ -1,73 +1,170 @@
 #include<stdio.h>
 #include "Arquivos.h"
 
-Cadastro lerArqEntrada()
+Cadastro* lerArqEntrada()
 {
 	FILE *texto = fopen("cadastros.txt", "r");
 
-	Cadastro arquivo[100];
+	Cadastro *arquivo = (Cadastro*)malloc(sizeof(Cadastro)*10);
 
 	int i, n, temp;
 
-	char s[256];
-
-	fgets(texto, s);
-
-	for(i = 0; !EOF(texto); i++)
+	for(i = 0; !feof(texto); i++)
 	{
-		sscanf(s, "%[^:]:%n", &arquivo[i].codigo, &n);
-		temp = n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].nome, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].sexo, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].cpf, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", &arquivo[i].crm, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].especialidade, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].rg, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].telefone, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].celular, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].email, &n);
-		temp += n;
-		sscanf(s+temp, "%[^:]:%n", arquivo[i].endereco, &n);
+		printf("%d\n", i);
+		fscanf(texto, "%d[^:]", &arquivo[i].codigo);
+		printf("%d\n", arquivo[i].codigo);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]", arquivo[i].nome);
+		printf("%s\n", arquivo[i].nome);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%c[^:]", &arquivo[i].sexo);
+		printf("%c\n", arquivo[i].sexo);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", arquivo[i].cpf);
+		printf("%s\n", arquivo[i].cpf);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", &arquivo[i].crm);
+		printf("%d\n", arquivo[i].crm);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", arquivo[i].especialidade);
+		printf("%s\n", arquivo[i].especialidade);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", arquivo[i].rg);
+		printf("%s\n", arquivo[i].rg);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", arquivo[i].telefone);
+		printf("%s\n", arquivo[i].telefone);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", arquivo[i].celular);
+		printf("%s\n", arquivo[i].celular);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^:]*c", arquivo[i].email);
+		printf("%s\n", arquivo[i].email);
+		fseek(texto, +1, SEEK_CUR);
+		fscanf(texto, "%[^\n]*c", arquivo[i].endereco);
+		printf("%s\n", arquivo[i].endereco);
 	}
+
+	return arquivo;
 }
 
-
-NodeArq* criaNohArq(int info)
+void criaIndicesArq(FILE *binario)
 {
-	NodeArq* novo = (NodeArq*)malloc(sizeof(NodeArq));
+	Cabecalho indice;
 
-	novo->numChaves = 0;
+	indice.cabecalho = -1;
+	indice.quantidade = 0;
+	indice.nohsLivre = -1;
+	indice.quantidadeLivre = 0;
 
-	for(int i = 0; i < ORDEM; i++)
-		novo->chave[i] = 0;
+	escreveCabecalho(binario, &indice);
+}
 
-	for(i = 0; i < ORDEM - 1; i++)
-		novo->filho[i] = -1;	
+void liberaNoh(ArvoreB* alvo)
+{
+	if(alvo)
+		free(alvo);
+}
+
+ArvoreB* inicializaArvore()
+{
+	ArvoreB* new = (ArvoreB*)malloc(sizeof(ArvoreB));
+
+	new->numChaves = 0;
+	new->posicao = -1;
+	
+	int i;
+
+	for(i = 0; i < ORDEM; i++)
+	{
+		new->chave[i] = 0;
+		new->filho[i] = -1;
+		new->dados[i] = -1;
+	}
+	
+	return new;
+}
+
+ArvoreB* leituraDoNoh(FILE* binario, int posicao)
+{
+    ArvoreB* nois;
+
+	if(posicao == -1)
+		return NULL;
+
+    nois = (ArvoreB*)malloc(sizeof(ArvoreB));
+
+    fseek(binario, sizeof(Cabecalho) + sizeof(ArvoreB)*posicao , SEEK_SET);
+
+    fread(nois, sizeof(ArvoreB), 1, binario);
+
+    return nois;
+}
+
+void escreveCabecalho(FILE* registros, Cabecalho* indice)
+{
+	if(!indice)
+		return;
+	
+	fseek(registros, 0, SEEK_SET);
+
+	fwrite(indice, sizeof(Cabecalho), 1, registros);
+}
+
+Livres* leLivres(FILE* registros, int posicao)
+{
+	Livres* novo;
+
+	if(posicao == -1)
+		return NULL;
+
+	novo = (Livres*)malloc(sizeof(Livres));
+
+	fseek(registros, sizeof(Cabecalho) + sizeof(ArvoreB) * posicao, SEEK_SET);
+
+	fread(novo, sizeof(Livres), 1, registros);
 
 	return novo;
 }
 
-NodeArq* leituraDeNoh(FILE* binario, int posicao)
+int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice)
 {
-    //cria e inicializa uma estrutura de nó
-    NodeArq* nois = (NodeArq*)malloc(sizeof(NodeArq));
+	int posicao;
 
-    //determina o lugat aonde o nó será buscado
+	if(!indice || !galho) return -1;
 
-    //posiciona na posição do nó
-    fseek(binario, sizeof(ArqBinario) + sizeof(NodeArq)*posicao , SEEK_SET);
+	posicao = galho->posicao;
 
-    //lê o nó
-    fread(nois, sizeof(NodeArq), 1, binario);
+	if(posicao == -1)
+	{
+		posicao = indice->quantidadeLivre;
+		
+		if(posicao == -1)
+			posicao = indice->quantidade++;
+		else
+		{
+			Livres *novo = leLivres(registros, posicao);
+			indice->nohsLivre = novo->prox;
+			free(novo);
+		}
+	}
 
-    //retorna o novo nó lido
-    return nois;
+	galho->posicao = posicao;
+
+	fseek(registros, sizeof(Cabecalho) + sizeof(ArvoreB) * posicao, SEEK_SET);
+	fwrite(galho, sizeof(ArvoreB), 1, registros);
+
+	return posicao;
+}
+
+Cabecalho* leituraDoCabecalho(FILE* binario)
+{
+    Cabecalho* cabeca = (Cabecalho*)malloc(sizeof(Cabecalho));
+
+    fseek(binario, 0, SEEK_SET);
+
+    fread(cabeca, sizeof(Cabecalho), 1, binario);
+
+    return cabeca;
 }

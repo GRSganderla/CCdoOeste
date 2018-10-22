@@ -1,11 +1,11 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#define ORDEM 5
+#include "ArvoreB.h"
 
 int overflow(ArvoreB* r)
 {
-	return (r->numChaves == ORDEM) ? 1: 0;
+	return (r->numChaves == ORDEM)? 1:0;
 }
 
 int vazia(ArvoreB* r)
@@ -15,24 +15,24 @@ int vazia(ArvoreB* r)
 
 ArvoreB* split(ArvoreB* x, int *m) 
 {
-	ArvoreB* y = (ArvoreB*) malloc(sizeof(ArvoreB));
+	ArvoreB* nova = inicializaArvore();
 
 	int q = x->numChaves/2;
-	y->numChaves = x->numChaves - q - 1;
+	nova->numChaves = x->numChaves - q - 1;
 	x->numChaves = q;
 	
 	*m = x->chave[q]; // chave mediana
 	int i = 0;
 	
-	y->filho[0] = x->filho[q+1];
+	nova->filho[0] = x->filho[q+1];
 	
-	for(i = 0; i < y->numChaves; i++)
+	for(i = 0; i < nova->numChaves; i++)
 	{
-		y->chave[i] = x->chave[q+i+1];
-		y->filho[i+1] = x->filho[q+i+2];
+		nova->chave[i] = x->chave[q+i+1];
+		nova->filho[i+1] = x->filho[q+i+2];
 	}
 
-	return y;
+	return nova;
 }
 
 int buscaPos(ArvoreB* r, int info, int * pos) 
@@ -50,10 +50,10 @@ int buscaPos(ArvoreB* r, int info, int * pos)
 
 int eh_folha(ArvoreB* r) 
 {
-	return (r->filho[0] == NULL);
+	return (r->filho[0] == -1);
 }
 
-void adicionaDireita(ArvoreB* r, int pos, int k, ArvoreB* p)
+void adicionaDireita(ArvoreB* r, int pos, int k, int p)
 {
 	int i;
 	for(i=r->numChaves; i>pos; i--)
@@ -67,161 +67,128 @@ void adicionaDireita(ArvoreB* r, int pos, int k, ArvoreB* p)
 	r->numChaves++;
 }
 
-void insere_aux(ArvoreB* r, int info)
+void insere_aux(FILE* registros, Cabecalho* indice, ArvoreB* r, int info)
 {
-	int pos;
-	if(!buscaPos(r,info, &pos)){
-		if(eh_folha(r)) {
-			adicionaDireita(r,pos,info,NULL);
+	int pos = 0;
+
+	if(!buscaPos(r, info, &pos))
+	{
+		if(eh_folha(r)) 
+		{
+			adicionaDireita(r, pos, info, -1);
 		}
-		else {
-			insere_aux(r->filho[pos],info);
-			if(overflow(r->filho[pos]))
+		else 
+		{
+			int alvo = r->filho[pos];
+			
+			ArvoreB* aux = leituraDoNoh(registros, alvo); 
+			insere_aux(registros, indice, aux, info);
+			
+			if(overflow(aux))
 			{
-			int m;
-			ArvoreB* aux = split(r->filho[pos],&m);
-			adicionaDireita(r,pos,m,aux);
+				int m;
+				ArvoreB* pai = split(aux, &m);
+				adicionaDireita(r, pos, m, escreveArvore(registros, pai, indice));
+				escreveArvore(registros, aux, indice);
+
+				liberaNoh(pai);
 			}
 		}
 	}
+
+	escreveArvore(registros, r, indice);
 }
 
-ArvoreB* insere(ArvoreB* r, int info)
+void insere(FILE* registros, int info)
 {
-	if(vazia(r)) 
+	Cabecalho *indice = leituraDoCabecalho(registros);
+
+	ArvoreB* raiz = leituraDoNoh(registros, indice->cabecalho);
+	ArvoreB* novo;
+
+	if(!raiz) 
 	{
-		r = malloc(sizeof(ArvoreB));
-		r->chave[0] = info;
-		r->filho[0] = NULL;
-		r->numChaves = 1;
+		raiz = inicializaArvore();
+
+		raiz->chave[0] = info;
+		raiz->numChaves = 1;
+
+		indice->cabecalho = escreveArvore(registros, raiz, indice);
 	}
 	else 
 	{
-		insere_aux(r,info);
-		if(overflow(r))
+		insere_aux(registros, indice, raiz,info);
+
+		if(overflow(raiz))
 		{
 			int m;
-			ArvoreB* x = split(r,&m);
-			ArvoreB* novaRaiz = malloc(sizeof(ArvoreB));
+			novo = split(raiz, &m);
+			ArvoreB* novaRaiz = inicializaArvore();
+
 			novaRaiz->chave[0] = m;
-			novaRaiz->filho[0] = r;
-			novaRaiz->filho[1] = x;
+			novaRaiz->filho[0] = indice->cabecalho;
 			novaRaiz->numChaves = 1;
-			return novaRaiz;
+			novaRaiz->filho[1] = escreveArvore(registros, novo, indice);
+
+			indice->cabecalho = escreveArvore(registros, novaRaiz, indice);
+
+			liberaNoh(novo);	
+			liberaNoh(novaRaiz);
 		}
+
+		escreveArvore(registros, raiz, indice);
 	}
 
-	return r;
+	escreveCabecalho(registros, indice);
+
+	liberaNoh(raiz);
+	free(indice);
 }
 
-ArvoreB* busca(ArvoreB* r, int info, int * pos)
+void printaArvore(FILE* registros)
 {
-	if(vazia(r))
-		return NULL;
-	
-	int i = 0;
-	
-	while(i < r->numChaves && r->chave[i] < info) i++;
-		if((i+1) > r->numChaves || r->chave[i] > info)
-			return busca(r->filho[i], info, pos);
-	
-	*pos = i;
-	return r;
-}
+	Cabecalho* indice = leituraDoCabecalho(registros);
 
-int altura(ArvoreB* r)
-{
-	if(r == NULL)
-		return 0;
-	if(r->filho[0] == NULL)
-		return 1;
-	else
-		return altura(r->filho[0]) + 1;
-}
+	ArvoreB* raiz = leituraDoNoh(registros, indice->cabecalho);
 
-void printaNivelB(ArvoreB* r, int i)
-{
-	if(i == 0)
+	Fila* fileira = start();
+	enqueue(fileira, raiz);
+
+	int n = fileira->n;
+
+	while(n)
 	{
-		int j;
-		printf("[ ");
-		for(j = 0; j < r->numChaves; j++)
-			printf("%d ", r->chave[j]);
-		printf("]");	
-	}
-	else
-	{
-		if(r->filho[0] != NULL)
+		for(; n > 0; n--)
 		{
+			No* noh = dequeue(fileira);
+
+			ArvoreB* nova = (ArvoreB*)noh->info;
+
+			printf("[");
+			for(int i = 0; i < ORDEM; i++)
+				printf(" %d", nova->chave[i]);
+			printf("] ");
+
 			int j;
-			for(j = 0; j <= r->numChaves; j++)
-				printaNivelB(r->filho[j], i-1);
+			printf("%d\n", nova->numChaves);
+			for(j = 0; j <= nova->numChaves; j++)
+			{
+				printf("%d %d\n",j, nova->filho[j]);
+				if(nova->filho[j] != -1)
+				{
+					printf("aaaa\n");
+					enqueue(fileira, leituraDoNoh(registros, nova->filho[j]));
+				}
+			}
+
+			printf("bbbb\n");
+			n--;				
+			free(noh);
+			liberaNoh(nova);
 		}
-	}
-}
-
-void printaPorNivelB(ArvoreB* r)
-{
-	int i;
-	for(i = 0; i < altura(r); i++)
-	{
-		printaNivelB(r, i);
 		printf("\n");
+		n = fileira->n;
 	}
-}
-
-ArvoreB* inicializaArvore()
-{
-	ArvoreB* new = (ArvoreB*)malloc(sizeof(ArvoreB));
-
-	new->numChaves = 0;
-
-
-	for(int i = 0; i < ORDEM; i++)
-	{
-		new->chave[i] = 0;
-		new->filho[i] = NULL;
-	}
-
-	return new;
-}
-
-void lerCadastro(Cadastro hospital[])
-{
-	int i;
-	for(i = 0; i < 1; i++)
-	{
-		scanf("%d%*c", &hospital[i].codigo);
-		scanf("%[^:]%*c", hospital[i].nome);
-		scanf("%c%*c", hospital[i].sexo);
-		scanf("%[^:]%*c", hospital[i].cpf);
-		scanf("%d%*c", &hospital[i].crm);
-		scanf("%[^:]%*c", hospital[i].especialidade);
-		scanf("%[^:]%*c", hospital[i].rg);
-		scanf("%[^:]%*c", hospital[i].telefone);
-		scanf("%[^:]%*c", hospital[i].celular);
-		scanf("%[^:]%*c", hospital[i].email);
-		scanf("%[^:]%*c", hospital[i].endereco);
-		scanf("%[^:]%*c", shospital[i].nascimento);
-	}
-}
-
-Cadastro* inicializaCadastro()
-{
-	Cadastro *novo = (Cadastro*)malloc(sizeof(Cadastro));
-
-	novo->codigo = 0;
-	novo->nome = malloc(sizeof(char)*100);
-	novo->sexo = '\0';
-	novo->cpf = malloc(sizeof(char)*100);
-	novo->crm = 0;
-	novo->especialidade = malloc(sizeof(char)*100);
-	novo->rg = malloc(sizeof(char)*100);
-	novo->telefone = malloc(sizeof(char)*100);
-	novo->celular = malloc(sizeof(char)*100);
-	novo->email = malloc(sizeof(char)*100);
-	novo->endereco = malloc(sizeof(char)*100);
-	novo->nascimento = malloc(sizeof(char)*10);
-
-	return novo;
+	liberaNoh(raiz);
+	clean(fileira);
 }

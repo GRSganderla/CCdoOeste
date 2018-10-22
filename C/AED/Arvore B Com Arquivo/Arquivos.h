@@ -1,29 +1,59 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include "ArvoreB.h"
+#include "fila.h"
+#define ORDEM 5
 
 typedef struct noBArq
 {
-	int numChaves;
-	int chaves[ORDEM-1];
-	int filhos[ORDEM];
-}NodeArq;
+	int cabecalho;
+	int quantidade;
+	int nohsLivre;
+	int quantidadeLivre;
+}Cabecalho;
 
-typedef struct cadastroArq
+typedef struct cadastro
 {
 	int codigo;
-	int nome;
-	int sexo;
-	int cpf;
+	char *nome;
+	char sexo;
+	char *cpf;
 	int crm;
-	int especialidade;
-	int rg;
-	int telefone;
-	int celular;
-	int email;
-	int endereco;
-	int nascimento;
-}CadastroArq;
+	char *especialidade;
+	char *rg;
+	char *telefone;
+	char *celular;
+	char *email;
+	char *endereco;
+	char *nascimento;
+}Cadastro;
 
-Cadastro lerArqEntrada();
+typedef struct arvoreB
+{
+	int numChaves;
+	int posicao;
+	int chave[ORDEM];
+	int dados[ORDEM];
+	int filho[ORDEM];
+}ArvoreB;
+
+typedef struct nohLivre
+{
+	int prox;
+}Livres;
+
+void liberaNoh(ArvoreB* alvo);
+
+Cadastro* lerArqEntrada();
+
+void criaIndicesArq(FILE *binario);
+
+ArvoreB* inicializaArvore();
+
+Cabecalho* leituraDoCabecalho(FILE* binario);
+
+ArvoreB* leituraDoNoh(FILE* binario, int posicao);
+
+void escreveCabecalho(FILE* registros, Cabecalho* indice);
+
+int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice);
