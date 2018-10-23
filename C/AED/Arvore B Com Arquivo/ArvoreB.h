@@ -2,7 +2,96 @@
 #include<string.h>
 #include<stdlib.h>
 #include "Arquivos.h"
+#include "fila.h"
+#define MAX 100
+#define ORDEM 5
 
+//estrutura para o cabecalho do arquivo
+typedef struct noBArq
+{
+	//variaves da cabeca do arquivo, sendo a raiz do arquivo, a quantidade de nós, a raiz dos nós livres e sua quantidade
+	int topo;
+	int quantidade;
+	int nohsLivre;
+	int quantidadeLivre;
+}Cabecalho;
+
+typedef struct registros
+{
+	int codigo;
+	int registroPos;
+}RegistrosDat;
+
+typedef struct arvoreB
+{
+	int numChaves;
+	int posicao;
+	RegistrosDat chave[ORDEM];
+	int filho[ORDEM];
+}ArvoreB;
+
+typedef struct nohLivre
+{
+	int prox;
+}Livres;
+
+typedef struct cadastro
+{
+	int codigo;
+	char nome[100];
+	char sexo;
+	char cpf[12];
+	char crm[20];
+	char especialidade[100];
+	char rg[12];
+	char telefone[13];
+	char celular[14];
+	char email[100];
+	char endereco[100];
+	char nascimento[11];
+}Cadastro;
+
+typedef struct noBArqDat
+{
+	//variaves da cabeca do arquivo e a raiz dos nós livres
+	int topo;
+	int nohsLivre;
+}CabecalhoDados;
+
+typedef struct livre
+{
+	int proxLivre; 
+}RegistrosLivres;
+
+///
+/// \brief criaIndicesArqDat, cria os indices do arquivo do tipo de dados, que são a raiz do arquivo e a raiz dos nós livres
+/// \param binario, arquivo que vai inserir os indices
+/// \pre nenhuma
+/// \post arquivo passado terá seus indices e primeiras linha escritas
+///
+void criaIndicesArqDat(FILE *binario);
+
+///
+/// \brief inicializaCadastro, aloca e inicializa as variaveis da estrutura Cadastro
+/// \return uma estrutura de dados do tipo Cadastro alocada
+/// \pre nenhuma
+/// \post nenhuma
+///
+Cadastro* inicializaCadastro();
+
+///
+/// \brief liberaNoh, desaloca o nó da Arvore-B da memoria
+/// \param alvo, libera a memoria usada pelo nó
+/// \pre nenhuma
+/// \post a area ocupada pelo nó sera desocupada
+///
+void liberaNoh(ArvoreB* alvo);
+
+void criaIndicesArq(FILE *binario);
+
+ArvoreB* inicializaArvore();
+
+void escreveCabecalho(FILE* registros, Cabecalho* indice);
 
 ///
 /// \brief overflow, funcao que testa se o nó atual esta com o numero de chaves com o maximo possivel de chaves
@@ -97,12 +186,66 @@ void insere(FILE* registros, int info, int pos);
 ///
 void printaArvore(FILE* registros);
 
-Livres* criaNohLivre();
+int validaCPF(char *s);
+
+int validaTelefone(char *s);
+
+int validaCelular(char *s);
+
+Cadastro* leDados(FILE* dados, CabecalhoDados* raiz, int indice);
+
+ArvoreB* leituraDoNoh(FILE* binario, int posicao);
+
+void escreveCabecalhoDat(FILE* registros, CabecalhoDados* indice);
+
+Livres* leLivres(FILE* registros, int posicao);
+
+int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice);
+
+void adicionaDireita(ArvoreB* r, int pos, RegistrosDat info, int p);
+
+void insere(FILE* registros, int dado, int pos);
+
+int escreverRegistro(FILE* dados, CabecalhoDados* indice, Cadastro* medico);
 
 void lerArquivo(FILE* dados, FILE* arvore, char* nome);
 
 CabecalhoDados* leCabecalhoDat(FILE* dados);
 
-void imprimeCadastro(FILE* registros, FILE* dados);
+void criaIndicesArq(FILE *binario);
 
-void inOrdem(FILE* dados, FILE* registros, ArvoreB *raiz);
+Livres* criaNohLivre();
+
+Cabecalho* leituraDoCabecalho(FILE* binario);
+
+void escreveNosLivres(FILE* registros, Cabecalho* indice, ArvoreB* raiz);
+
+void removerArvoreB(FILE *registros, int id);
+
+void removerArvoreBAux(FILE *registros, Cabecalho *indice, ArvoreB *raiz, RegistrosDat info);
+
+void removerDaFolha(ArvoreB *raiz, int pos);
+
+void removerDoInteirior(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos);
+
+RegistrosDat pegaPrecessor(FILE *f, ArvoreB *raiz, int pos);
+
+RegistrosDat pegaSucessor(FILE *f, ArvoreB *raiz, int pos);
+
+void merge(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos);
+
+void fill(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos);
+
+void emprestimoDoAnt(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos);
+
+void emprestimoDoProx(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos);
+
+void printMedico(Cadastro *medico) ;
+
+void leituraEmCMD(FILE *registros, FILE *dados) ;
+
+void imprimeInOrd(FILE *registros, Cabecalho *indice, FILE *dados, CabecalhoDados *raizDat, ArvoreB *raiz) ;
+
+void imprimeRegistro(FILE *registros, FILE *dados) ;
+
+void procuraCadastro(FILE *registro, FILE *dados) ;

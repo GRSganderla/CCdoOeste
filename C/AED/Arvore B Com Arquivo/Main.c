@@ -37,15 +37,16 @@ int main()
 				lerArquivo(registroDados, registroArv, arquivo);
 				break;
 			case 2:
-			//em construcao
+				leituraEmCMD(registroArv, registroDados);
+				break;
 			case 3:
 			//em construcao
 			case 4:
-			//em construcao
+				procuraCadastro(registroArv, registroDados);
 			case 5:
 			//em construcao
 			case 6:
-				imprimeCadastro(registroArv, registroDados);
+				imprimeRegistro(registroArv, registroDados);
 				break;
 			case 7:
 				printaArvore(registroArv);
