@@ -1,48 +1,33 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<conio.h>
+#include<math.h>
+#include<ctype.h>
 #include "ArvoreB.h"
 
-int validaCPF(char *s)
+int validaDado(char *s)
 {	
-	if(s[0] == '\0')
-		return 1;
-
 	int i;
 	for(i = 0; i < strlen(s); i++)
-		if(s[i] < '0' && s[i] > '9')
-			if(s[i] == '-' && i != 9)
-				return 1;
+		if(!isdigit(s[i]))
+			if(s[i] != '-')
+				return 0;
 
-	return 0;
+	return 1;
 }
 
-int validaTelefone(char *s)
+int validaData(char *s)
 {
 	if(s[0] == '\0')
-		return 1;
+		return 0;
 
 	int i;
-	for(i = 0; i < strlen(s); i++)
-		if(s[i] < '0' && s[i] > '9')
-			if(s[i] == '-' && (i != 2 || i != 7))
-				return 1;
-
-	return 0;
-}
-
-int validaCelular(char *s)
-{
-	if(s[0] == '\0')
+	if(s[2] == '/' && s[5] == '/')
 		return 1;
 
-	int i;
-	for(i = 0; i < strlen(s); i++)
-		if(s[i] < '0' && s[i] > '9')
-			if(s[i] == '-' && (i != 2 || i != 8))
-				return 1;
-
-	return 0;
+	else
+		return 0;
 }
 
 Cadastro* leDados(FILE* dados, CabecalhoDados* raiz, int indice)
@@ -59,15 +44,15 @@ Cadastro* leDados(FILE* dados, CabecalhoDados* raiz, int indice)
 	fread(&novo->codigo, sizeof(int), 1, dados);
 	fread(&novo->nome, sizeof(char)* 100, 1, dados);
 	fread(&novo->sexo, sizeof(char), 1, dados);
-	fread(&novo->cpf, sizeof(char)* 12, 1, dados);
-	fread(&novo->crm, sizeof(char)* 20, 1, dados);
+	fread(&novo->cpf, sizeof(char)* 22, 1, dados);
+	fread(&novo->crm, sizeof(char)* 30, 1, dados);
 	fread(&novo->especialidade, sizeof(char)* 100, 1, dados);
-	fread(&novo->rg, sizeof(char)* 12, 1, dados);
-	fread(&novo->telefone, sizeof(char)* 13, 1, dados);
-	fread(&novo->celular, sizeof(char)* 14, 1, dados);
+	fread(&novo->rg, sizeof(char)* 22, 1, dados);
+	fread(&novo->telefone, sizeof(char)* 23, 1, dados);
+	fread(&novo->celular, sizeof(char)* 24, 1, dados);
 	fread(&novo->email, sizeof(char)* 100, 1, dados);
 	fread(&novo->endereco, sizeof(char)* 100, 1, dados);
-	fread(&novo->nascimento, sizeof(char)* 11, 1, dados);
+	fread(&novo->nascimento, sizeof(char)* 21, 1, dados);
 
 	return novo;
 }
@@ -136,7 +121,7 @@ int escreveArvore(FILE* registros, ArvoreB* galho, Cabecalho* indice)
 
 	if((posicao = galho->posicao) == -1)
 	{
-		if(posicao = indice->nohsLivre == -1)
+		if((posicao = indice->nohsLivre) == -1)
 			posicao = indice->quantidade++;
 		else
 		{
@@ -302,9 +287,9 @@ void printaArvore(FILE* registros)
 			ArvoreB* nova = (ArvoreB*)noh->info;
 
 			printf("[");
-			for(int i = 0; i < nova->numChaves - 1; i++)
-				printf(" %d", nova->chave[i]);
-			printf(" %d", nova->chave[nova->numChaves-1]);
+			for(int i = 0; i < nova->numChaves-1; i++)
+				printf(" %d", nova->chave[i].codigo);
+			printf(" %d", nova->chave[nova->numChaves-1].codigo);
 			printf("] ");
 
 			int j;
@@ -339,7 +324,7 @@ int escreverRegistro(FILE* dados, CabecalhoDados* indice, Cadastro* medico)
 
 	if(pos == -1)
 	{
-		pos = indice->topo;
+		pos = indice->topo++;
 	}
 	else
 	{
@@ -353,15 +338,15 @@ int escreverRegistro(FILE* dados, CabecalhoDados* indice, Cadastro* medico)
 	fwrite(&medico->codigo, sizeof(int), 1, dados);
 	fwrite(medico->nome, sizeof(char)* 100, 1, dados);
 	fwrite(&medico->sexo, sizeof(char), 1, dados);
-	fwrite(medico->cpf, sizeof(char)* 12, 1, dados);
-	fwrite(medico->crm, sizeof(char)* 20, 1, dados);
+	fwrite(medico->cpf, sizeof(char)* 22, 1, dados);
+	fwrite(medico->crm, sizeof(char)* 30, 1, dados);
 	fwrite(medico->especialidade, sizeof(char)* 100, 1, dados);
-	fwrite(medico->rg, sizeof(char)* 12, 1, dados);
-	fwrite(medico->telefone, sizeof(char)* 13, 1, dados);
-	fwrite(medico->celular, sizeof(char)* 14, 1, dados);
+	fwrite(medico->rg, sizeof(char)* 22, 1, dados);
+	fwrite(medico->telefone, sizeof(char)* 23, 1, dados);
+	fwrite(medico->celular, sizeof(char)* 24, 1, dados);
 	fwrite(medico->email, sizeof(char)* 100, 1, dados);
 	fwrite(medico->endereco, sizeof(char)* 100, 1, dados);
-	fwrite(medico->nascimento, sizeof(char)* 11, 1, dados);
+	fwrite(medico->nascimento, sizeof(char)* 21, 1, dados);
 
 	return pos;
 }
@@ -370,10 +355,30 @@ void criaIndicesArqDat(FILE *binario)
 {
 	CabecalhoDados indice;
 
-	indice.topo = -1;
+	indice.topo = 0;
 	indice.nohsLivre = -1;
 
 	escreveCabecalhoDat(binario, &indice);
+}
+
+Cadastro limpaMed()
+{
+	Cadastro novo;
+
+	novo.codigo = 0;
+	novo.nome[0] = '\0';
+	novo.sexo = '\0';
+	novo.cpf[0] = '\0';
+	novo.crm[0] = '\0';
+	novo.especialidade[0] = '\0';
+	novo.rg[0] = '\0';
+	novo.telefone[0] = '\0';
+	novo.celular[0] = '\0';
+	novo.email[0] = '\0';
+	novo.endereco[0] = '\0';
+	novo.nascimento[0] = '\0';
+
+	return novo;
 }
 
 void lerArquivo(FILE* dados, FILE* arvore, char* nome)
@@ -391,7 +396,8 @@ void lerArquivo(FILE* dados, FILE* arvore, char* nome)
 
 	while(!feof(texto))
 	{
-		fscanf(texto, "%d :", &medicos->codigo);
+		*medicos = limpaMed();
+		fscanf(texto, "%d", &medicos->codigo);
 		fseek(texto, +1, SEEK_CUR);
 	    
 	    fscanf(texto, "%[^:]", medicos->nome);
@@ -424,9 +430,9 @@ void lerArquivo(FILE* dados, FILE* arvore, char* nome)
 	    fscanf(texto, "%[^:]", medicos->endereco);
 	    fseek(texto, +1, SEEK_CUR);
 	    
-	    fscanf(texto, "%[^\n]", medicos->nascimento);
+	    fscanf(texto, "%[^\n]%*c", medicos->nascimento);
 
-	    if(!medicos->rg[0] || medicos->codigo == -1 || !medicos->nome[0] || medicos->sexo == '\0' || !medicos->cpf[0] || validaCPF(medicos->cpf) || !medicos->crm[0] || validaTelefone(medicos->telefone) || validaCelular(medicos->celular) || !medicos->nascimento[0])
+	    if(!medicos->rg[0] || medicos->codigo == -1 || !medicos->nome[0] || medicos->sexo == '\0' || !medicos->cpf[0] || !validaDado(medicos->cpf) || !medicos->crm[0] || !validaDado(medicos->telefone) || !validaDado(medicos->celular) || !medicos->nascimento[0] || !validaData(medicos->nascimento))
 	    {
 	    	printf("Cadastro Invalido!\n");
 	    }
@@ -434,8 +440,10 @@ void lerArquivo(FILE* dados, FILE* arvore, char* nome)
 	    {
     		int pos = escreverRegistro(dados, indice, medicos);
     		insere(arvore, medicos->codigo, pos);
+    		escreveCabecalhoDat(dados, indice);
     	}
 	}
+
 
 	free(medicos);
 }
@@ -560,7 +568,7 @@ void escreveNosLivres(FILE* registros, Cabecalho* indice, ArvoreB* raiz)
 
 Cadastro* inicializaCadastro()
 {
-	Cadastro* novo;
+	Cadastro* novo = (Cadastro*)malloc(sizeof(Cadastro));
 
 	novo->codigo = 0;
 	novo->nome[0] = '\0';
@@ -578,292 +586,273 @@ Cadastro* inicializaCadastro()
 	return novo;
 }
 
-/*void printaCadastro(FILE* dados)
+void remocaoPorFolha(ArvoreB *raiz, int pos) 
 {
-	int i;
-	system("CLS");
-	for(i = 0; i < MAX; i++)
-	{
-	    printf("//----------------------------------------//\n");
-		printf("Medico[%d]\n", i);
-		printf("Codigo: %d\n", medicos[i].codigo);
-		
-	    printf("Nome: %s\n", medicos[i].nome);
-	    
-	    printf("Sexo: %s\n", medicos[i].sexo);
-	   
-	    printf("CPF: %s\n", medicos[i].cpf);
-	    
-	    printf("CRM: %s\n", medicos[i].crm);
-	    
-	    printf("Especialidade: %s\n", medicos[i].especialidade);
-	    
-	    printf("RG: %s\n", medicos[i].rg);
-	    
-	    printf("Telefone: %s\n", medicos[i].telefone);
-	    
-	    printf("Celular: %s\n", medicos[i].celular);
-	    
-	    printf("Email: %s\n", medicos[i].email);
-	    
-	    printf("Endereco: %s\n", medicos[i].endereco);
-	    
-	    printf("Data de Nascimento: %s\n", medicos[i].nascimento);
-	}
-}
-
-
-void removeBTree(FILE *fTree, int id) {
-    BTreeHeader *header = readBTreeHeader(fTree);
-    BTreeNode *root = readBTreeNode(fTree, header->root);
-
-    RegData data = {.id = id, .regPos = -1};
-
-    removeBTreeAux(fTree, header, root, data);
-
-    freeBTreeNode(root);
-    free(header);
-}
-
-void removeBTreeAux(FILE *fTree, BTreeHeader *header, BTreeNode *node, RegData info) {
-    int pos;
-    searchBTreePos(node, info.id, &pos);
-
-    if (pos < node->keyNum && node->keys[pos].id == info.id) {
-        if (isLeaf(node)) {
-            removeFromLeaf(node, pos);
-        } else {
-            removeFromInnerNode(fTree, header, node, pos);
-        }
-        writeNodeToFile(fTree, header, node);
-    } else {
-        if (isLeaf(node)) {
-            printf("The value [%d] is not present in tree\n", info);
-            return;
-        }
-
-        int flag = (pos == node->keyNum);
-
-        BTreeNode *nextNode = readBTreeNode(fTree, node->children[pos]);
-//        printf("nextNode->keyNum = %d\n", nextNode->keyNum);
-        printBTreeNodeKeys(nextNode);
-        if (nextNode->keyNum < ORDER / 2) {
-            fill(fTree, header, node, pos);
-        }
-
-        BTreeNode *prevNode = NULL;
-        BTreeNode *modifiedNode = NULL;
-        if (flag && pos > node->keyNum) {
-            removeBTreeAux(fTree, header, prevNode = readBTreeNode(fTree, node->children[pos - 1]), info);
-            modifiedNode = prevNode;
-        } else {
-//            printf("removeBTreeAux (0)\n");
-            removeBTreeAux(fTree, header, nextNode, info);
-            modifiedNode = nextNode;
-        }
-
-        if (modifiedNode->keyNum < ORDER / 2) {
-            fill(fTree, header, node, pos);
-        }
-
-        freeBTreeNode(prevNode);
-        freeBTreeNode(nextNode);
-    }
-}
-
-void removeFromLeaf(BTreeNode *node, int pos) {
-    for (int i = pos + 1; i < node->keyNum; ++i) {
-        node->keys[i - 1] = node->keys[i];
+    for (int i = pos + 1; i < raiz->numChaves; ++i) {
+        raiz->chave[i - 1] = raiz->chave[i];
     }
 
-    node->keyNum--;
+    raiz->numChaves--;
 }
 
-void removeFromInnerNode(FILE *fTree, BTreeHeader *header, BTreeNode *node, int pos) {
-    RegData k = node->keys[pos];
+RegistrosDat pegaPrede(FILE *registros, ArvoreB *raiz, int pos) {
+    ArvoreB *atual = leituraDoNoh(registros, raiz->filho[pos]);
+    ArvoreB *proximo = NULL;
+    RegistrosDat pred;
 
-    BTreeNode *leftChildNode = readBTreeNode(fTree, node->children[pos]);
-    BTreeNode *rightChildNode = readBTreeNode(fTree, node->children[pos + 1]);
-
-//    printf("removeFromInnerNode (0)\n");
-
-    if (leftChildNode->keyNum >= ORDER / 2) {
-        RegData pred = getPred(fTree, node, pos);
-        node->keys[pos] = pred;
-        removeBTreeAux(fTree, header, leftChildNode, pred);
-    } else if (rightChildNode->keyNum >= ORDER / 2) {
-        RegData succ = getSucc(fTree, node, pos);
-        node->keys[pos] = succ;
-        removeBTreeAux(fTree, header, rightChildNode, succ);
-    } else {
-//        printf("removeFromInnerNode (1)\n");
-        merge(fTree, header, node, pos);
-        removeBTreeAux(fTree, header, leftChildNode, k);
+    while (!eh_folha(atual)) {
+        proximo = leituraDoNoh(registros, raiz->numChaves);
+        liberaNoh(atual);
+        atual = proximo;
     }
 
-    writeNodeToFile(fTree, header, leftChildNode);
-    writeNodeToFile(fTree, header, rightChildNode);
-    writeNodeToFile(fTree, header, node);
-
-    freeBTreeNode(leftChildNode);
-    freeBTreeNode(rightChildNode);
-}
-
-RegData getPred(FILE *f, BTreeNode *node, int pos) {
-    BTreeNode *current = readBTreeNode(f, node->children[pos]);
-    BTreeNode *next = NULL;
-    RegData pred;
-
-    while (!isLeaf(current)) {
-        next = readBTreeNode(f, node->keyNum);
-        freeBTreeNode(current);
-        current = next;
-    }
-
-    pred = current->keys[current->keyNum - 1];
-    freeBTreeNode(current);
+    pred = atual->chave[atual->numChaves - 1];
+    liberaNoh(atual);
 
     return pred;
 }
 
+RegistrosDat pegaSucessor(FILE *registros, ArvoreB *raiz, int pos) {
+    ArvoreB *atual = leituraDoNoh(registros, raiz->filho[pos + 1]);
+    ArvoreB *proximo = NULL;
+    RegistrosDat sucessor;
 
-RegData getSucc(FILE *f, BTreeNode *node, int pos) {
-    BTreeNode *current = readBTreeNode(f, node->children[pos + 1]);
-    BTreeNode *next = NULL;
-    RegData succ;
-
-    while (!isLeaf(current)) {
-        next = readBTreeNode(f, 0);
-        freeBTreeNode(current);
-        current = next;
+    while (!eh_folha(atual)) 
+    {
+        proximo = leituraDoNoh(registros, 0);
+        liberaNoh(atual);
+        atual = proximo;
     }
 
-    succ = current->keys[0];
-    freeBTreeNode(current);
+    sucessor = atual->chave[0];
+    liberaNoh(atual);
 
-    return succ;
+    return sucessor;
 }
 
-void merge(FILE *fTree, BTreeHeader *header, BTreeNode *node, int pos) {
-    BTreeNode *child = readBTreeNode(fTree, pos);
-    BTreeNode *sibling = readBTreeNode(fTree, pos + 1);
+void merge(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos) 
+{
+    ArvoreB *filho = leituraDoNoh(registros, pos);
+    ArvoreB *sobrinho = leituraDoNoh(registros, pos + 1);
 
-//    printf("merge (0)\n");
+    filho->chave[(ORDEM - 1) / 2 - 1] = raiz->chave[pos];
 
-    child->keys[(ORDER - 1) / 2 - 1] = node->keys[pos];
-
-    for (int i = 0; i < sibling->keyNum; ++i) {
-        child->keys[i + (ORDER - 1) / 2] = sibling->keys[i];
+    for (int i = 0; i < sobrinho->numChaves; ++i) {
+        filho->chave[i + (ORDEM - 1) / 2] = sobrinho->chave[i];
     }
 
-    if (!isLeaf(child)) {
-        for (int i = 0; i <= sibling->keyNum; ++i)
-            child->children[i + (ORDER - 1) / 2] = sibling->children[i];
+    if (!eh_folha(filho)) {
+        for (int i = 0; i <= sobrinho->numChaves; ++i)
+            filho->filho[i + (ORDEM - 1) / 2] = sobrinho->filho[i];
     }
 
-    for (int i = pos + 1; i < node->keyNum; ++i)
-        node->keys[i - 1] = node->keys[i];
+    for (int i = pos + 1; i < raiz->numChaves; ++i)
+        raiz->chave[i - 1] = raiz->chave[i];
 
-    for (int i = pos + 2; i <= node->keyNum; ++i)
-        node->children[i - 1] = node->children[i];
+    for (int i = pos + 2; i <= raiz->numChaves; ++i)
+        raiz->filho[i - 1] = raiz->filho[i];
 
-    child->keyNum += sibling->keyNum + 1;
-    node->keyNum--;
+    filho->numChaves += sobrinho->numChaves + 1;
+    raiz->numChaves--;
 
-    writeNodeToFile(fTree, header, child);
-    writeNodeToFile(fTree, header, node);
+    escreveArvore(registros, filho,indice);
+    escreveArvore(registros, raiz, indice);
 
-    writeBTreeFreeNodesList(fTree, header, sibling);
+    escreveNosLivres(registros, indice, sobrinho);
 
-    writeBTreeHeaderToFile(fTree, header);
+    escreveCabecalho(registros, indice);
 
-    freeBTreeNode(sibling);
-    freeBTreeNode(child);
+    liberaNoh(sobrinho);
+    liberaNoh(filho);
 }
 
-void fill(FILE *fTree, BTreeHeader *header, BTreeNode *node, int pos) {
-    BTreeNode *childPrev = readBTreeNode(fTree, node->children[pos - 1]);
-    BTreeNode *childNext = readBTreeNode(fTree, node->children[pos + 1]);
+void emprestaDoAnt(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos) {
+    ArvoreB *filho = leituraDoNoh(registros, raiz->filho[pos]);
+    ArvoreB *sobrinho = leituraDoNoh(registros, raiz->filho[pos - 1]);
 
-    if (pos != 0 && childPrev->keyNum - 1 >= ORDER / 2) {
-//        printf("fill (0)\n");
-        borrowFromPrev(fTree, header, node, pos);
-    } else if (pos != node->keyNum && childNext->keyNum - 1 >= ORDER / 2) {
-        borrowFromNext(fTree, header, node, pos);
-    } else {
-        if (pos != node->keyNum) {
-            merge(fTree, header, node, pos);
+    for (int i = filho->numChaves - 1; i >= 0; --i)
+        filho->chave[i + 1] = filho->chave[i];
+
+    if (!eh_folha(filho)) {
+        for (int i = filho->numChaves; i >= 0; --i)
+            filho->filho[i + 1] = filho->filho[i];
+    }
+
+    filho->chave[0] = raiz->chave[pos - 1];
+
+    if (!eh_folha(filho))
+        filho->filho[0] = sobrinho->filho[sobrinho->numChaves];
+
+    raiz->chave[pos - 1] = sobrinho->chave[sobrinho->numChaves - 1];
+
+    filho->numChaves += 1;
+    sobrinho->numChaves -= 1;
+
+    escreveArvore(registros, filho, indice);
+    escreveArvore(registros, sobrinho, indice);
+    escreveArvore(registros, raiz, indice);
+
+    liberaNoh(filho);
+    liberaNoh(sobrinho);
+}
+
+void emprestaDoProx(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos) {
+    ArvoreB *filho = leituraDoNoh(registros, raiz->filho[pos]);
+    ArvoreB *sobrinho = leituraDoNoh(registros, raiz->filho[pos + 1]);
+
+    filho->chave[filho->numChaves] = raiz->chave[pos];
+
+    if (!eh_folha(filho)) {
+        filho->filho[(filho->numChaves) + 1] = sobrinho->filho[0];
+    }
+
+    filho->chave[pos] = raiz->chave[0];
+
+    for (int i = 1; i < sobrinho->numChaves; ++i) {
+        sobrinho->chave[i - 1] = sobrinho->chave[i];
+    }
+
+    if (!eh_folha(sobrinho)) 
+    {
+        for (int i = 1; i <= sobrinho->numChaves; ++i) 
+            sobrinho->filho[i - 1] = sobrinho->filho[i];
+        
+    }
+
+    filho->numChaves += 1;
+    sobrinho->numChaves -= 1;
+
+    escreveArvore(registros, filho, indice);
+    escreveArvore(registros, sobrinho, indice);
+    escreveArvore(registros, raiz, indice);
+
+    liberaNoh(filho);
+    liberaNoh(sobrinho);
+}
+
+void enche(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos) {
+    ArvoreB *filhoAnt = leituraDoNoh(registros, raiz->filho[pos - 1]);
+    ArvoreB *filhoProx = leituraDoNoh(registros, raiz->filho[pos + 1]);
+
+    if (pos != 0 && filhoAnt->numChaves - 1 >= ORDEM / 2) 
+    {
+        emprestaDoAnt(registros, indice, raiz, pos);
+    } 
+    else if (pos != raiz->numChaves && filhoProx->numChaves - 1 >= ORDEM / 2) 
+    {
+        emprestaDoProx(registros, indice, raiz, pos);
+    } 
+    else 
+    {
+        if (pos != raiz->numChaves) 
+        {
+            merge(registros, indice, raiz, pos);
+        } 
+        else 
+        {
+            merge(registros, indice, raiz, pos - 1);
+        }
+    }
+
+    liberaNoh(filhoProx);
+    liberaNoh(filhoAnt);
+}
+
+void remocaoAux(FILE *registros, Cabecalho *indice, ArvoreB *raiz, RegistrosDat dados) 
+{
+    int pos;
+    buscaPos(raiz, dados.codigo, &pos);
+
+    if (pos < raiz->numChaves && raiz->chave[pos].codigo == dados.codigo) {
+        if (eh_folha(raiz)) {
+            remocaoPorFolha(raiz, pos);
         } else {
-            merge(fTree, header, node, pos - 1);
+            remocaoDoInterior(registros, indice, raiz, pos);
         }
-    }
+        escreveArvore(registros, raiz, indice);
+    } else {
+        if (eh_folha(raiz)) {
+            printf("Dado nao presente na Arvore\n");
+            return;
+        }
 
-    freeBTreeNode(childNext);
-    freeBTreeNode(childPrev);
+        int flag = (pos == raiz->numChaves);
+
+        ArvoreB *proxRaiz = leituraDoNoh(registros, raiz->filho[pos]);
+
+        if (proxRaiz->numChaves < ORDEM / 2) {
+            enche(registros, indice, raiz, pos);
+        }
+
+        ArvoreB *raizAnt = NULL;
+        ArvoreB *modificado = NULL;
+        if (flag && pos > raiz->numChaves) {
+            remocaoAux(registros, indice, raizAnt = leituraDoNoh(registros, raiz->filho[pos - 1]), dados);
+            modificado = raizAnt;
+        } else {
+            remocaoAux(registros, indice, proxRaiz, dados);
+            modificado = proxRaiz;
+        }
+
+        if (modificado->numChaves < ORDEM / 2) {
+            enche(registros, indice, raiz, pos);
+        }
+
+        liberaNoh(raizAnt);
+        liberaNoh(proxRaiz);
+    }
 }
 
-void borrowFromPrev(FILE *fTree, BTreeHeader *header, BTreeNode *node, int pos) {
-    BTreeNode *child = readBTreeNode(fTree, node->children[pos]);
-    BTreeNode *sibling = readBTreeNode(fTree, node->children[pos - 1]);
+void remocaoDoInterior(FILE *registros, Cabecalho *indice, ArvoreB *raiz, int pos) 
+{
+    RegistrosDat k = raiz->chave[pos];
 
-    for (int i = child->keyNum - 1; i >= 0; --i)
-        child->keys[i + 1] = child->keys[i];
+    ArvoreB *filhoEsq = leituraDoNoh(registros, raiz->filho[pos]);
+    ArvoreB *filhoDir = leituraDoNoh(registros, raiz->filho[pos + 1]);
 
-    if (!isLeaf(child)) {
-        for (int i = child->keyNum; i >= 0; --i)
-            child->children[i + 1] = child->children[i];
+    if (filhoEsq->numChaves >= ORDEM / 2) 
+    {
+        RegistrosDat predecessor = pegaPrede(registros, raiz, pos);
+        raiz->chave[pos] = predecessor;
+        remocaoAux(registros, indice, filhoEsq, predecessor);
+    } 
+    else if (filhoDir->numChaves >= ORDEM / 2) 
+    {
+        RegistrosDat sucessor = pegaSucessor(registros, raiz, pos);
+        raiz->chave[pos] = sucessor;
+        remocaoAux(registros, indice, filhoDir, sucessor);
+    } 
+    else {
+        merge(registros, indice, raiz, pos);
+        remocaoAux(registros, indice, filhoEsq, k);
     }
 
-    child->keys[0] = node->keys[pos - 1];
+    escreveArvore(registros, filhoEsq, indice);
+    escreveArvore(registros, filhoDir, indice);
+    escreveArvore(registros, raiz, indice);
 
-    if (!isLeaf(child))
-        child->children[0] = sibling->children[sibling->keyNum];
-
-    node->keys[pos - 1] = sibling->keys[sibling->keyNum - 1];
-
-    child->keyNum += 1;
-    sibling->keyNum -= 1;
-
-    writeNodeToFile(fTree, header, child);
-    writeNodeToFile(fTree, header, sibling);
-    writeNodeToFile(fTree, header, node);
-
-    freeBTreeNode(child);
-    freeBTreeNode(sibling);
+    liberaNoh(filhoEsq);
+    liberaNoh(filhoDir);
 }
 
-void borrowFromNext(FILE *fTree, BTreeHeader *header, BTreeNode *node, int pos) {
-    BTreeNode *child = readBTreeNode(fTree, node->children[pos]);
-    BTreeNode *sibling = readBTreeNode(fTree, node->children[pos + 1]);
+void remocao(FILE *registros)
+{
+	int codigo;
+	printf("Chave a ser Removida: ");
+	scanf("%d%*c", &codigo);
 
-    child->keys[(child->keyNum)] = node->keys[pos];
+    Cabecalho *indice = leituraDoCabecalho(registros);
+    ArvoreB *raiz = leituraDoNoh(registros, indice->topo);
 
-    if (!isLeaf(child)) {
-        child->children[(child->keyNum) + 1] = sibling->children[0];
-    }
+    RegistrosDat dados;
+    dados.codigo = codigo;
+    dados.registroPos = -1;
 
-    child->keys[pos] = node->keys[0];
+    remocaoAux(registros, indice, raiz, dados);
 
-    for (int i = 1; i < sibling->keyNum; ++i) {
-        sibling->keys[i - 1] = sibling->keys[i];
-    }
-
-    if (!isLeaf(sibling)) {
-        for (int i = 1; i <= sibling->keyNum; ++i) {
-            sibling->children[i - 1] = sibling->children[i];
-        }
-    }
-
-    child->keyNum += 1;
-    sibling->keyNum -= 1;
-
-    writeNodeToFile(fTree, header, child);
-    writeNodeToFile(fTree, header, sibling);
-    writeNodeToFile(fTree, header, node);
-
-    freeBTreeNode(child);
-    freeBTreeNode(sibling);
-}*/
+    liberaNoh(raiz);
+    free(indice);
+}
 
 void printMedico(Cadastro *medico) 
 {
@@ -935,18 +924,21 @@ void leituraEmCMD(FILE *registros, FILE *dados)
     printf("Data de nascimento: ");
     scanf("%[^\n]%*c", medico->nascimento);  
 
-    if (!medico->rg[0] || medico->codigo == -1 || !medico->nome[0] || medico->sexo == '\0' || !medico->cpf[0] || validaCPF(medico->cpf) || !medico->crm[0] 
-    	|| validaTelefone(medico->telefone) || validaCelular(medico->celular) || !medico->nascimento[0]) {
+    if (!medico->rg[0] || medico->codigo == -1 || !medico->nome[0] || medico->sexo == '\0' || !medico->cpf[0] || !validaDado(medico->cpf) || !medico->crm[0] 
+    	|| !validaDado(medico->telefone) || !validaDado(medico->celular) || !medico->nascimento[0]) {
 
         printf("Cadastro Invalido!\n");
 
-    } else {
+    } 
+    else 
+    {
         CabecalhoDados *indice = leCabecalhoDat(dados);
         int pos = escreverRegistro(dados, indice, medico);
 
         insere(registros, medico->codigo, pos);
 
         free(indice);
+    	escreveCabecalhoDat(dados, indice);
     }
 
     free(medico);
@@ -954,7 +946,7 @@ void leituraEmCMD(FILE *registros, FILE *dados)
 
 void imprimeInOrd(FILE *registros, Cabecalho *indice, FILE *dados, CabecalhoDados *raizDat, ArvoreB *raiz) {
     ArvoreB *aux = NULL;
-    Cadastro *medico = NULL;
+    Cadastro *medico = (Cadastro*)malloc(sizeof(Cadastro));
 
     if (!raiz)
         return;
@@ -962,7 +954,9 @@ void imprimeInOrd(FILE *registros, Cabecalho *indice, FILE *dados, CabecalhoDado
     for (int i = 0; i < raiz->numChaves; ++i) 
     {
         imprimeInOrd(registros, indice, dados, raizDat, aux = leituraDoNoh(registros, raiz->filho[i]));
-        printMedico(medico = leDados(dados, raizDat, raiz->chave[i].registroPos));
+
+       	medico = leDados(dados, raizDat, raiz->chave[i].registroPos);
+        printMedico(medico);
         
         printf("\n");
 
@@ -976,12 +970,14 @@ void imprimeInOrd(FILE *registros, Cabecalho *indice, FILE *dados, CabecalhoDado
 
 void imprimeRegistro(FILE *registros, FILE *dados) 
 {
+	system("CLS");
     Cabecalho *indice = leituraDoCabecalho(registros);
     CabecalhoDados *raizDat = leCabecalhoDat(dados);
 
     ArvoreB *raiz = leituraDoNoh(registros, indice->topo);
 
-    if (raiz) {
+    if (raiz) 
+    {
         imprimeInOrd(registros, indice, dados, raizDat, raiz);
     }
 
@@ -989,37 +985,150 @@ void imprimeRegistro(FILE *registros, FILE *dados)
     free(raizDat);
 }
 
-void procuraCadastro(FILE *registro, FILE *dados) 
+Cadastro* procuraCadastro(FILE *registro, FILE *dados, int codigo, int *posicaoRegistro) 
 {
     Cabecalho *indice = leituraDoCabecalho(registro);
     CabecalhoDados *indiceDat = leCabecalhoDat(dados);
     ArvoreB *raiz = leituraDoNoh(registro, indice->topo);
     ArvoreB *aux = raiz;
-    int codigo, pos, achou;
+    Cadastro *medico = NULL;
+    int pos, achou;
 
-    if (raiz) 
+    if(raiz)
     {
-        printf("Digite o codigo a ser pesquisado: ");
-        scanf("%d", &codigo);
-
         while (!(achou = buscaPos(aux, codigo, &pos)) && !eh_folha(aux)) {
             liberaNoh(aux);
-            aux = leituraDoNoh(registro, pos);
+            aux = leituraDoNoh(registro, aux->filho[pos]);
         }
 
-        if (achou) {
+        if (achou) 
+        {
             system("CLS");
-            Cadastro *medico= leDados(dados, indiceDat, aux->chave[pos].registroPos);
-            printMedico(medico);
-            free(medico);
-            liberaNoh(aux);
+            medico = leDados(dados, indiceDat, aux->chave[pos].registroPos);
+            *posicaoRegistro = aux->chave[pos].registroPos;
         } else {
             printf("Registro nao encontrado!\n");
         }
 
-
+        liberaNoh(aux);
     }
 
     free(indice);
     free(indiceDat);
+
+    return medico;
 }
+
+void alteraRegistro(FILE* dados, Cadastro* medico, int posicao)
+{
+	fseek(dados, sizeof(CabecalhoDados) + sizeof(Cadastro)*posicao, SEEK_SET);
+
+	fwrite(&medico->codigo, sizeof(int), 1, dados);
+	fwrite(medico->nome, sizeof(char)* 100, 1, dados);
+	fwrite(&medico->sexo, sizeof(char), 1, dados);
+	fwrite(medico->cpf, sizeof(char)* 22, 1, dados);
+	fwrite(medico->crm, sizeof(char)* 30, 1, dados);
+	fwrite(medico->especialidade, sizeof(char)* 100, 1, dados);
+	fwrite(medico->rg, sizeof(char)* 22, 1, dados);
+	fwrite(medico->telefone, sizeof(char)* 23, 1, dados);
+	fwrite(medico->celular, sizeof(char)* 24, 1, dados);
+	fwrite(medico->email, sizeof(char)* 100, 1, dados);
+	fwrite(medico->endereco, sizeof(char)* 100, 1, dados);
+	fwrite(medico->nascimento, sizeof(char)* 21, 1, dados);
+}
+
+void alterar(FILE* registros, FILE* dados)
+{
+	Cabecalho *indice = leituraDoCabecalho(registros);
+	CabecalhoDados* indiceDat = leCabecalhoDat(dados);
+
+	char alteracao[256];
+	int codigoAlvo, opcao, posicao;
+	printf("Entre com o codigo do Medico a ser Alterado: ");
+	scanf("%d", &codigoAlvo);
+
+	Cadastro* medico = procuraCadastro(registros, dados, codigoAlvo, &posicao);
+
+	if(!medico)
+	{
+		printf("Medico nao pertencente!\n");
+		return;
+	}
+
+	else{
+		system("CLS");
+		
+		printf("\n	Codigo: %d\n", medico->codigo);
+
+	    printf("	Nome: %s\n", medico->nome);
+
+	    printf("	Sexo: %c\n", medico->sexo);
+
+	    printf("	CPF: %s\n", medico->cpf);
+
+	    printf("	CRM: %s\n", medico->crm);
+
+	    printf("	Especialidade: %s\n", medico->especialidade);
+
+	    printf("	RG: %s\n", medico->rg);
+
+	    printf("	Telefone: %s\n", medico->telefone);
+
+	    printf("	Celular: %s\n", medico->celular);
+
+	    printf("	Email: %s\n", medico->email);
+
+	    printf("	Endereco: %s\n", medico->endereco);
+
+	    printf("	Data de nascimento: %s\n", medico->nascimento);
+
+		do{
+			printf("\n[1] Alterar Telefone\n");
+			printf("[2] Alterar Celular\n");
+			printf("[3] Alterar E-mail\n");
+			printf("[4] Alterar Endereco\n");
+			printf("[0] Fechar\n");
+			printf("	Opcao: ");
+			scanf("%d%*c", &opcao);
+
+			switch(opcao)
+			{
+				case 1:
+					printf("Novo Telefone: ");
+					scanf("%[^\n]%*c", alteracao);
+
+					if(validaDado(alteracao))
+						strcpy(medico->telefone, alteracao);
+
+					break;
+				case 2:
+					printf("Novo Celular: ");
+					scanf("%[^\n]%*c", alteracao);
+
+					if(validaDado(alteracao))
+						strcpy(medico->celular, alteracao);
+					break;
+				case 3:
+					printf("Novo E-mail: ");
+					scanf("%[^\n]%*c", alteracao);
+
+					if(alteracao[0])
+						strcpy(medico->email, alteracao);
+					break;
+				case 4:
+					printf("Novo Endereco: ");
+					scanf("%[^\n]%*c", alteracao);
+
+					if(alteracao[0])
+						strcpy(medico->endereco, alteracao);
+					break;	
+				default:
+					printf("Fechando\n");
+					break;
+			}
+			
+			alteraRegistro(dados, medico, posicao);
+		}while(opcao);
+
+	}
+}	

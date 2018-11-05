@@ -6,7 +6,7 @@
 
 int main()
 {	
-	int opcao;
+	int opcao, codigo, pos;
 	char arquivo[100];
 
 	FILE* registroArv = fopen("arvores.bin", "wb+");
@@ -40,11 +40,16 @@ int main()
 				leituraEmCMD(registroArv, registroDados);
 				break;
 			case 3:
-			//em construcao
+				alterar(registroArv, registroDados);
+				break;
 			case 4:
-				procuraCadastro(registroArv, registroDados);
-			case 5:
-			//em construcao
+				printf("Digite o codigo a ser pesquisado: ");
+       			scanf("%d", &codigo);
+				printMedico(procuraCadastro(registroArv, registroDados, codigo, &pos));
+				break;
+			case 5:	
+				remocao(registroArv);
+				break;
 			case 6:
 				imprimeRegistro(registroArv, registroDados);
 				break;
