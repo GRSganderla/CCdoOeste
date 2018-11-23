@@ -6,14 +6,14 @@
 #include "arquivo.h"
 
 ///
-/// \brief alfabetoCMP, compara se o terminal passado pertence ao alfabeto que o AFD lê
-/// \param afd, struct que mantém consigo o alfabeto a ser comparado
+/// \brief alfabetoCMP, compara se o terminal passado pertence ao alfabeto que o MT lê
+/// \param mt, struct que mantém consigo o alfabeto a ser comparado
 /// \param terminal, char terminal que vai ser comparado
 /// \return retorna 1 se pertence ao alfabeto e 0 se não pertence
-/// \pre afd não vazia
+/// \pre mt não vazia
 /// \post nenhuma
 ///
-int alfabetoCMP(AFD afd, char terminal);
+int alfabetoCMP(MT mt, char terminal);
 
 ///
 /// \brief fazerTransicao, funcao que busca em qual transição o terminal é lido e retorna o proximo estado
@@ -23,37 +23,37 @@ int alfabetoCMP(AFD afd, char terminal);
 /// \pre nenhuma
 /// \post nenhum
 ///
-Estado* fazerTransicao(Estado* atual, char terminal);
+Transicao* fazerTransicao(Estado* atual, char terminal);
 
 ///
 /// \brief ehFinal, compara os nomes do estado passado com o estado final
-/// \param afd, struct que contem os estados finais
+/// \param mt, struct que contem os estados finais
 /// \param atual, estado que se quer saber se é final ou não
 /// \return retorna 1 se o estado passado é o final ou retorna 0 se o estado não é o final
-/// \pre struct afd ter os estados finais guardados
+/// \pre struct MT ter os estados finais guardados
 /// \post nenhum
 ///
-int ehFinal(AFD* afd, Estado* atual);
+int ehFinal(MT* mt, Estado* atual);
 
 ///
 /// \brief verificaPalavra, verifica em ordem cada letra da passada e verifica se é possivel ser processada
-/// \param afd, struct que contem os estados, alfabetos e as transições de cada estado
-/// \param str, palavra a ser processada e verifica se é aceita pelo AFD
+/// \param mt, struct que contem os estados, alfabetos e as transições de cada estado
+/// \param str, palavra a ser processada e verifica se é aceita pelo MT
 /// \param atual, estado a qual vai verificar se ele le o terminal da primeira letra da palavra
-/// \return 1 se ela for aceita pelo AFD, ou seja, foi processada totalmente ou retorna 0 se não foi processada corretamente
-/// \pre afd ter sido inicializado
+/// \return 1 se ela for aceita pelo MT, ou seja, foi processada totalmente ou retorna 0 se não foi processada corretamente
+/// \pre mt ter sido inicializado
 /// \post nenhum
 ///
-int verificaPalavra(AFD afd, char str[], Estado* atual);
+int verificaPalavra(MT mt, char str[], Estado* atual, int pos);
 
 ///
-/// \brief aceitaOUnao, função que printa se a palavra é aceita ou não pelo AFD
-/// \param afd, struct que contém todos os dados para a verificação e processamento da palavra entrada
-/// \param str, palavra a ser processada pelo AFD
-/// \pre afd não tem estados e,ou, transições guardadas
+/// \brief aceitaOUnao, função que printa se a palavra é aceita ou não pelo MT
+/// \param mt, struct que contém todos os dados para a verificação e processamento da palavra entrada
+/// \param str, palavra a ser processada pelo MT
+/// \pre mt não tem estados e,ou, transições guardadas
 /// \post nenhuma
 ///
-void aceitaOUnao(AFD afd, char str[]);
+void aceitaOUnao(MT mt, char str[]);
 
 ///
 /// \brief etois, função que retorna a conversão de string para inteiro feito pela função atoi
@@ -63,23 +63,5 @@ void aceitaOUnao(AFD afd, char str[]);
 /// \post nenhum
 ///
 int etois(Estado *alvo);
-
-///
-/// \brief printaLinhas, printa as linhas da gramatica que o AFD faz
-/// \param afd, struct que guarda todas as informações para imprimir a gramatica
-/// \param nTerminal, vetor que contem o nome dos não terminais que serão imprimidos ex: S, A, B...
-/// \param atual, estado a qual vai ser verifica qual terminal ele lê e qual é o não terminal que ele corresponde
-/// \pre afd conter as informações necessarias e nTerminal não ser vazio
-/// \post nenhum
-///
-void printaLinhas(AFD* afd, char nTerminal[], Estado* atual);
-
-///
-/// \brief fazGramatica, determina qual vai ser o não terminal correspondente dos estados e manda imprimir as linhas de cada estado
-/// \param afd, struct que contem os estados e seus nomes que serão determinados os não terminais correspondentes
-/// \pre afd conter os estados e os nomes desses estados
-/// \post nenhuma
-///
-void fazGramatica(AFD* afd);
 
 #endif // GRAMATICA_H
