@@ -4,7 +4,7 @@
 #include<conio.h>
 #include<Windows.h>
 #include "design.h"
-float versao = 2.5;
+float versao = 3.0;
 
 int charToNum(char c)
 {

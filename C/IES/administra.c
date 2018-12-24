@@ -6,6 +6,29 @@
 #include <conio.h>
 int anoAtual = 2018;
 
+void fazEstacao(Estacao programa[])
+{
+	strcpy(programa[0].nomeEstacao,"Jovem Pan");
+	programa[0].frequencia = 93.3;
+	strcpy(programa[0].genero, "Pop-Rock");
+
+	strcpy(programa[1].nomeEstacao, "Itaipu");
+	programa[1].frequencia = 105.7;
+	strcpy(programa[1].genero, "Pop-Rock");
+	
+	strcpy(programa[2].nomeEstacao, "TransAmerica");
+	programa[2].frequencia = 104.5;
+	strcpy(programa[2].genero, "Pop-Rock");
+	
+	strcpy(programa[3].nomeEstacao, "WOODS");
+	programa[3].frequencia = 101.1;
+	strcpy(programa[3].genero, "Sertanejo");
+	
+	strcpy(programa[4].nomeEstacao, "Morumbi Foz");
+	programa[4].frequencia = 106.3;
+	strcpy(programa[4].genero, "Pop-Rock / Eletronica");
+}
+
 Playlist lerBiblio()
 {
 	Playlist first = inicializaPlaylist();
@@ -116,7 +139,213 @@ int cmp(Musica mus, Playlist* play)
 	return 0;
 }
 
-Playlist adicionaMusica(Playlist *play)
+void adicionaMusicaManual(Playlist *play)
+{
+	char escolha;
+	Musica aux;
+	int i;
+
+	for(i=0; i<MAX; i++){
+
+		if(play->musicas[i].ocupado == 0)
+		{
+
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                       Entre com o nome da musica                        :\n");
+			printf(":                                                                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                       Nome:                                             :\n");
+			printaInferior();
+			
+			gotoXY(30, 9);
+			
+			scanf("%[^\n]%*c", aux.tituloMus);
+			
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                 Entre com o nome do cantor da musica                    :\n");
+			printf(":                                                                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                 Nome:                                                   :\n");
+			printaInferior();
+			
+			gotoXY(24, 9);
+			
+			scanf("%[^\n]%*c", aux.cantor);
+	
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                  Entre com o nome do autor da musica                    :\n");
+			printf(":                                                                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                  Nome:                                                  :\n");
+			printaInferior();
+			
+			gotoXY(25, 9);
+			
+			scanf("%[^\n]%*c", aux.autorMus);
+
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                       Entre com o ano da musica                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                       Ano:                                              :\n");
+			printaInferior();
+			
+			gotoXY(29, 9);
+			
+			int anoAux;
+			scanf("%d%*c", &anoAux);
+			
+			if(anoAux <= anoAtual)
+				aux.ano = anoAux;
+			else
+			{
+				while(anoAux > anoAtual && anoAux != anoAtual)
+				{
+					printaSuperior();
+					printf(":                                                                         :\n");
+					printf(":                       Entre com o ano da musica valido                  :\n");
+					printf(":                                                                         :\n");
+					printf(":                                                                         :\n");
+					printf(":                       Ano:                                              :\n");
+					printaInferior();
+
+					gotoXY(29, 9);
+				
+					int anoAux;
+					scanf("%d%*c", &anoAux);
+				}
+
+				aux.ano = anoAux;
+			}
+			
+
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                      Entre com o genero da musica                       :\n");
+			printf(":                                                                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                      Genero:                                            :\n");
+			printaInferior();
+
+			gotoXY(31, 9);
+						
+			scanf("%[^\n]%*c", aux.genero);
+			
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                     Entre com a duracao da musica                       :\n");
+			printf(":                                                                         :\n");
+			printf(":                          Formato 99:99                                  :\n");
+			printf(":                                                                         :\n");
+			printf(":                     Duracao:                                            :\n");
+			printaInferior();
+
+			gotoXY(31, 10);
+			
+			int min, seg;
+			scanf("%d:%d%*c", &min, &seg);
+
+			while(seg >= 60)
+			{
+				seg -= 60;
+				min++;
+			}
+
+			aux.duracao.min = min;
+			aux.duracao.seg = seg;
+			
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                    Entre com a avaliacao da musica                      :\n");
+			printf(":                                                                         :\n");
+			printf(":                      	      De 0 a 5                                    :\n");
+			printf(":                                                                         :\n");
+			printf(":                    Avaliacao:                                           :\n");
+			printaInferior();
+			
+			gotoXY(32, 10);
+			int ava;						
+			scanf("%d%*c", &ava);
+
+			if(ava >= 0 && ava <= 5)
+				aux.avaliacao = ava;
+			else
+			{
+				while(ava < 0 || ava > 5)
+				{
+					printaSuperior();
+					printf(":                                                                         :\n");
+					printf(":                    Entre com a avaliacao valida                         :\n");
+					printf(":                                                                         :\n");
+					printf(":                            De 0 a 5                                     :\n");
+					printf(":                                                                         :\n");
+					printf(":                    Avaliacao:                                           :\n");
+					printaInferior();
+					
+					gotoXY(32, 10);					
+					scanf("%d%*c", &ava);
+				}
+
+				aux.avaliacao = ava;
+			}
+
+			if(cmp(aux, play))
+			{
+				printaSuperior();
+				printf(":                                                                         :\n");
+				printf(":                                                                         :\n");
+				printf(":                              Musica Duplicada                           :\n");
+				printf(":                                                                         :\n");
+				printf(":                                                                         :\n");
+				printaInferior();
+				getch();
+			}
+			else
+			{
+				play->musicas[i] = aux;
+			
+				play->quantMus++;
+
+				play->duracaoTotal.min += play->musicas[i].duracao.min;
+				play->duracaoTotal.seg += play->musicas[i].duracao.seg;
+
+				if(play->duracaoTotal.seg >= 60)
+				{
+					play->duracaoTotal.seg -= 60;
+					play->duracaoTotal.min++;
+				}
+
+				play->musicas[i].ocupado = 1;
+			}
+
+			printaSuperior();
+			printf(":                                                                         :\n");
+			printf(":                       Deseja continuar adicionando?                     :\n");
+			printf(":                                                                         :\n");
+			printf(":                             Sim(S)  |  Nao(N)                           :\n");
+			printf(":                                                                         :\n");
+			printf(":                                                                         :\n");
+			printf(":                             R:                                          :\n");
+			printaInferior();
+			
+			gotoXY(33, 11);
+						
+			char escolha;
+			scanf("%c%*c", &escolha);
+			
+			if(escolha == 'N' || escolha == 'n'){
+			
+				break;
+			}
+		} 
+	}
+}
+
+void adicionaMusicaDaBiblio(Playlist *play)
 {
 	char escolha;
 	Musica aux;
@@ -202,6 +431,48 @@ Playlist adicionaMusica(Playlist *play)
 	}
 }
 
+void adicionaMusica(Playlist* play)
+{
+	int continua = 1;
+	while(continua)
+	{
+		int i = 0;
+		
+		printaSuperior();
+		printf(":                       Escolha uma das opcoes:                           :\n");
+		printf(":                                                                         :\n");
+		printf(":                   [1] - Adicionar da Biblioteca                         :\n");
+		printf(":                   [2] - Adicionar Manualmente uma musica                :\n");
+		printf(":                   [0] - Voltar                                          :\n");
+		printf(":                                                                         :\n");
+		printf(":                   Opcao:                                                :\n");
+		printaInferior();
+		
+		gotoXY(27, 11);
+	
+		char c = getch();
+		int escolha = charToNum(c);
+		
+		switch(escolha){
+
+			case 1: 
+				adicionaMusicaDaBiblio(play); 
+				break;
+				
+			case 2:
+				adicionaMusicaManual(play);
+				break;
+			default:
+				break;
+		}
+
+		if(escolha == 0)
+			break;
+
+		continua = escolha;
+	}
+}
+
 Duracao inicializaDur()
 {
 	Duracao duracao;
@@ -224,6 +495,17 @@ Musica inicializaMusica()
 	nova.duracao = inicializaDur();
 	nova.avaliacao = 0;
 	nova.ocupado = 0;
+
+	return nova;
+}
+
+Estacao inicializaRadio()
+{
+	Estacao nova;
+
+	nova.nomeEstacao[0] = '\0';
+	nova.frequencia = 0;
+	nova.genero[0] = '\0';
 
 	return nova;
 }
@@ -251,10 +533,13 @@ Menu* inicializaMenu()
 	Menu *novo = (Menu*)malloc(sizeof(Menu));
 	int i = 0;
 
-	for(i = 0; i < 100; i++)
+	for(i = 0; i < 50; i++)
 		novo->play[i] = inicializaPlaylist();
 
 	novo->quantPlay = 0;
+
+	for(i = 0; i < 5; i++)
+		novo->radio[i] = inicializaRadio();
 
 	return novo;
 }
@@ -277,8 +562,8 @@ void adicionaEremove(Menu *menu)
 		printaSuperior();
 		printf(":                       Escolha uma das opcoes:                           :\n");
 		printf(":                                                                         :\n");
-		printf(":                   [1] - Adicionar musica a playlist                     :\n");
-		printf(":                   [2] - Remover musica a playlist                       :\n");
+		printf(":                   [1] - Adicionar musica na playlist                    :\n");
+		printf(":                   [2] - Remover musica da playlist                      :\n");
 		printf(":                   [0] - Voltar                                          :\n");
 		printf(":                                                                         :\n");
 		printf(":                   Opcao:                                                :\n");

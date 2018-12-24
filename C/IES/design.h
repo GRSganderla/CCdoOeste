@@ -30,9 +30,17 @@ typedef struct playlist{
 	int ativa;
 }Playlist;
 
+typedef struct estacao
+{
+	char nomeEstacao[100];
+	float frequencia;
+	char genero[30];
+}Estacao;
+
 typedef struct menu
 {
-	Playlist play[100];
+	Playlist play[50];
+	Estacao radio[5];
 	int quantPlay;
 }Menu;
 

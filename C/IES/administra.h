@@ -5,11 +5,17 @@
 #include <conio.h>
 #include "design.h"
 
+void fazEstacao(Estacao programa[]);
+
 void removeMusica(Playlist* play);
 
 int cmp(Musica mus, Playlist* play);
 
-Playlist adicionaMusica(Playlist *play);
+void adicionaMusica(Playlist *play);
+
+void adicionaMusicaManual(Playlist *play);
+
+void adicionaMusicaDaBiblio(Playlist *play);
 
 Duracao inicializaDur();
 

@@ -1,0 +1,6 @@
+Nome do Elemento = Litio
+Numero Atomico = 1
+Massa do Elemento = 1.200000
+Nome do Elemento = Litio
+Numero Atomico = 2
+Massa do Elemento = 1.420000

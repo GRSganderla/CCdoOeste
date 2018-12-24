@@ -1,4 +1,8 @@
-C:\Users\guilh\Documents\GitHub\CCdoOeste\C\AED\Trabalho 4\busca\arvores.txt
-C:\Users\guilh\Documents\GitHub\CCdoOeste\C\AED\Trabalho 4\busca\conto.txt
-C:\Users\guilh\Documents\GitHub\CCdoOeste\C\AED\Trabalho 4\busca\divisao.txt
-C:\Users\guilh\Documents\GitHub\CCdoOeste\C\AED\Trabalho 4\busca\ipe.txt
+musica/elisregina.txt
+musica/milton.txt
+literatura/ferreiragullar.txt
+literatura/rubemalves.txt
+objaprend/oa.txt
+objaprend/oa2.txt
+objaprend/oa3.txt
+sti/sti1.txt
