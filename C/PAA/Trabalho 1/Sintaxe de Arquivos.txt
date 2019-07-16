@@ -1,0 +1,21 @@
+Para os arquivos de entrada para a multiplicação de matrizes a sintaxe definida foi de:
+ - Primeira linha se tem a ordem n das matrizes A e B, colocando "n = t", t sendo a ordem das matrizes;
+ - A partir da segunda linha se coloca os valores da matriz A, se coloca um espaço entre os números, sendo representado como uma matriz, uma linha do arquivo é uma linha da matriz;
+ - Assim que terminar os valores da matriz A, pode ser colocado os valores da matriz B.
+O programa lê n*n números e coloca eles na matriz A e assim faz de novo colocando n*n números na matriz B.
+Exemplo do arquivo:
+	n = 2 -> Ordem das matrizes 
+	32 21 -> Primeira linha da matriz A, com as duas colunas
+	64 92 -> Segunda    "    "    "   "   "   "  "     "
+	11 59 -> Primeira linha da matriz B, com as duas colunas
+	72 38 -> Segunda    "    "    "   "   "   "  "     "
+
+Para o arquivo de entrada para o problema da mochila a sintaxe foi:
+ - Primeira linha tem que colocar " W = x" sendo x o valor que quer de capacidade maxima da mochila;
+ - Segunda linha tem que colocar "n = t" sendo t o valor da quantidade de itens que vai ter no arquivo; 
+ - Partindo da terceira linha, se coloca primeiro o peso do item 1 e depois o valor do item 1, e a cada linha seguindo essa mesma sintaxe, peso e valor de um item.
+Exemplo do arquivo:
+	W = 10 -> Peso da mochila
+	n = 2  -> quantidade de itens
+	5 2    -> Peso e valor respectivamente do item 1
+	2 1    -> Peso e valor respectivamente do item 2
