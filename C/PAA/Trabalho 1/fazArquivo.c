@@ -10,32 +10,32 @@ int main(){
 
 	srand(time(NULL));
 
-	int n, limite;
-	scanf("%d", &n);
+	int n = 34, limite = 1, peso = (rand()*rand())%20000;
+	//scanf("%d", &n);
 
-	scanf("%d", &limite);
+	//scanf("%d", &limite);
 
+	fprintf(f, "W = %d\n", peso);
 	fprintf(f, "n = %d\n", n);
-	fprintf(f, "l = %d\n", limite);
 
 	for(int i = 0; i < n; i++){
 
-		for(int j = 0; j < n; j++){
+		for(int j = 0; j < 2; j++){
 
-			fprintf(f, "%d ", (rand()*rand())%100);
+			fprintf(f, "%d ", (rand()*rand())%peso);
 		}
 		fprintf(f, "\n");
 	}
 
-	for(int i = 0; i < n; i++){
+	/*for(int i = 0; i < n; i++){
 
 		for(int j = 0; j < n; j++){
 
-			fprintf(f, "%d ", (rand()*rand())%100);
+			fprintf(f, "%d ", (rand()*rand())%100000);
 		}
 		fprintf(f, "\n");
 	}
-
+*/
 	fclose(f);
 	return 0;
 }

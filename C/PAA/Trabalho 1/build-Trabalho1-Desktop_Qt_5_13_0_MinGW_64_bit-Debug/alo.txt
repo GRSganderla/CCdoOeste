@@ -1,0 +1,26 @@
+pr1.txt   -> 45.2080
+pr2.txt   -> 43.4690
+pd-i1.txt -> 0.4770
+pd-i2.txt -> 1.2190
+pd-i3.txt -> 1.4360
+pd6.txt   -> 57.7960
+
+backtracking
+back-i1.txt -> 0.071s - 0.070s - 0.075s
+back-i2.txt -> 208.693s - 208.376s - 209.780s
+back-i3.txt -> 772.561s - 765.774s - 764.096s
+
+prog. dinamica
+pdin-i1.txt -> 1.328s - 4.876s -  1.052s
+pdin-i2.txt -> 85.964 - 44.161s - 51.089s
+pdin-i3.txt -> 45.509s - 57.205s - 52.134s
+
+naive C = AxB
+n_1000nxn.txt -> 5.844s   - 10.375s  - 7.640s
+n_2500nxn.txt -> 189.676s - 188.462s - 190.048s
+n_3584nxn.txt -> 489.945s - 585.663s - 514.374s
+
+strassen C = AxB
+n_1024nxn.txt -> 172.201s - 171.657s - 168.316s
+n_2048nxn.txt -> 1175.276s - 1170.623s - 1233.013s
+n_512nxn.txt -> 26.330s - 25.067s - 23.477s
