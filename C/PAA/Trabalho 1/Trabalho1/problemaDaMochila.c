@@ -20,7 +20,7 @@ int pesos(int n, int *temp, Objeto* ob, int W){
 
     for(int i = 0; i < n; i++){
 
-        if(resultado < W)
+        if(resultado < W && ((resultado += temp[i] * ob[i].w) < W))
             resultado += temp[i] * ob[i].w;
         else
             return 0;
@@ -279,12 +279,12 @@ void mochila(){
 		    
 		    printf("\n");
             //mostra cada um dos itens
-            /*for(i = 0; i < n[k]; ++i){
+            for(i = 0; i < n[k]; ++i){
 
 		    	printf("Objeto[%d]: ", i);
                 printf("\tPeso: %-7d; Valor: %d;\n", ob[i].w, ob[i].c);
 		    }
-            printf("\n");*/
+            printf("\n");
 
             //pega o tempo antes do algoritmo
             clock_t tempo;
@@ -304,7 +304,7 @@ void mochila(){
             tempo = clock() - tempo;
             tempoGasto[k] = ((double)tempo)/CLOCKS_PER_SEC;
 
-            /*printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+            printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
 
             printf("Vetor solucao = x: {");
             //imprime o vetor solução
@@ -312,15 +312,15 @@ void mochila(){
 
 				printf(" %d ", x[i]);
 			}
-            printf("}\n");*/
-
+            printf("}\n");
+            printf("Capacidade da Mochila = %d\n", W);
 			printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
             printf("Valor maximo atingido = %d\n", valor_final);
             printf("Peso total atingido = %d\n", peso_final);
 			printf("+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-\n\n");
 
 
-            /*if(opcao == 1){
+            if(opcao == 1){
 
                 printf("Matriz dos valores: \n");
                 for(int i = 0; i < n[k]+1; i++){
@@ -333,7 +333,7 @@ void mochila(){
                     printf("|\n");
                 }
                 printf("\n");
-            }*/
+            }
 
             printf("Tempo de execucao foi de %lf s\n", tempoGasto[k]);
             getchar();

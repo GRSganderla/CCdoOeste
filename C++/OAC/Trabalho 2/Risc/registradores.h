@@ -1,17 +1,40 @@
 #ifndef REGISTRADORES_H
 #define REGISTRADORES_H
+#include <string>
+#include "control.h"
+#include "novapc.h"
 
+using namespace std;
 
 class Registradores
-{                              // Endereços
-    int zero = 0, at;          // 0, 1
-    int v[2], a[4];            // 2, 3, 4, 5, 6, 7
-    int t[10];                 // 8, 9, 10, 11, 12, 13, 14, 15, 24, 25
-    int s[8];                  // 16, 17, 18, 19, 20, 21, 22, 23
-    int k[2], gp, sp, fp, ra;  // 26, 27, 28, 29, 30, 31
+{
+    unsigned int Reg[32];
+
+    unsigned int ReadReg1;
+    unsigned int ReadReg2;
+    unsigned int WriteReg;
+    unsigned int WriteData;
+
+    unsigned int ReadData1;
+    unsigned int ReadData2;
+
+    bool RegWrite;
 
 public:
     Registradores();
+
+    void show();
+    void set_regs(unsigned int r1, unsigned int r2, unsigned int w);
+    unsigned int get_Reg(int endereco);
+    static string get_nome(unsigned int endereco);
+    void set_WriteData(unsigned int data);
+    void set_RegWrite(bool reg);
+    unsigned int executa_inst(Control *con, string inst, NovaPc* pc);
+    void write_Reg();
+    void update();
+    unsigned int get_ReadData2();
+
+    ~Registradores();
 };
 
 #endif // REGISTRADORES_H
