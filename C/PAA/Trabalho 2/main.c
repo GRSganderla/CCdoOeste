@@ -3,10 +3,17 @@
 #include<string.h>
 
 typedef struct label {
-    char nome[200];
+    char *nome;
 } Label;
 
-char nomeArq[] = "grafoOrientado.txt";
+typedef struct grafo{
+    int **grafo, vertices, nNomeado;
+    float peso,  **pesos;
+    char linha[200], orientado[4], label[200];
+    Label **rotulos, *nomes;
+} Grafo;
+
+char nomeArq[] = "grafoNOrientado.txt";
 
 int ** initGrafo(int v){
 
@@ -47,6 +54,10 @@ Label** initLabels(int v){
     for(int i = 0; i < v; i++){
 
         lab[i] = (Label*)malloc(sizeof(Label)*v);
+
+        for(int j = 0; j < v; j++){
+            lab[i][j].nome = (char *)malloc(sizeof(char)*v);
+        }
     }
 
     return lab;
@@ -79,26 +90,37 @@ void printLabel(Label** lab, int v){
     }
 }
 
-void fazArquivoDot(int **grafo, float** pesos, Label** labels, int nNomeado, int vertices, char orientado[]){
+void fazArquivoDot(int **grafo, float** pesos, Label** labels, Label *nomes, int nNomeado, int vertices, char orientado[]){
 
     FILE* out = fopen("out1.dot", "w");
-    char type[3] = { };
+    char type[3];
 
     if(strcmp(orientado, "sim") == 0){
-        fprintf(out, "digraph {\n");
+        fprintf(out, "strict digraph {\n");
         strcpy(type, "->");
     }
     else{
-        fprintf(out, "graph {\n");
+        fprintf(out, "strict graph {\n");
         strcpy(type, "--");
     }
 
-    fprintf(out, "rankdir=LR;");
+    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\n");
     if(nNomeado == 1){
         for(int i = 0; i < vertices; i++){
             for(int j = 0; j < vertices; j++){
                 if(grafo[i][j] == 1){
-                    fprintf(out, "\t%d %s %d[headlabel=\"%s\",label=\"%s\"];\n", i, type, j, labels[i][j].nome, pesos[i][j]);
+                    fprintf(out, "\t%d %s %d[label=\"%.2f\",labelfontcolor=black];\n", i, type, j, pesos[i][j]);
+                    fprintf(out, "\t%d %s %d[taillabel=\"%s\",labeldistance=9,labelfontcolor=blue,labelangle=-5];\n", i, type, j, labels[i][j].nome);
+                }
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < vertices; i++){
+            for(int j = 0; j < vertices; j++){
+                if(grafo[i][j] == 1){
+                    fprintf(out, "\t\"%s\" %s \"%s\"[label=\"%.2f\",labelfontcolor=black];\n", nomes[i], type, nomes[j], pesos[i][j]);
+                    fprintf(out, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=9,labelfontcolor=blue,labelangle=-5];\n", nomes[i], type, nomes[j], labels[i][j].nome);
                 }
             }
         }
@@ -111,51 +133,58 @@ int main(){
 
     int **grafo, vertices, row, col, nNomeado;
     float peso,  **pesos;
-    char linha[200], orientado[4], label[200];
-    Label **labels;
+    char linha[200], orientado[4], aux[500];
+    Label **labels, *nomes;
     FILE* arq = fopen(nomeArq, "r+");
 
     while(fgets(linha, 200, arq)){
 
-        printf("Lido: %s\n", linha);
-
         if(strncmp(linha, "orientado", 9) == 0){
-
-            printf("orientado? ");
             sscanf(linha, "orientado=%[^\n]%*c", orientado);
-            printf("%s\n", orientado);
         }
         else if(linha[0] == 'V'){
 
-            printf("vertices? ");
+            if(linha[2] == '{'){
 
-            if(linha[3] == '{'){
-                //bla
+                sscanf(linha, "V={ %[^}] }", aux);
+                nomes = (Label*)malloc(sizeof(Label)*10);
+                for(int j = 0; j < 10; j++) nomes[j].nome = (char*)malloc(sizeof(char)*300);
+                int percorre, i;
+                for(percorre = 0, i = 0; percorre < strlen(aux); percorre += strlen(nomes[i].nome)+1, i++)
+                {
+                    sscanf(aux+percorre, "%[^,],", nomes[i].nome);
+                    if(i >= 10){
+                        nomes = realloc(nomes, i);
+                    }
+                }
+                vertices = i;
             }
             else{
                 nNomeado = 1;
                 sscanf(linha, "V=%d%*c", &vertices);
-                printf("%d\n", vertices);
-                grafo = initGrafo(vertices);
-                pesos = initPesos(vertices);
-                labels = initLabels(vertices);
             }
+
+            grafo = initGrafo(vertices);
+            pesos = initPesos(vertices);
+            labels = initLabels(vertices);
         }
         else{
 
-            sscanf(linha, "(%d,%d):%f,%{^\n]%*c", &row, &col, &peso, label);
+            sscanf(linha, "(%d,%d):%f,%[^\n]%*c", &row, &col, &peso, aux);
+            printf("[%f]", peso);
             grafo[row][col] = 1;
             if(strcmp(orientado, "nao") == 0) grafo[col][row] = 1;
             pesos[row][col] = peso;
-            strcpy(labels[row][col].nome, label);
+            printf("{%f}", pesos[row][col]);
+            strcpy(labels[row][col].nome, aux);
         }
     }
 
-    printGrafo(grafo, vertices);
-    printPesos(pesos, vertices);
-    printLabel(labels, vertices);
+    //printGrafo(grafo, vertices);
+    //printPesos(pesos, vertices);
+    //printLabel(labels, vertices);
 
-    fazArquivoDot(grafo, pesos, labels, nNomeado, vertices, orientado);
+    fazArquivoDot(grafo, pesos, labels, nomes, nNomeado, vertices, orientado);
 
     return 0;
 }

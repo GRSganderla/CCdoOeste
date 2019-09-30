@@ -1,5 +1,5 @@
 orientado=nao
-V={Brasilia,Sao Paulo,Foz do Iguaçu,Rio de Janeiro,Curitiba,Porto Alegre,Belo Horizonte}
+V={Brasilia,Sao Paulo,Foz do Iguacu,Rio de Janeiro,Curitiba,Porto Alegre,Belo Horizonte}
 (0,1):1008,BR-050
 (0,2):1240
 (0,3):1166,BR-040
