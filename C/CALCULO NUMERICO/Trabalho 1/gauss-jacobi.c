@@ -104,7 +104,7 @@ void imprimeCabecalho(double xs[][MAXI], int n)
 	printf("\n--------|");
 
 	for(i = 0; i < n*2; i++)
-		printf("-----------------------|");
+		printf("---------------|");
 
 	printf("\n 0\t|");
 
