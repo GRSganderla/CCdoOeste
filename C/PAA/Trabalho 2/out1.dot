@@ -1,44 +1,14 @@
-strict graph {
+strict digraph {
 	graph [pad="0.5", nodesep="1", ranksep="2"]
 	rankdir=LR;
-	"Brasilia" -- "Sao Paulo"[label="1008.00",labelfontcolor=black];
-	"Brasilia" -- "Sao Paulo"[taillabel="BR-050",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Brasilia" -- "Foz do Iguacu"[label="1240.00",labelfontcolor=black];
-	"Brasilia" -- "Foz do Iguacu"[taillabel="BR-050",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Brasilia" -- "Rio de Janeiro"[label="1166.00",labelfontcolor=black];
-	"Brasilia" -- "Rio de Janeiro"[taillabel="BR-040",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Sao Paulo" -- "Brasilia"[label="0.00",labelfontcolor=black];
-	"Sao Paulo" -- "Brasilia"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Sao Paulo" -- "Foz do Iguacu"[label="0.00",labelfontcolor=black];
-	"Sao Paulo" -- "Foz do Iguacu"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Sao Paulo" -- "Rio de Janeiro"[label="434.00",labelfontcolor=black];
-	"Sao Paulo" -- "Rio de Janeiro"[taillabel="Via Dutra",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Sao Paulo" -- "Belo Horizonte"[label="0.00",labelfontcolor=black];
-	"Sao Paulo" -- "Belo Horizonte"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Foz do Iguacu" -- "Brasilia"[label="0.00",labelfontcolor=black];
-	"Foz do Iguacu" -- "Brasilia"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Foz do Iguacu" -- "Sao Paulo"[label="1062.00",labelfontcolor=black];
-	"Foz do Iguacu" -- "Sao Paulo"[taillabel="BR-040",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Foz do Iguacu" -- "Rio de Janeiro"[label="1485.00",labelfontcolor=black];
-	"Foz do Iguacu" -- "Rio de Janeiro"[taillabel="BR-040",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Foz do Iguacu" -- "Curitiba"[label="636.00",labelfontcolor=black];
-	"Foz do Iguacu" -- "Curitiba"[taillabel="BR-277",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Rio de Janeiro" -- "Brasilia"[label="0.00",labelfontcolor=black];
-	"Rio de Janeiro" -- "Brasilia"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Rio de Janeiro" -- "Sao Paulo"[label="0.00",labelfontcolor=black];
-	"Rio de Janeiro" -- "Sao Paulo"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Rio de Janeiro" -- "Foz do Iguacu"[label="0.00",labelfontcolor=black];
-	"Rio de Janeiro" -- "Foz do Iguacu"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Rio de Janeiro" -- "Porto Alegre"[label="0.00",labelfontcolor=black];
-	"Rio de Janeiro" -- "Porto Alegre"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Rio de Janeiro" -- "Belo Horizonte"[label="441.00",labelfontcolor=black];
-	"Rio de Janeiro" -- "Belo Horizonte"[taillabel="Via Dutra",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Curitiba" -- "Foz do Iguacu"[label="0.00",labelfontcolor=black];
-	"Curitiba" -- "Foz do Iguacu"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Porto Alegre" -- "Rio de Janeiro"[label="1569.00",labelfontcolor=black];
-	"Porto Alegre" -- "Rio de Janeiro"[taillabel="BR-101",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Belo Horizonte" -- "Sao Paulo"[label="586.00",labelfontcolor=black];
-	"Belo Horizonte" -- "Sao Paulo"[taillabel="BR-381",labeldistance=9,labelfontcolor=blue,labelangle=-5];
-	"Belo Horizonte" -- "Rio de Janeiro"[label="0.00",labelfontcolor=black];
-	"Belo Horizonte" -- "Rio de Janeiro"[taillabel="",labeldistance=9,labelfontcolor=blue,labelangle=-5];
+	0 -> 1[label="11",labelfontcolor=black];
+	0 -> 1[taillabel="a",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	1 -> 3[label="-5",labelfontcolor=black];
+	1 -> 3[taillabel="c",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	2 -> 4[label="7",labelfontcolor=black];
+	2 -> 4[taillabel="b",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	3 -> 2[label="8",labelfontcolor=black];
+	3 -> 2[taillabel="e",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	4 -> 2[label="19",labelfontcolor=black];
+	4 -> 2[taillabel="d",labeldistance=8,labelfontcolor=blue,labelangle=-5];
 }
