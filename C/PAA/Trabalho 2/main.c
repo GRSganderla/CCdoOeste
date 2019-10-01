@@ -6,23 +6,26 @@
 
 int main(){
 
-    char nomeArq[200];
+    char nomeArq[200], dot[200];
 
-    printf("Entre com o arquivo de entrada: ");
-    scanf("%s", nomeArq);
+    system("clear");
+
+    printf("Entre com o arquivo de entrada (sem .txt): ");
+    scanf("%s%*c", nomeArq);
+    strcat(nomeArq, ".txt");
 
     FILE* in = fopen(nomeArq, "r+");
 
-    if(in == NULL){
+    while(in == NULL){
+
         printf("Entre com um arquivo valido!\n");
+        printf("Entre com o arquivo de entrada Valido (sem .txt): ");
+        scanf("%s%*c", nomeArq);
+        strcat(nomeArq, ".txt\n");
+        in = fopen(nomeArq, "r+");
     }
 
-    printf("Entre com o arquivo de saida: ");
-    scanf("%s", nomeArq);
-
-    FILE* out = fopen(nomeArq, "w+");
-
-    leArquivo(in, out);
+    leArquivo(in);
 
     return 0;
 }

@@ -5,7 +5,7 @@
 #include<stdlib.h>
 #include "grafo.h"
 
-void leArquivo(FILE* in, FILE* out);
+void leArquivo(FILE* in);
 
 void fazArquivoDot(Grafo* grf, FILE* out);
 

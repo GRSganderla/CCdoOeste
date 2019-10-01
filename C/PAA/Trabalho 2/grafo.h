@@ -6,7 +6,7 @@
 #include<string.h>
 
 typedef struct label {
-    char *nome;
+    char nome[100];
 } Label;
 
 typedef struct grafo{
@@ -15,7 +15,7 @@ typedef struct grafo{
     char orientado[4];
 } Grafo;
 
-Grafo* initGrafo(int vertices, char orientado[], char **nomes, int EhRotulado);
+Grafo* initGrafo(char orientado[]);
 
 Label** initLabels(int v);
 

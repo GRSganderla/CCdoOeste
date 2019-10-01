@@ -2,11 +2,12 @@
 #include<stdlib.h>
 #include<string.h>
 
+#include "algoritmos.h"
 #include "arquivo.h"
 
-void fazArquivoDot(Grafo* grf, FILE* out){
+void fazArquivoAlg(Grafo* grf, FILE* out, int** res){
 
-    char type[3];
+    char type[4];
 
     if(strcmp(grf->orientado, "sim") == 0){
         fprintf(out, "strict digraph {\n");
@@ -17,7 +18,63 @@ void fazArquivoDot(Grafo* grf, FILE* out){
         strcpy(type, "--");
     }
 
-    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\n");
+    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
+    if(grf->EhRotulado == 0){
+
+        for(int i = 0; i < grf->nVertices; i++){
+            for(int j = 0; j < grf->nVertices; j++){
+
+                if(res[i][j] == 1){
+                    fprintf(out, "\t%d %s %d[color=red];\n", i, type, j);
+                }
+
+                if(grf->adjacente[i][j] == 1){
+                    fprintf(out, "\t%d %s %d[label=\"%d\",labelfontcolor=black];\n", i, type, j, grf->pesos[i][j]);
+                    fprintf(out, "\t%d %s %d[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", i, type, j, grf->rotulos[i][j].nome);
+                }
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < grf->nVertices; i++){
+
+            fprintf(out, "\t\"%s\" [shape=box];\n", grf->nomes[i].nome);
+        }
+        for(int i = 0; i < grf->nVertices; i++){
+            for(int j = 0; j < grf->nVertices; j++){
+
+                if(res[i][j] == 1){
+                    fprintf(out, "\t\"%s\" %s \"%s\"[color=red];\n", grf->nomes[i].nome, type, grf->nomes[j].nome);
+                }
+
+                if(grf->adjacente[i][j] == 1){
+                    
+                    fprintf(out, "\n");
+                    fprintf(out, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
+                    fprintf(out, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome);
+
+                }
+            }
+        }
+    }
+
+    fprintf(out, "}");
+}
+
+void fazArquivoDot(Grafo* grf, FILE* out){
+
+    char type[4];
+
+    if(strcmp(grf->orientado, "sim") == 0){
+        fprintf(out, "strict digraph {\n");
+        strcpy(type, "->");
+    }
+    else{
+        fprintf(out, "strict graph {\n");
+        strcpy(type, "--");
+    }
+
+    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
     if(grf->EhRotulado == 0){
         for(int i = 0; i < grf->nVertices; i++){
             for(int j = 0; j < grf->nVertices; j++){
@@ -30,14 +87,17 @@ void fazArquivoDot(Grafo* grf, FILE* out){
     }
     else{
         for(int i = 0; i < grf->nVertices; i++){
+
+            fprintf(out, "\t\"%s\" [shape=box];\n", grf->nomes[i].nome);
+        }
+        for(int i = 0; i < grf->nVertices; i++){
             for(int j = 0; j < grf->nVertices; j++){
-                printf("%d %d", i, j);
                 if(grf->adjacente[i][j] == 1){
-                    printf("I: %d J: %d nomeI: %s nomeJ: %s label: %d\n", i, j, grf->nomes[i].nome, grf->nomes[j].nome, grf->pesos[i][j]);
+                    
+                    fprintf(out, "\n");
                     fprintf(out, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
-                    printf("I: %d J: %d nomeI: %s nomeJ: %s label: %s\n", i, j, grf->nomes[i].nome, grf->nomes[j].nome, grf->rotulos[i][j].nome);
                     fprintf(out, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome);
-                    printf("BYE\n");
+
                 }
             }
         }
@@ -46,12 +106,24 @@ void fazArquivoDot(Grafo* grf, FILE* out){
     fprintf(out, "}");
 }
 
-void leArquivo(FILE* in, FILE* out){
+int countVirgula(char *nome){
+
+    int i = 0, count = 0;
+
+    while(nome[i] != '\0'){
+        if(nome[i] == ',')
+            count++;
+        i++;
+    }
+
+    return count+1;
+}
+
+void leArquivo(FILE* in){
 
     Grafo* grf;
-    char **nomes;
     char linha[500], aux[300], orientado[3];
-    int peso, vertices, row, col, EhRotulado;
+    int row, col, peso;
 
     while(fgets(linha, 500, in)){
 
@@ -60,54 +132,87 @@ void leArquivo(FILE* in, FILE* out){
 
         if(strncmp(linha, "orientado", 9) == 0){
             sscanf(linha, "orientado=%[^\n]%*c", orientado);
+            grf = initGrafo(orientado);
         }
         else if(linha[0] == 'V'){
 
             if(linha[2] == '{'){
 
-                EhRotulado = 1;
-                sscanf(linha, "V={ %[^}] }", aux);
-                nomes = (char**)malloc(sizeof(char*)*50);
-                
-                for(int j = 0; j < 10; j++) nomes[j] = (char*)malloc(sizeof(char)*100);
-                int percorre, i, atual = 10;
-                
-                for(percorre = 0, i = 0; percorre < strlen(aux); percorre += strlen(nomes[i])+1, i++)
-                {
-                    sscanf(aux+percorre, "%[^,],", nomes[i]);
-                }
+                grf->EhRotulado = 1;
 
-                nomes = realloc(nomes, i);
-                vertices = i;
+                sscanf(linha, "V={ %[^}] }", aux);
+                strcat(aux, "\n");
+
+                grf->nVertices = countVirgula(aux);
+
+                grf->nomes = (Label*)malloc(sizeof(Label)*grf->nVertices);
+                
+                int percorre, i;
+                
+                for(percorre = 0, i = 0; percorre < strlen(aux) && i < grf->nVertices; percorre += strlen(grf->nomes[i].nome)+1, i++)
+                {
+                    sscanf(aux+percorre, "%[^,],", grf->nomes[i].nome);
+                    
+                    strtok(grf->nomes[i].nome, "\n");
+                }
             }
             else{
-                EhRotulado = 0;
-                sscanf(linha, "V=%d%*c", &vertices);
+                grf->EhRotulado = 0;
+                sscanf(linha, "V=%d%*c", &grf->nVertices);
             }
 
-            grf = initGrafo(vertices, orientado, nomes, EhRotulado);
+            grf->pesos = init(grf->nVertices);
+            grf->adjacente = init(grf->nVertices);
+            grf->rotulos = initLabels(grf->nVertices);
         }
         else{
 
             int percorre;
             sscanf(linha, "(%d,%d):%d%n", &row, &col, &peso, &percorre);
-            strcpy(grf->rotulos[row][col].nome, " ");
 
-            //printf("ALO: %s\n", grf->rotulos[row][col].nome);
-            if(linha[percorre] == ','){
-                printf("ALO");
-                sscanf(linha+percorre, ",%[^\n]%*c", aux);
-                strcpy(grf->rotulos[row][col].nome, aux);
+            if((row >= 0 && row < grf->nVertices) && (col >= 0 && col < grf->nVertices))
+            {
+                strcpy(grf->rotulos[row][col].nome, " ");
+
+                if(linha[percorre] == ','){
+                    sscanf(linha+percorre, ",%[^\n]%*c", aux);
+                    strcpy(grf->rotulos[row][col].nome, aux);
+                }
+
+                grf->adjacente[row][col] = 1;
+                grf->pesos[row][col] = peso;
             }
-
-            grf->adjacente[row][col] = 1;
-            //if(strcmp(grf->orientado, "nao") == 0) grf->adjacente[col][row] = 1;
-            grf->pesos[row][col] = peso;
-            
-            printf("I: %d J: %d nomeI: %s nomeJ: %s labelA: %d", row, col, grf->nomes[row].nome, grf->nomes[col].nome, grf->pesos[row][col]);
-            printf("labelB: %s\n", grf->rotulos[row][col].nome);
         }
     }
 
+    char nomeArq[200], dot[200];
+
+    printf("Entre com o arquivo de saida (sem .dot): ");
+    scanf("%s%*c", nomeArq);
+    strcpy(dot, nomeArq);
+
+    strcat(dot, ".dot");
+
+    FILE* out = fopen(dot, "w+");
+
     fazArquivoDot(grf, out);
+
+    strcat(nomeArq, "busca.dot");
+
+    FILE* busca = fopen(nomeArq, "w+");
+
+    int **res = buscaEmProfundidade(grf, 0);
+
+    for(int i = 0; i < grf->nVertices; i++){
+
+        for(int j = 0; j < grf->nVertices; j++){
+
+            if(res[i][j] == 1){
+
+                printf("%d -> %d\n", i, j);
+            }
+        }
+    }
+
+    fazArquivoAlg(grf, busca, res);
 }
