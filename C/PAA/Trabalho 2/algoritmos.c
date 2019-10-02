@@ -1,11 +1,30 @@
 #include "algoritmos.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 
 int timestamp;
 
-void visita_buscaProf(int vertice, Profundidade* busca, int n, int **ordem, int index){
+const char *algoritmos[] = {
+    "Busca em Profundidade", 
+    "Busca em Largura",
+    "Bellman-Ford",
+    "Kruskal",
+    "Prim",
+    "Algoritmo de Ford-Fulkerson",
+};
+
+const char *algoritmosDot[] = {
+    "BuscaProfundidade.dot", 
+    "BuscaLargura.dot",
+    "Bellman-Ford.dot",
+    "Kruskal.dot",
+    "Prim.dot",
+    "FordFulkerson.dot",
+};
+
+void visita_buscaProf(int vertice, Profundidade* busca, int n, int **ordem){
 
     busca[vertice].cor = 'C';
     timestamp++;
@@ -15,9 +34,9 @@ void visita_buscaProf(int vertice, Profundidade* busca, int n, int **ordem, int 
 
         if(busca[vertice].adj[i] == 1 && busca[i].cor == 'B'){
 
-            ordem[index][i] = 1;
+            ordem[vertice][i] = 1;
             busca[i].pred = vertice;
-            visita_buscaProf(i, busca, n, ordem, i);
+            visita_buscaProf(i, busca, n, ordem);
         }
     }
 
@@ -43,20 +62,104 @@ int** buscaEmProfundidade(Grafo* grf, int inicial){
     }
 
     timestamp = 0;
-    int atual = inicial, **ordem = init(grf->nVertices), i = 0;
+    int **ordem = init(grf->nVertices), i = 0;
 
-    while(atual < grf->nVertices){
+    if(busca[inicial].cor == 'B'){
 
-        if(busca[atual].cor == 'B'){
-            
-            visita_buscaProf(atual, busca, grf->nVertices, ordem, i);
-            if(atual == inicial) atual = 0;
-        }
-        else{
+        visita_buscaProf(inicial, busca, grf->nVertices, ordem);
 
-            atual++;
+    }
+
+    for(int i = 0; i < grf->nVertices; i++){
+
+        if(busca[i].cor == 'B'){
+
+            visita_buscaProf(i, busca, grf->nVertices, ordem);
+
         }
     }
 
     return ordem;
+}
+
+void beginBuscaProf(Grafo* g, char nomeArq[]){
+
+    int vertice;
+    int **res;
+
+    FILE* f = fopen(nomeArq, "w+");
+
+    system("clear");
+    printf("Busca em Profundidade\n");
+
+    printf("Vertices={");
+    for(int i = 0; i < g->nVertices; i++){
+
+        printf(" %d", i);
+        if(g->EhRotulado){
+            printf(": %s", g->nomes[i]);
+        }
+
+        (i < g->nVertices-1)? printf(","): printf("}\n");
+    }
+
+    printf("Entre com o vertice de origem: ");
+    scanf("%d%*c", &vertice);
+
+    res = buscaEmProfundidade(g, vertice);
+    
+    fazArquivoAlg(g, f, res);
+}
+
+void menu(Grafo* g, char nomeArq[]){
+
+    int opcao;
+
+    do{
+
+        system("clear");
+        printf("Algoritmos com Grafos\n");
+
+        printf("------------------------------\n");
+
+        for(int i = 0; i < 6; i++){
+            printf("%d - %s\n", i+1, algoritmos[i]);
+        } 
+        printf("0 - Sair\n");
+        printf("------------------------------\n");
+        printf("Opcao: ");
+
+        scanf("%d%*c", &opcao);
+
+        if(nomeArq == NULL){
+        
+            printf("Entre com o nome do arquivo .dot a ser gerado: ");
+            scanf("%s%*c", nomeArq);
+        }
+        else{
+            
+            if(opcao > 0){
+                char dot[200];
+                strcat(nomeArq, algoritmosDot[opcao-1]);
+            }
+        }
+
+        switch (opcao)
+        {
+            case 1:
+        
+                beginBuscaProf(g, nomeArq);
+                
+                break;
+            case 2:
+
+                //beginBuscaLar(g, nomeArq);
+                break;
+            case 0:
+                break;
+        }
+        
+        getchar();
+
+    }while(opcao != 0);
 }

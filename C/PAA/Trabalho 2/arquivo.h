@@ -5,7 +5,14 @@
 #include<stdlib.h>
 #include "grafo.h"
 
-void leArquivo(FILE* in);
+#define LINHA_ORIENTADO 1;
+#define LINHA_ROTULO_VERTICES 2;
+#define LINHA_N_VERTICES 3;
+#define LINHA_ARESTAS 4;
+
+void fazArquivoAlg(Grafo* g, FILE* out, int** res);
+
+Grafo* leArquivo(FILE* in);
 
 void fazArquivoDot(Grafo* grf, FILE* out);
 
