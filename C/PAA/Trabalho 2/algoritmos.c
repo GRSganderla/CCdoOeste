@@ -4,26 +4,6 @@
 #include <ctype.h>
 #include <string.h>
 
-int timestamp;
-
-const char *algoritmos[] = {
-    "Busca em Profundidade", 
-    "Busca em Largura",
-    "Bellman-Ford",
-    "Kruskal",
-    "Prim",
-    "Algoritmo de Ford-Fulkerson",
-};
-
-const char *algoritmosDot[] = {
-    "BuscaProfundidade.dot", 
-    "BuscaLargura.dot",
-    "Bellman-Ford.dot",
-    "Kruskal.dot",
-    "Prim.dot",
-    "FordFulkerson.dot",
-};
-
 void visita_buscaProf(int vertice, Profundidade* busca, int n, int **ordem){
 
     busca[vertice].cor = 'C';
@@ -82,15 +62,11 @@ int** buscaEmProfundidade(Grafo* grf, int inicial){
     return ordem;
 }
 
-void beginBuscaProf(Grafo* g, char nomeArq[]){
+int vertice_origem(Grafo* g){
 
     int vertice;
-    int **res;
-
-    FILE* f = fopen(nomeArq, "w+");
-
     system("clear");
-    printf("Busca em Profundidade\n");
+
 
     printf("Vertices={");
     for(int i = 0; i < g->nVertices; i++){
@@ -103,63 +79,69 @@ void beginBuscaProf(Grafo* g, char nomeArq[]){
         (i < g->nVertices-1)? printf(","): printf("}\n");
     }
 
-    printf("Entre com o vertice de origem: ");
-    scanf("%d%*c", &vertice);
+    do {
+        printf("Entre com o vertice de origem: ");
+        scanf("%d%*c", &vertice);
+    }while(vertice < 0 && vertice > g->nVertices);
 
-    res = buscaEmProfundidade(g, vertice);
-    
-    fazArquivoAlg(g, f, res);
+    return vertice;
 }
 
-void menu(Grafo* g, char nomeArq[]){
+int** buscaEmLargura(Grafo* g, int origem){
 
-    int opcao;
+    Fila* q = start();
+    int u, i, j;
+    int **res = init(g->nVertices);
 
-    do{
+    Largura* l = (Largura*)malloc(sizeof(Largura)*g->nVertices);
 
-        system("clear");
-        printf("Algoritmos com Grafos\n");
+    for(i = 0; i < g->nVertices; i++){
 
-        printf("------------------------------\n");
+        if(i != origem){
 
-        for(int i = 0; i < 6; i++){
-            printf("%d - %s\n", i+1, algoritmos[i]);
-        } 
-        printf("0 - Sair\n");
-        printf("------------------------------\n");
-        printf("Opcao: ");
+            l[i].cor = 'B';
+            l[i].d = 999999;
+            l[i].pred = -1;
 
-        scanf("%d%*c", &opcao);
+            l[i].adj = (int*)malloc(sizeof(int)*g->nVertices);
 
-        if(nomeArq == NULL){
-        
-            printf("Entre com o nome do arquivo .dot a ser gerado: ");
-            scanf("%s%*c", nomeArq);
+            for(j = 0; j < g->nVertices; j++){
+                l[i].adj[j] = (g->adjacente[i][j] == 1);
+            }
         }
-        else{
-            
-            if(opcao > 0){
-                char dot[200];
-                strcat(nomeArq, algoritmosDot[opcao-1]);
+    }
+
+    l[origem].cor = 'C';
+    l[origem].pred = -1;
+    l[origem].d = 0;
+    l[origem].adj = (int*)malloc(sizeof(int)*g->nVertices);
+
+    for(j = 0; j < g->nVertices; j++){
+        l[origem].adj[j] = (g->adjacente[origem][j] == 1);
+    }
+    enqueue(q, origem);
+
+    while(!empty(q)){
+
+        imprime(q);
+        u = dequeue(q);
+
+        if(u == -1) return NULL;
+
+        for(i = 0; i < g->nVertices; i++){
+
+            if(l[u].adj[i] && l[i].cor == 'B'){
+                
+                res[u][i] = 1;
+                l[i].cor = 'C';
+                l[i].d = l[u].d + 1;
+                l[i].pred = u;
+                enqueue(q, i);
             }
         }
 
-        switch (opcao)
-        {
-            case 1:
-        
-                beginBuscaProf(g, nomeArq);
-                
-                break;
-            case 2:
+        l[u].cor = 'P';
+    }
 
-                //beginBuscaLar(g, nomeArq);
-                break;
-            case 0:
-                break;
-        }
-        
-        getchar();
-
-    }while(opcao != 0);
+    return res;
 }

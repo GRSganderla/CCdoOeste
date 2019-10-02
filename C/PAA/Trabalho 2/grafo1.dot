@@ -1,0 +1,29 @@
+strict digraph {
+	graph [pad="0.5", nodesep="1", ranksep="2"]
+	rankdir=LR;
+node[style=rounded];
+	1 -> 0[label="1",labelfontcolor=black];
+	1 -> 0[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	1 -> 2[label="1",labelfontcolor=black];
+	1 -> 2[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	1 -> 5[label="1",labelfontcolor=black];
+	1 -> 5[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	1 -> 6[label="1",labelfontcolor=black];
+	1 -> 6[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	2 -> 0[label="1",labelfontcolor=black];
+	2 -> 0[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	2 -> 1[label="1",labelfontcolor=black];
+	2 -> 1[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	2 -> 4[label="1",labelfontcolor=black];
+	2 -> 4[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	2 -> 6[label="1",labelfontcolor=black];
+	2 -> 6[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	3 -> 1[label="1",labelfontcolor=black];
+	3 -> 1[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	3 -> 5[label="1",labelfontcolor=black];
+	3 -> 5[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	3 -> 7[label="1",labelfontcolor=black];
+	3 -> 7[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+	5 -> 7[label="1",labelfontcolor=black];
+	5 -> 7[taillabel=" ",labeldistance=8,labelfontcolor=blue,labelangle=-5];
+}

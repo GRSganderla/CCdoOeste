@@ -4,12 +4,12 @@
 
 #include "grafo.h"
 #include "arquivo.h"
-#include "algoritmos.h"
+#include "menu.h"
 
 int main(){
 
     FILE* in, *out;
-    char nomeArq[200], dot[200];
+    char inArq[200], dot[200], outArq[200];
     int opcao;
     Grafo* g = NULL;
 
@@ -31,18 +31,18 @@ int main(){
             case 1:
 
                 printf("Entre com o arquivo de entrada (sem .txt): ");
-                scanf("%s%*c", nomeArq);
-                strcat(nomeArq, ".txt");
+                scanf("%s%*c", inArq);
+                strcat(inArq, ".txt");
 
-                in = fopen(nomeArq, "r+");
+                in = fopen(inArq, "r+");
 
                 while(in == NULL){
 
                     printf("Arquivo invalido!\n");
                     printf("Entre com o arquivo de entrada Valido (sem .txt): ");
-                    scanf("%s%*c", nomeArq);
-                    strcat(nomeArq, ".txt\n");
-                    in = fopen(nomeArq, "r+");
+                    scanf("%s%*c", inArq);
+                    strcat(inArq, ".txt\n");
+                    in = fopen(inArq, "r+");
                 }
 
                 g = leArquivo(in);
@@ -50,21 +50,21 @@ int main(){
             case 2:
 
                 printf("Entre com o arquivo de saida (sem .dot): ");
-                scanf("%s%*c", nomeArq);
-                strcpy(dot, nomeArq);
+                scanf("%s%*c", outArq);
+                strcpy(dot, outArq);
 
                 strcat(dot, ".dot");
 
                 out = fopen(dot, "w+");
 
-                //if(g != NULL){
+                if(g != NULL){
 
-                fazArquivoDot(g, out);
-                //}
+                    fazArquivoDot(g, out);
+                }
 
                 break;
             case 3:
-                menu(g, nomeArq);
+                menu(g, outArq);
                 break;
             case 0:
                 break;

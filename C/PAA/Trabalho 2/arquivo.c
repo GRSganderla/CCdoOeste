@@ -126,16 +126,24 @@ int countVirgula(char *nome){
 int qualLinha(char linha[]){
 
     if(strncmp(linha, "orientado", 9) == 0) {
+        printf("%s\n", linha);
         return LINHA_ORIENTADO;
     }
     else if(linha[0] == 'V'){
+        printf("linha: %s", linha);
+        
         if(strncmp(linha, "V={", 3) == 0) {
+            printf("linha: %s", linha);
             return LINHA_ROTULO_VERTICES;
         }
-        else
+        else{
+            printf("linha: %s", linha);
             return LINHA_N_VERTICES;
+        }
     }
-    else return LINHA_ARESTAS;
+    else{
+        
+    } return LINHA_ARESTAS;
 }
 
 void alocaCampos(Grafo* grf){
@@ -145,12 +153,15 @@ void alocaCampos(Grafo* grf){
     grf->rotulos = initLabels(grf->nVertices);
 }
 
-void linha_orientado(char linha[], Grafo* grf){
-
+Grafo* linha_orientado(char linha[]){
+    
+    Grafo* grf;
     char orientado[4];
 
     sscanf(linha, "orientado=%[^\n]%*c", orientado);
     grf = initGrafo(orientado);
+
+    return grf;
 }
 
 void linha_n_vertices(char linha[], Grafo* grf){
@@ -207,26 +218,33 @@ void linha_arestas(char linha[], Grafo *grf){
 
 Grafo* leArquivo(FILE* in){
 
-    Grafo* grf;
+    Grafo* grf = NULL;
     char linha[500];
 
     while(fgets(linha, 500, in)){
-
-        printf("1");
+        
         strtok(linha, "\n");
 
         switch(qualLinha(linha)){
             case 1:
-                linha_orientado(linha, grf);
+                grf = linha_orientado(linha);
+                printf("%s\n", grf->orientado);
                 break;
             case 2:
+                printf("ALO\n");
                 linha_rotulo_vertices(linha, grf);
+                if(grf->EhRotulado){
+                    printf("%s\n", grf->nomes[0]);
+                }
+                printf("%d\n", grf->nVertices);
                 break;
             case 3:
                 linha_n_vertices(linha, grf);
+                printf("%d\n", grf->nVertices);
                 break;
             case 4:
                 linha_arestas(linha, grf);
+                printf("%d %d\n", grf->adjacente[0][1], grf->pesos[0][1]);
                 break;     
         }
     }
