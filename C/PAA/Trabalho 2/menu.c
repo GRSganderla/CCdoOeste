@@ -20,11 +20,27 @@ char *algoritmosDot[] = {
     "FordFulkerson.dot",
 };
 
+char *linhaDeComandoDot(char dot[]){
+
+    char *linha =  (char*)malloc(sizeof(char)*300), nome[200];
+
+    printf("Digite o nome do arquivo para ser gerado o .png (sem o .png): ");
+    scanf("%s%*c", nome);
+
+    sprintf(linha, "/bin/dot -Tpng /home/sganchine/Git/CCdoOeste/C/PAA/Trabalho 2/%s -o /home/sganchine/%s.png", dot, nome);
+    printf("%s", linha);
+
+    return linha;
+}
+
 void menu(Grafo* g, char nomeArq[]){
 
+    char dotGerado[300], *command;
     int opcao;
 
     do{
+        
+        strcpy(dotGerado, nomeArq);
         system("clear");
         printf("Algoritmos com Grafos\n");
 
@@ -44,20 +60,19 @@ void menu(Grafo* g, char nomeArq[]){
         if(nomeArq == NULL){
         
             printf("Entre com o nome do arquivo .dot a ser gerado: ");
-            scanf("%s%*c", nomeArq);
+            scanf("%s%*c", dotGerado);
         }
         else{
             
             if(opcao > 0){
-                char dot[200];
-                strcat(nomeArq, algoritmosDot[opcao-1]);
+                strcat(dotGerado, algoritmosDot[opcao-1]);
             }
         }
 
         int vertice = vertice_origem(g);
         int **res;
 
-        FILE* f = fopen(nomeArq, "w+");
+        FILE* f = fopen(dotGerado, "w+");
 
         switch (opcao)
         {
@@ -76,6 +91,9 @@ void menu(Grafo* g, char nomeArq[]){
         if(res != NULL){
 
             fazArquivoAlg(g, f, res);
+            command = linhaDeComandoDot(dotGerado);
+            strcat(command, " > log.txt");
+            system(command);
         }
         
     }while(opcao != 0);
