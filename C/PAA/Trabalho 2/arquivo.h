@@ -10,7 +10,9 @@
 #define LINHA_N_VERTICES 3;
 #define LINHA_ARESTAS 4;
 
-void fazArquivoAlg(Grafo* g, FILE* out, int** res);
+void fazArquivoBusca(Grafo* g, FILE* out, int** res);
+
+void fazArquivoFord(Grafo* g, FILE* out, int** res);
 
 Grafo* leArquivo(FILE* in);
 

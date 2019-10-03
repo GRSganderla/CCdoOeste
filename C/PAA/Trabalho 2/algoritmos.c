@@ -25,7 +25,7 @@ void visita_buscaProf(int vertice, Profundidade* busca, int n, int **ordem){
     busca[vertice].f = timestamp; 
 }
 
-int** buscaEmProfundidade(Grafo* grf, int inicial){
+void buscaEmProfundidade(Grafo* grf, int inicial, int** res){
 
     Profundidade* busca = (Profundidade*)malloc(sizeof(Profundidade)*grf->nVertices);
 
@@ -42,11 +42,11 @@ int** buscaEmProfundidade(Grafo* grf, int inicial){
     }
 
     timestamp = 0;
-    int **ordem = init(grf->nVertices), i = 0;
+    int i = 0;
 
     if(busca[inicial].cor == 'B'){
 
-        visita_buscaProf(inicial, busca, grf->nVertices, ordem);
+        visita_buscaProf(inicial, busca, grf->nVertices, res);
 
     }
 
@@ -54,12 +54,10 @@ int** buscaEmProfundidade(Grafo* grf, int inicial){
 
         if(busca[i].cor == 'B'){
 
-            visita_buscaProf(i, busca, grf->nVertices, ordem);
+            visita_buscaProf(i, busca, grf->nVertices, res);
 
         }
     }
-
-    return ordem;
 }
 
 int vertice_origem(Grafo* g){
@@ -73,7 +71,7 @@ int vertice_origem(Grafo* g){
 
         printf(" %d", i);
         if(g->EhRotulado){
-            printf(": %s", g->nomes[i]);
+            printf(": %s", g->nomes[i].nome);
         }
 
         (i < g->nVertices-1)? printf(","): printf("}\n");
@@ -87,11 +85,10 @@ int vertice_origem(Grafo* g){
     return vertice;
 }
 
-int** buscaEmLargura(Grafo* g, int origem){
+int buscaEmLargura(Grafo* g, int origem, int **res){
 
     Fila* q = start();
     int u, i, j;
-    int **res = init(g->nVertices);
 
     Largura* l = (Largura*)malloc(sizeof(Largura)*g->nVertices);
 
@@ -126,7 +123,7 @@ int** buscaEmLargura(Grafo* g, int origem){
         imprime(q);
         u = dequeue(q);
 
-        if(u == -1) return NULL;
+        if(u == -1) return 0;
 
         for(i = 0; i < g->nVertices; i++){
 
@@ -143,5 +140,73 @@ int** buscaEmLargura(Grafo* g, int origem){
         l[u].cor = 'P';
     }
 
-    return res;
+    return 1;
+}
+
+BellmanFord* inicializaOrigem(int n, int origem){
+
+    BellmanFord* bf = (BellmanFord*)malloc(sizeof(BellmanFord));
+
+    for(int i = 0; i < n; i++){
+
+        if(i != origem){
+            bf[i].d = 9999999;
+            bf[i].pred = -1;
+        }
+    }
+
+    bf[origem].d = 0;
+    bf[origem].pred = -1;
+
+    return bf;
+}
+
+void relax(BellmanFord* bf, int** pesos, int u, int v){
+
+    if(bf[v].d > (bf[u].d + pesos[u][v])){
+        bf[v].d = bf[u].d + pesos[u][v];
+        bf[v].pred = u;
+    }
+}
+
+int BellmanFordAlg(Grafo* g, int origem, int **res){
+
+    BellmanFord* bf = inicializaOrigem(g->nVertices, origem);
+
+    int i, j, k;
+
+    for(i = 0; i < g->nVertices -1; i++){
+
+        for(k = 0; k < g->nVertices; k++){
+            for(j = 0; j < g->nVertices; j++){
+
+                if(g->adjacente[k][j] == 1)
+                    relax(bf, g->pesos, k, j);
+            }
+        }
+    }
+
+    for(i = 0; i < g->nVertices; i++){
+        for(j = 0; j < g->nVertices; j++){
+            if(g->adjacente[i][j] == 1 && (bf[j].d > bf[i].d + g->pesos[i][j])){
+                return 0;
+            }
+        }
+    }
+
+    for(i = 0; i < g->nVertices; i++){
+
+        for(j = 0; j < g->nVertices; j++){
+            if(g->adjacente[i][j] && (bf[j].pred == i)){
+
+                res[i][j] = bf[j].d;
+            }
+        }
+    }
+
+    getchar();
+
+    free(bf);
+
+    return 1;
 }

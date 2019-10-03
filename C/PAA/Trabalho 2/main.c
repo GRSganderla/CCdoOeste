@@ -8,8 +8,8 @@
 
 int main(){
 
-    FILE* in, *out;
-    char inArq[200], dot[200], outArq[200];
+    FILE* inFile, *outFile;
+    char inArq[200], dot[200], outArq[200], aux[200];
     int opcao;
     Grafo* g = NULL;
 
@@ -34,34 +34,31 @@ int main(){
                 scanf("%s%*c", inArq);
                 strcat(inArq, ".txt");
 
-                in = fopen(inArq, "r+");
+                inFile = fopen(inArq, "r+");
 
-                while(in == NULL){
+                if(inFile == NULL){
 
-                    printf("Arquivo invalido!\n");
-                    printf("Entre com o arquivo de entrada Valido (sem .txt): ");
-                    scanf("%s%*c", inArq);
-                    strcat(inArq, ".txt\n");
-                    in = fopen(inArq, "r+");
+                    printf("Arquivo Invalido!");
+                    getchar();
+                    break;
                 }
 
-                g = leArquivo(in);
+                g = leArquivo(inFile);
+                fclose(inFile);
                 break;
             case 2:
 
                 printf("Entre com o arquivo de saida (sem .dot): ");
                 scanf("%s%*c", outArq);
-                strcpy(dot, outArq);
+                sprintf(dot, "%s.dot", outArq);
 
-                strcat(dot, ".dot");
-
-                out = fopen(dot, "w+");
+                outFile = fopen(dot, "w+");
 
                 if(g != NULL){
 
-                    fazArquivoDot(g, out);
+                    fazArquivoDot(g, outFile);
                 }
-
+                fclose(outFile);
                 break;
             case 3:
                 menu(g, outArq);

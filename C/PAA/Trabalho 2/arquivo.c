@@ -4,9 +4,69 @@
 
 #include "arquivo.h"
 
-void fazArquivoAlg(Grafo* grf, FILE* out, int** res){
+void fazArquivoFord(Grafo* grf, FILE* outFile, int** res){
 
     char type[4];
+
+    if(res == NULL) return;
+
+    if(strcmp(grf->orientado, "sim") == 0){
+        fprintf(outFile, "strict digraph {\n");
+        strcpy(type, "->");
+    }
+    else{
+        fprintf(outFile, "strict graph {\n");
+        strcpy(type, "--");
+    }
+
+    fprintf(outFile, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
+    if(grf->EhRotulado == 0){
+
+        for(int i = 0; i < grf->nVertices; i++){
+            for(int j = 0; j < grf->nVertices; j++){
+
+                if(grf->adjacente[i][j] == 1){
+                    fprintf(outFile, "\t%d %s %d[label=\"%d\",labelfontcolor=black];\n", i, type, j, grf->pesos[i][j]);
+                    fprintf(outFile, "\t%d %s %d[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", i, type, j, grf->rotulos[i][j].nome);
+                }
+
+                if(res[i][j] == 1){
+                    fprintf(outFile, "\t%d %s %d[label=\"%d\", labelfontcolor=red,color=red];\n", i, type, j);
+                }
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < grf->nVertices; i++){
+
+            fprintf(outFile, "\t\"%s\" [shape=box];\n", grf->nomes[i].nome);
+        }
+        for(int i = 0; i < grf->nVertices; i++){
+            for(int j = 0; j < grf->nVertices; j++){
+
+                if(grf->adjacente[i][j] == 1){
+                    
+                    fprintf(outFile, "\n");
+                    fprintf(outFile, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
+                    fprintf(outFile, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome);
+
+                }
+
+                if(res[i][j] > 0){
+                    fprintf(outFile, "\t\"%s\" %s \"%s\"[label=\"%d\", labelfontcolor=red, color=red];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, res[i][j]);
+                }
+            }
+        }
+    }
+
+    fprintf(outFile, "}");
+}
+
+void fazArquivoBusca(Grafo* grf, FILE* out, int** res){
+
+    char type[4];
+
+    if(res == NULL) return;
 
     if(strcmp(grf->orientado, "sim") == 0){
         fprintf(out, "strict digraph {\n");
@@ -60,24 +120,21 @@ void fazArquivoAlg(Grafo* grf, FILE* out, int** res){
     fprintf(out, "}");
 }
 
-char *orientacao(Grafo* grf){
-
-    return (strcmp(grf->orientado, "sim") == 0)? "digraph" : "graph"; 
-}
-
 void fazArquivoDot(Grafo* grf, FILE* out){
 
     char type[4];
-
     if(strcmp(grf->orientado, "sim") == 0){
         fprintf(out, "strict digraph {\n");
         strcpy(type, "->");
     }
     else{
+        printf("JESUS\n");
         fprintf(out, "strict graph {\n");
         strcpy(type, "--");
+        printf("CHRIST1\n");
     }
 
+    printf("bla\n");
     fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
     if(grf->EhRotulado == 0){
         for(int i = 0; i < grf->nVertices; i++){
@@ -98,7 +155,6 @@ void fazArquivoDot(Grafo* grf, FILE* out){
             for(int j = 0; j < grf->nVertices; j++){
                 if(grf->adjacente[i][j] == 1){
                     
-                    fprintf(out, "\n");
                     fprintf(out, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
                     fprintf(out, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome);
 
@@ -126,18 +182,14 @@ int countVirgula(char *nome){
 int qualLinha(char linha[]){
 
     if(strncmp(linha, "orientado", 9) == 0) {
-        printf("%s\n", linha);
         return LINHA_ORIENTADO;
     }
     else if(linha[0] == 'V'){
-        printf("linha: %s", linha);
         
         if(strncmp(linha, "V={", 3) == 0) {
-            printf("linha: %s", linha);
             return LINHA_ROTULO_VERTICES;
         }
         else{
-            printf("linha: %s", linha);
             return LINHA_N_VERTICES;
         }
     }
@@ -189,7 +241,6 @@ void linha_rotulo_vertices(char linha[], Grafo* grf){
     for(percorre = 0, i = 0; percorre < strlen(aux) && i < grf->nVertices; percorre += strlen(grf->nomes[i].nome)+1, i++)
     {
         sscanf(aux+percorre, "%[^,],", grf->nomes[i].nome);
-        
         strtok(grf->nomes[i].nome, "\n");
     }
 
@@ -212,7 +263,14 @@ void linha_arestas(char linha[], Grafo *grf){
         }
 
         grf->adjacente[row][col] = 1;
+
         grf->pesos[row][col] = peso;
+
+        if(strcmp(grf->orientado, "nao") == 0) {
+            grf->adjacente[col][row] = 1;
+            grf->pesos[col][row] = peso;
+            strcpy(grf->rotulos[col][row].nome, grf->rotulos[col][row].nome);
+        }
     }
 }
 
@@ -228,23 +286,15 @@ Grafo* leArquivo(FILE* in){
         switch(qualLinha(linha)){
             case 1:
                 grf = linha_orientado(linha);
-                printf("%s\n", grf->orientado);
                 break;
             case 2:
-                printf("ALO\n");
                 linha_rotulo_vertices(linha, grf);
-                if(grf->EhRotulado){
-                    printf("%s\n", grf->nomes[0]);
-                }
-                printf("%d\n", grf->nVertices);
                 break;
             case 3:
                 linha_n_vertices(linha, grf);
-                printf("%d\n", grf->nVertices);
                 break;
             case 4:
                 linha_arestas(linha, grf);
-                printf("%d %d\n", grf->adjacente[0][1], grf->pesos[0][1]);
                 break;     
         }
     }
