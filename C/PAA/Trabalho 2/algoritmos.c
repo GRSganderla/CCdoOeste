@@ -145,12 +145,12 @@ int buscaEmLargura(Grafo* g, int origem, int **res){
 
 BellmanFord* inicializaOrigem(int n, int origem){
 
-    BellmanFord* bf = (BellmanFord*)malloc(sizeof(BellmanFord));
+    BellmanFord* bf = (BellmanFord*)malloc(sizeof(BellmanFord)*n);
 
     for(int i = 0; i < n; i++){
 
         if(i != origem){
-            bf[i].d = 9999999;
+            bf[i].d = 99999999;
             bf[i].pred = -1;
         }
     }
@@ -172,14 +172,12 @@ void relax(BellmanFord* bf, int** pesos, int u, int v){
 int BellmanFordAlg(Grafo* g, int origem, int **res){
 
     BellmanFord* bf = inicializaOrigem(g->nVertices, origem);
-
+    
     int i, j, k;
 
     for(i = 0; i < g->nVertices -1; i++){
-
         for(k = 0; k < g->nVertices; k++){
             for(j = 0; j < g->nVertices; j++){
-
                 if(g->adjacente[k][j] == 1)
                     relax(bf, g->pesos, k, j);
             }
@@ -195,7 +193,6 @@ int BellmanFordAlg(Grafo* g, int origem, int **res){
     }
 
     for(i = 0; i < g->nVertices; i++){
-
         for(j = 0; j < g->nVertices; j++){
             if(g->adjacente[i][j] && (bf[j].pred == i)){
 
@@ -208,5 +205,283 @@ int BellmanFordAlg(Grafo* g, int origem, int **res){
 
     free(bf);
 
+    return 1;
+}
+
+///
+/// \brief intercala, função auxiliar do algoritmo de ordenação Merge Sort
+/// \param vet, vetor a ser ordenado
+/// \param inicio, indice do inicio da parte do vetor separada
+/// \param meio, indice do meio do vetor partido
+/// \param fim, tamanho maximo da partição
+/// \pre nenhuma
+/// \post nenhuma
+///
+void intercala(Aresta* vet, int inicio, int meio, int fim)
+{
+    int i, j, k;
+    Aresta *vet_aux;
+
+    //aloca o vetor
+    vet_aux = malloc((fim-inicio)*sizeof(Aresta));
+
+    i = inicio; j = meio; k = 0;
+
+    //enquanto não for o meio ou o fim
+    while( i < meio && j < fim)
+    {
+        //se o vetor J é maior ou igual a o vetor I, adiciona o valor de I em K, aumenta ambos
+        if(vet[i].peso <= vet[j].peso)
+            vet_aux[k++] = vet[i++];
+        else
+        {
+            //se não é menor ou igual, adiciona o valor de J em K, aumenta ambos
+            vet_aux[k++] = vet[j++];
+        }
+    }
+
+    //enquanto não for o meio, adiciona I em K, aumenta ambos
+    while (i < meio)
+        vet_aux[k++] = vet[i++];
+
+    //enquanto não for o meio, adiciona J em K, aumenta ambos
+    while (j < fim)
+        vet_aux[k++] = vet[j++];
+
+    //adiciona no vetor original, o vetor K
+    for(i = inicio; i < fim; i++)
+        vet[i] = vet_aux[i-inicio];
+
+    //libera o vetor auxiliar
+    free(vet_aux);
+}
+
+///
+/// \brief mergeSortN, algoritmo de ordenação por metodo de separar, ordenar e reajuntar e ordenar...
+/// \param v, vetor a ser ordenado
+/// \param inicio, indice do inicio do vetor
+/// \param fim, tamanho maximo do vetor
+/// \pre nenhuma
+/// \post nenhuma
+///
+void mergeSortN(Aresta* v, int inicio, int fim)
+{
+    if( inicio < fim - 1)
+    {
+        //chama recursivamente ate tiver um vetor separado com 2 valores
+        int meio = (inicio + fim) / 2;
+        mergeSortN(v, inicio, meio);
+        mergeSortN(v, meio, fim);
+        intercala(v, inicio, meio, fim);
+    }
+}
+
+int findV(int alvo, int *conj){
+    
+    if(conj[alvo] < 0) {
+        return alvo;
+    }else{
+        return findV(conj[alvo], conj);
+    }
+}
+
+int diferente(int u, int v, int *conj){
+    
+    if(findV(u, conj) == u && findV(v, conj) == v)
+        return 1;
+    else{
+        int a = (conj[u] < 0)? u : findV(conj[u], conj), b = (conj[v] < 0)? v: findV(conj[v], conj);
+        
+        if(a != b) return 1;
+
+        return 0;
+    }
+}
+
+void troca(int u, int v, int *conj){
+    int temp;
+
+    temp = conj[u];
+    conj[u] = v;
+    conj[v] += temp;
+}
+
+void Uniao(int u, int v, int *conj){
+
+    int temp;
+
+    if(findV(u, conj) == u && findV(v, conj) == v){
+
+        if(conj[u] >= conj[v]){
+            troca(u, v, conj);
+        }else{
+            troca(v, u, conj); 
+        }
+    }else{
+
+        int a = findV(u, conj), b = findV(v, conj);
+        if(conj[a] >= conj[b]){
+            troca(a, b, conj);
+        }else{
+            troca(b, a, conj); 
+        }
+    }
+}
+
+int jaExiste(int i, int j, int peso, Aresta* e, int n){
+
+    for(int k = 0; k < n; k++){
+
+        if(((e[k].u == i && e[k].v == j) || (e[k].u == j && e[k].v == i)) && e[k].peso == peso) return 1;
+    }
+
+    return 0;
+}
+
+Aresta* fazAresta(Grafo* g, int *n){
+
+    Aresta* novo = (Aresta*)malloc(sizeof(Aresta)*g->nVertices*g->nVertices);
+
+    int i, j, k = 0;
+
+    for(i = 0; i < g->nVertices; i++){
+        for(j = 0; j < g->nVertices; j++){
+            if(g->adjacente[i][j] == 1 && !jaExiste(i, j, g->pesos[i][j], novo, k)){
+                novo[k].u = i;
+                novo[k].v = j;
+                novo[k++].peso = g->pesos[i][j];
+            }
+        }
+    }
+
+    *n = k;
+
+    novo = (Aresta*)realloc(novo, sizeof(Aresta)*k);
+
+    return novo;
+}
+
+int KruskalAlgm(Grafo* g, int **res){
+
+    int *conj = (int*)malloc(sizeof(int)*g->nVertices);
+
+    for(int k = 0; k < g->nVertices; k++) conj[k] = -1;
+
+    Kruskal* k = (Kruskal*)malloc(sizeof(Kruskal));
+
+    int i, j, n, ki = 0;
+    Aresta* E = fazAresta(g, &n);
+    k->A = (Aresta*)malloc(sizeof(Aresta)*n);
+
+    mergeSortN(E, 0, n);
+
+    for(i = 0 ; i < n; i++){
+
+        if(diferente(E[i].u, E[i].v, conj)){
+            k->A[ki].u = E[i].u;
+            k->A[ki].v = E[i].v;
+            k->A[ki++].peso = E[i].peso;
+            Uniao(E[i].u, E[i].v, conj);
+        }
+    }
+
+    k->A = (Aresta*)realloc(k->A, sizeof(Aresta)*ki);
+    for(i = 0; i < ki; i++){
+        res[k->A[i].u][k->A[i].v] = k->A[i].peso;
+    }
+
+    free(k);
+    free(E);
+
+    return 1;
+}
+
+int houverNaoConhecidos(Prim* p, int n){
+
+    int i;
+
+    for(i = 0; i < n; i++){
+        
+        if(p[i].conhecido == 0) return 1;
+    }
+
+    return 0;
+}
+
+int menorCusto(Prim* p, int n){
+
+    int i, menorVal = 99999, indMenor = -1;
+
+    for(i = 0; i < n; i++){
+        
+        if(p[i].conhecido == 0){
+            
+            if(p[i].key < menorVal){
+                indMenor = i;
+                menorVal = p[i].key;
+            }
+        }
+    }
+
+    return indMenor;
+}
+
+int procuraV(Prim* p, int n, int alvo){
+
+    return !(p[alvo].conhecido);
+}
+
+int PrimAlgm(Grafo* g, int r, int **res){
+
+    Prim *p = (Prim*)malloc(sizeof(Prim)*g->nVertices);
+
+    int i, j, u, n = g->nVertices;
+
+    for(i = 0; i < n; i++){
+
+        p[i].conhecido = 0;
+        p[i].key = 99999999;
+
+        p[i].pred = -1;
+        p[i].adj = (int*)malloc(sizeof(int)*n);
+
+        for(j = 0; j < g->nVertices; j++){
+            p[i].adj[j] = (g->adjacente[i][j] == 1);
+        }
+    }
+
+    p[r].key = 0;
+    p[r].pred = -1;
+
+    while(houverNaoConhecidos(p, n)){
+
+        u = menorCusto(p, n);
+
+        if(u == -1) return 0;
+        p[u].conhecido = 1;
+
+        for(i = 0; i < n; i++){
+
+            if(p[u].adj[i] == 1){
+
+                if(procuraV(p, n, i) && (g->pesos[u][i] < p[i].key)){
+
+                    p[i].pred = u;
+                    p[i].key = g->pesos[u][i];
+                }
+            }
+        }
+    }
+
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            if(p[j].pred == i){
+                res[i][j] = p[j].key;
+            }
+        }
+    }
+
+    free(p);
+    
     return 1;
 }

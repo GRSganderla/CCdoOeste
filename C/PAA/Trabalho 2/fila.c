@@ -93,3 +93,17 @@ void imprime(Fila* f)
 	}
 	printf("NULL\n");
 }
+
+int procura(Fila* f, int alvo){
+
+	if(empty(f)) return 0;
+
+	struct no* aux = f->inicio;
+	while(aux)
+	{
+		if(aux->info == alvo) return 1;
+		aux = aux->prox;
+	}
+
+	return 0;
+}

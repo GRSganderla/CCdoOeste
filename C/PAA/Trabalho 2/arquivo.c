@@ -8,8 +8,6 @@ void fazArquivoFord(Grafo* grf, FILE* outFile, int** res){
 
     char type[4];
 
-    if(res == NULL) return;
-
     if(strcmp(grf->orientado, "sim") == 0){
         fprintf(outFile, "strict digraph {\n");
         strcpy(type, "->");
@@ -19,20 +17,21 @@ void fazArquivoFord(Grafo* grf, FILE* outFile, int** res){
         strcpy(type, "--");
     }
 
-    fprintf(outFile, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
-    if(grf->EhRotulado == 0){
+    fprintf(outFile, "\tgraph [pad=\"0.5\", nodesep=\"1 equally\", ranksep=\"1 equally\"]\n");
 
+    if(grf->EhRotulado == 0){
         for(int i = 0; i < grf->nVertices; i++){
             for(int j = 0; j < grf->nVertices; j++){
 
                 if(grf->adjacente[i][j] == 1){
-                    fprintf(outFile, "\t%d %s %d[label=\"%d\",labelfontcolor=black];\n", i, type, j, grf->pesos[i][j]);
+                    if(res[i][j] > 0){
+                        fprintf(outFile, "\t%d %s %d[label=\"%d\", fontcolor=red,color=red];\n", i, type, j, res[i][j]);
+                    }else{
+                        fprintf(outFile, "\t%d %s %d[label=\"%d\",labelfontcolor=black];\n", i, type, j, grf->pesos[i][j]);
+                    }
                     fprintf(outFile, "\t%d %s %d[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", i, type, j, grf->rotulos[i][j].nome);
                 }
 
-                if(res[i][j] == 1){
-                    fprintf(outFile, "\t%d %s %d[label=\"%d\", labelfontcolor=red,color=red];\n", i, type, j);
-                }
             }
         }
     }
@@ -46,15 +45,15 @@ void fazArquivoFord(Grafo* grf, FILE* outFile, int** res){
 
                 if(grf->adjacente[i][j] == 1){
                     
-                    fprintf(outFile, "\n");
-                    fprintf(outFile, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
+                    if(res[i][j] > 0){
+                        fprintf(outFile, "\t\"%s\" %s \"%s\"[label=\"%d\", fontcolor=red, color=red];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, res[i][j]);
+                    }else{
+                        fprintf(outFile, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
+                    }
                     fprintf(outFile, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome);
 
                 }
 
-                if(res[i][j] > 0){
-                    fprintf(outFile, "\t\"%s\" %s \"%s\"[label=\"%d\", labelfontcolor=red, color=red];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, res[i][j]);
-                }
             }
         }
     }
@@ -77,7 +76,7 @@ void fazArquivoBusca(Grafo* grf, FILE* out, int** res){
         strcpy(type, "--");
     }
 
-    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
+    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1 equally\", ranksep=\"1 equally\"]\n\trankdir=LR;\n");
     if(grf->EhRotulado == 0){
 
         for(int i = 0; i < grf->nVertices; i++){
@@ -128,14 +127,11 @@ void fazArquivoDot(Grafo* grf, FILE* out){
         strcpy(type, "->");
     }
     else{
-        printf("JESUS\n");
         fprintf(out, "strict graph {\n");
         strcpy(type, "--");
-        printf("CHRIST1\n");
     }
 
-    printf("bla\n");
-    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1\", ranksep=\"2\"]\n\trankdir=LR;\nnode[style=rounded];\n");
+    fprintf(out, "\tgraph [pad=\"0.5\", nodesep=\"1 equally\", ranksep=\"1 equally\"]\n\trankdir=LR;\n");
     if(grf->EhRotulado == 0){
         for(int i = 0; i < grf->nVertices; i++){
             for(int j = 0; j < grf->nVertices; j++){
@@ -148,22 +144,17 @@ void fazArquivoDot(Grafo* grf, FILE* out){
     }
     else{
         for(int i = 0; i < grf->nVertices; i++){
-
-            fprintf(out, "\t\"%s\" [shape=box];\n", grf->nomes[i].nome);
-        }
-        for(int i = 0; i < grf->nVertices; i++){
             for(int j = 0; j < grf->nVertices; j++){
                 if(grf->adjacente[i][j] == 1){
-                    
                     fprintf(out, "\t\"%s\" %s \"%s\"[label=\"%d\",labelfontcolor=black];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->pesos[i][j]);
-                    fprintf(out, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome);
-
+                    fprintf(out, "\t\"%s\" %s \"%s\"[taillabel=\"%s\",labeldistance=8,labelfontcolor=blue,labelangle=-5];\n", grf->nomes[i].nome, type, grf->nomes[j].nome, grf->rotulos[i][j].nome, grf->rotulos[i][j].nome);
                 }
             }
         }
     }
 
     fprintf(out, "}");
+    getchar();
 }
 
 int countVirgula(char *nome){
@@ -269,7 +260,7 @@ void linha_arestas(char linha[], Grafo *grf){
         if(strcmp(grf->orientado, "nao") == 0) {
             grf->adjacente[col][row] = 1;
             grf->pesos[col][row] = peso;
-            strcpy(grf->rotulos[col][row].nome, grf->rotulos[col][row].nome);
+            strcpy(grf->rotulos[col][row].nome, grf->rotulos[row][col].nome);
         }
     }
 }

@@ -45,6 +45,7 @@ void printMat(Grafo* g){
 void menu(Grafo* g, char nomeArq[]){
 
     char dotGerado[300], *command;
+    FILE* f;
     int opcao, feito;
 
     do{
@@ -81,10 +82,11 @@ void menu(Grafo* g, char nomeArq[]){
             strcat(dotGerado, algoritmosDot[opcao-1]);
         }
 
-        int vertice = vertice_origem(g);
-        int **res = init(g->nVertices);
-
-        FILE* f = fopen(dotGerado, "w+");
+        int **res = init(g->nVertices), vertice;
+        if(opcao != 4){
+            vertice = vertice_origem(g);
+        }
+        f = fopen(dotGerado, "w+");
 
         switch (opcao)
         {
@@ -102,13 +104,20 @@ void menu(Grafo* g, char nomeArq[]){
                 break;
             case 3:
                 feito = BellmanFordAlg(g, vertice, res);
-                if(feito) fazArquivoFord(g, f, res);
+                if(feito == 1) fazArquivoFord(g, f, res);
                 free(res);
                 break;
+            case 4:
+                feito = KruskalAlgm(g, res);
+                if(feito == 1) fazArquivoFord(g, f, res);
+                break;
+            case 5:
+                feito = PrimAlgm(g, vertice, res);
+                if(feito == 1) fazArquivoFord(g, f, res);
             case 0:
                 break;
         }
-
+        fclose(f);
         getchar();
         
     }while(opcao != 0);
