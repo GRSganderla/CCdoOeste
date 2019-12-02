@@ -1,0 +1,625 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  STATIC = false;
+  DEBUG_PARSER = true;
+  DEBUG_LOOKAHEAD = true;
+}
+
+PARSER_BEGIN(SubLing_C)
+package compiladorcc;
+import java.io.*;
+import recovery.*;
+import semantica.*;
+
+public class SubLing_C
+{
+  // contador de erros sint�ticos
+  int contParseError = 0;
+  //controla verbose de recupera��o de erros
+  boolean debug_recovery; 
+  
+  public static void main(String args []) throws ParseException
+  {
+    boolean debug_as = false;
+    boolean debug_recovery = false;
+
+	//nome do arquivo a ser lido
+    String filename = "";
+    String arvore_arquivo;
+    //analisador lexico e sintatico
+    SubLing_C parser; 
+    int i;
+    boolean ms = false;
+
+//l� os par�metros passados para o compilador
+    for ( i = 0; i < args.length-1; i++) {
+		if(args[i].equals("-debug_AS")) {
+		  debug_as = true;
+		  break;
+		}else {
+		  System.out.println("Usage is: " + "java SubLing_C [-degub_AS] inputfile");
+		  System.exit(0);
+		}
+    }
+
+//l� da entrada padr�o
+	if(args[i].equals("-")) { 
+		 System.out.println("Reading from standard input...");
+		 parser = new SubLing_C(System.in); //cria o analisador sint�tico
+		 
+	}else {
+	  // l� do arquivo
+	   filename = args[args.length-1];
+	   System.out.println("Reading from file " + filename + ". . .");
+	   
+	   try {
+	     // cria o analisador sint�tico
+	     parser = new SubLing_C(new java.io.FileInputStream(filename));
+	     
+	   } catch (java.io.FileNotFoundException e) {
+	     System.out.println("File " + filename + " not found.");
+	     return;
+	   }catch (IOException e) {
+	     System.out.println("Erro ao abrir o aquivo." + e.getMessage());
+	     return;
+	   }
+	 }
+
+	parser.debug_recovery = debug_recovery;
+	if(!debug_as) parser.disable_tracing(); //desabilita verbose do Analisador sint�tico
+
+	
+	SimpleNode root = null;
+
+	try { 
+		root = parser.program();
+	}
+	catch(ParseException e) {
+		System.err.println(e.getMessage());
+	}
+
+    SimpleNode print = root;
+	print.dump(filename); //imprime a arvore no arquivo
+	  
+	SemanticRun parseSem = new SemanticRun();
+
+	try {
+		parseSem.programCheck(root);
+	}
+	catch(SemanticException e) {
+		System.out.println(e.getMessage());
+	}
+
+	finally {
+	  System.out.println(parser.token_source.foundLexError() + " Lexical Errors found");
+	  System.out.println(parser.contParseError + " Syntactic Errors found");
+	  System.out.println(parseSem.getFoundSemanticError() + " Semantic Errors found");
+	}
+  }//main
+
+  static public String im  (int x) {
+    int k;
+    String s;
+
+    s = tokenImage[x];
+    k = s.lastIndexOf("\"");
+
+    try { s = s.substring(1,k); }
+    catch (StringIndexOutOfBoundsException e) { }
+    return s;
+  }
+
+  boolean eof; //vari�vel que indica se EOF foi alcan�ado
+ 
+
+/**
+* consumeUntil, consome tokenns at� alcan�ar um que perten�a ao conjunto de sincroniza��o
+* @param g, conjunto de sincroniza��o que ser� usado
+* @param e, descreve o erro sint�tico que ocorreu
+* @oaram met, n�o terminal que faz a recupera��o dos erros
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/
+ void consumeUntil(RecoverySet g, ParseException e, String met) throws /*/*ParseEOFException*/ ParseException{
+ 	Token tok;
+ 		if(debug_recovery){ //informa sobre a recupera��o
+ 			System.out.println();
+ 			System.out.println("*** " + met+ "***");
+ 			System.out.println("	Syncronizing Set: " + g);
+ 		}
+ 		if(g == null) throw e; // se o conjunto � nulo, propaga a exce��o
+
+ 		tok = getToken(1); //pega token corrente
+ 		while(!eof){ //se n�o chegou ao fim do arquivo
+ 			if(g.contains(tok.kind)) { //acha um token no conjunto
+ 				if(debug_recovery){
+ 					System.out.println("	found Syncronizing token: " + im(tok.kind));
+ 					break;
+ 				}
+ 			}
+ 			if(debug_recovery){
+ 					System.out.println("	ignoring token: " + im(tok.kind));
+ 			}
+ 			getNextToken(); 
+ 			tok = getToken(1);
+ 			if(tok.kind == EOF && !g.contains(EOF)) eof = true;
+ 		}
+ 		System.out.println(e.getMessage());
+ 		contParseError++;
+ 		//if(eof) throw new /*ParseEOFException*/("EOF found prematurely.");
+ }
+}//SubLing_C
+
+PARSER_END(SubLing_C)
+
+/**
+* TOKEN_MGR_DECLS, Introduz c�digo java na classe correspondente ao analisador l�xico
+* @pre-condition nenhuma
+* @post-condition nenhuma
+* @return n�mero de erro lexico encontrado no arquivo que est� sendo analisado
+*/
+TOKEN_MGR_DECLS : {
+	int countLexError= 0;
+
+	public int foundLexError() {
+		return countLexError;
+	}
+}
+
+/**
+* SKIP, Define quais cadeias dever�o ser ignoradas e n�o v�o entrar no reconhecimento de token 
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+/**
+* TOKEN, Define conjunto de operadores a serem reconhecidos
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/
+TOKEN : /* OPERATORS */
+{
+  < PLUS : "+" >
+| < MINUS : "-" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
+| < AND : "&&" >
+| < OR : "||" >
+| < NOT : "!" >
+| < ASSIGNMENT : "=" >
+| < ASSIGNMENT_PLUS : "+=" >
+| < ASSIGNMENT_MINUS : "-=" >
+| < ASSIGNMENT_MULTIPLY : "*=" >
+| < ASSIGNMENT_DIVIDE : "/=" >
+| < GT : ">" >
+| < LT : "<" >
+| < GE : ">=" >
+| < LE : "<=" >
+| < EQ : "==" >
+| < NEQ : "!=" >
+}
+
+/**
+* TOKEN, define conjunto de palavras reservadas a serem reconhecidas e as express�es que as define s�o as pr�prias palavras
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/
+TOKEN : /*PALAVRA RESERVADA*/
+{
+  < INT : "int" >
+| < CHAR : "char" >
+| < IF : "if" >
+| < ELSE : "else" >
+| < SWITCH : "switch" >
+| < CASE : "case" >
+| < BREAK : "break" >
+| < FOR : "for" >
+| < WHILE : "while" >
+| < VOID : "void" >
+| < RETURN : "return" >
+| < DEFAULTT : "default" >
+}
+
+/**
+* TOKEN, define conjunto de s�mbolos especiais a serem reconhecidos
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/
+TOKEN : /*SIMBOLOS ESPECIAIS*/
+{
+  < L_PAREN : "(" >
+| < R_PAREN : ")" >
+| < L_CHAV : "[" >
+| < R_CHAV : "]" >
+| < L_COLC : "{" >
+| < R_COLC : "}" >
+| < PONT_VIRG : ";" >
+| < TWO_PONT : ":" >
+| < VIRG : "," >
+}
+
+/**
+* TOKEN, define conjunto de constantes a serem reconhecidas
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/ 
+TOKEN : /*CONSTANTES*/
+{
+  // constantes n�meros
+  < INT_CONSTANT : (< DIGIT >)+ >
+
+  // constantes string 
+| < CHAR_CONSTANT : "\""( ~["\"","\n","\r"])* "\"" >
+| < NULL_CONSTANT : "null" >
+| < #DIGIT : [ "0"-"9" ] >
+| < #CARACTERES : ["A" - "Z","a"-"z"] >
+}
+
+/**
+* TOKEN, define conjunto de identificadores a serem reconhecidos
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/ 
+TOKEN : /*IDENTIFICADORES*/
+{
+  < IDENT : < CARACTERES > (< CARACTERES > | < DIGIT >)* >
+}
+
+/**
+* SPECIAL_TOKEN, trata os erros l�xicos, significa que n�o � passado para o analisador l�xico mas � armazenado
+* @var ~, indica que o casamento � feito quando os caracter  de entrada n�o est� no conjunto definido entre os colchetes
+* @var +, indica que a repeti��o ocorrer� pelo menos uma vez
+* @pre-condition nenhuma
+* @post-condition nenhuma
+*/ 
+SPECIAL_TOKEN : /*TRATA OS ERROS LEXICOS*/
+{
+  < INVALID_LEXICAL :
+  (
+    ~["a"-"z" , "A"-"Z",
+    "0"-"9",
+    "\"",
+    "(", ")",
+    "[", "]",
+    "{", "}",
+    ";", ":", ",",
+    ">", "<",
+    "=", "!",
+    "+", "-", "*", "/",
+    " ", "\t", "\n", "\r"]
+  )+ >
+	{
+	  System.err.println("Line " + input_stream.getEndLine() + " - Invalid string found: " + image);
+	  countLexError++;
+	}
+}
+
+/**
+* program, � um n�o-terminal que ap�s reconhecer o functlist na entrada, ele tenta achar o EOF,
+* @pre-condition: nenhuma
+* @post-condition: se n�o conseguir achar o EOF dever� fazer a ressincroniza��o e voltar a analisar o programa
+*/ 
+SimpleNode program() #PROGRAMA: {
+	RecoverySet g = First.program;
+}
+{
+ (
+    < EOF > |  functlist(g)
+	try{
+		< EOF > 
+	}catch(ParseException e){
+		consumeUntil(g, e, "program");
+	}
+	[program()]
+) { return jjtThis; }
+}
+
+/**
+* functlist, � um n�o terminal que diz que o programa � formado por uma lista de fun��es, seguido pelo EOF
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: o erro � tratado 
+*/
+void functlist(RecoverySet g) #FUNCT_LIST: {
+	RecoverySet f = First.functlist.union(g);
+}
+{
+  (
+   // functdecl passa como conjunto de sincroniza��o o conjunto g que foi passado como parametro
+  // ap�s functdecl, o functlist pode ou n�o ocorrer  
+  functdecl(f) [functlist(g)]
+) 
+}
+
+/**
+* functdecl, define como formar a assinatura da fun��o
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: 
+*/ 
+void functdecl(RecoverySet g) #FUNCT_DECL: { //assinatura da fun��o
+	RecoverySet f = new RecoverySet (R_PAREN);
+	RecoverySet h = new RecoverySet (IDENT);
+	Token t;
+}
+{
+  try { 
+		functype(h) t = <IDENT> <L_PAREN> paramlist(f) < R_PAREN >  < L_COLC > functbody(g) < R_COLC >
+		{
+		  jjtn000.value1 = t.image;
+		}
+	}catch (ParseException e) {
+	  consumeUntil(g, e, "functdecl");
+	}
+}
+
+
+/**
+* paramlist, define como formar a lista de par�metros
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void paramlist(RecoverySet g) #PARAM_LIST: { // lista de parametros
+	RecoverySet f = new RecoverySet (IDENT);
+	Token t1 = null, t2 = null;
+}
+{
+  try { 
+  	[functype(f) t1 = <IDENT> (< L_CHAV > <R_CHAV >)* (< VIRG > functype(f) t2 = < IDENT > (< L_CHAV ><R_CHAV >)*)*]
+  	{
+  	  if(t1 != null) { 
+  	  	jjtn000.value1 = t1.image;
+	  	if(t2 != null) jjtn000.value2 = t2.image;
+		}
+  	}
+  }catch(ParseException e) {
+    consumeUntil(g, e, "paramlist");
+  }
+}
+
+/**
+* varlist, demonstra como declarar uma vari�vel
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void varlist(RecoverySet g) #VAR_LIST: { //declara��o de variavel
+	Token tipo, nome;
+}
+{
+  	try { 
+    	(tipo = < VOID > | tipo = < INT > | tipo = < CHAR > ) nome = <IDENT> (< L_CHAV >(<INT_CONSTANT>)+<R_CHAV >)*
+    	{
+    	  jjtn000.value1 = tipo.image;
+    	  jjtn000.value2 = nome.image;
+    	}
+   }catch(ParseException e) {
+     consumeUntil (g, e, "varlist");
+   }
+}
+
+/**
+* functype, define qual ser� o tipo das vari�veis
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: tipo da vari�vel � definido
+*/
+void functype(RecoverySet g) #FUNCT_TYPE :
+{
+  Token tipo;
+} //tipos de variaveis
+{
+  try { 
+  	tipo = < VOID > | tipo = < INT > | tipo = < CHAR > | tipo = < IDENT >
+  	{
+  	  jjtn000.value1 = tipo.image;
+  	}
+ }catch(ParseException e) {
+   consumeUntil (g, e, "functype");
+ }
+}
+
+/**
+* functbody, define como ser� definido o corpo do fun��o
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: corpo da fun��o � definido
+*/ 
+void functbody(RecoverySet g) #FUNCT_BODY: {
+	RecoverySet f = new RecoverySet(PONT_VIRG);
+}
+{
+try {  	
+  	(
+  	varlist(f) <PONT_VIRG>
+|	comand_if(g)
+|	comand_switch(g)
+| 	comand_for(g)
+| 	comand_while(g)
+| 	atrib(f) < PONT_VIRG >
+| 	< BREAK > <PONT_VIRG >
+| 	Return(f)< PONT_VIRG >
+	)*
+	}catch(ParseException e) {
+		consumeUntil (g, e, "functbody");
+	}
+}
+
+/**
+* return, define como o comando "return" funcionar�
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void Return(RecoverySet g) #RETURN : { }
+{
+  try { 
+  	< RETURN > expressao(g)
+ }catch(ParseException e) {
+   consumeUntil (g, e, "Return");
+ }
+}
+
+/**
+* comand_if, define como o comando "if" funcionar�
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void comand_if(RecoverySet g) #IF: {
+	RecoverySet f1 = new RecoverySet(R_PAREN), f2 = new RecoverySet(ELSE).union(g);
+}
+{
+  try { 
+  	< IF > <L_PAREN > expressao(f1) < R_PAREN > <L_COLC> functbody(f2) <R_COLC> [< ELSE > <L_COLC>functbody(g)<R_COLC>]
+ }catch(ParseException e) {
+	consumeUntil(g, e, "comand_if");
+ }
+}
+
+/**
+* comand_switch, define como o comando "switch" funcionar� 
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void comand_switch(RecoverySet g) #SWITCH: {
+	RecoverySet f = new RecoverySet(PONT_VIRG);
+	Token t;
+}
+{
+  try { 
+	  < SWITCH > < L_PAREN > t= < IDENT > < R_PAREN > <L_COLC >
+	  (
+	    < CASE > (< INT_CONSTANT > | < CHAR_CONSTANT >) < TWO_PONT >
+		(atrib(f)<PONT_VIRG >)+
+	  < BREAK > <PONT_VIRG >
+	  )+
+	  < DEFAULTT > < TWO_PONT >(atrib(f) < PONT_VIRG >)+
+	  < R_COLC >
+	  {
+	    jjtn000.value1 = t.image;
+	  }
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "comand_switch");
+	}
+}
+
+/**
+* comand_for, define como o comando "for" funcionar�
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma 
+*/ 
+void comand_for(RecoverySet g) #FOR : {
+	RecoverySet f1 = new RecoverySet(PONT_VIRG), f2 = new RecoverySet(R_COLC);
+}
+{
+  try { 
+		<FOR> <L_PAREN> [atrib(f1)] <PONT_VIRG>
+						[expressao(f1)] <PONT_VIRG>
+						[atrib(f2)] <R_PAREN>
+		<L_COLC> functbody(g) <R_COLC>
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "comand_for");
+	}
+}
+
+/**
+* comand_while, define como o comando "while" funcionar�
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void comand_while(RecoverySet g) #WHILE: {
+	RecoverySet f = new RecoverySet(R_PAREN);
+}
+{
+  try { 
+		<WHILE> <L_PAREN> expressao(f) <R_PAREN>
+		<L_COLC> functbody(g) <R_COLC>
+	}catch(ParseException e) {
+		consumeUntil(g, e, "comand_while");
+	}
+}
+
+/**
+* atrib, faz atribui��o, uma vari�vel que recebe alguma express�o
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/
+void atrib(RecoverySet g) #ATRIBUICAO: {}
+{
+  try { 
+	< IDENT > ( < ASSIGNMENT > | < ASSIGNMENT_PLUS > | < ASSIGNMENT_MINUS > | < ASSIGNMENT_MULTIPLY > | < ASSIGNMENT_DIVIDE >) expressao(g)
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "atrib");
+	} 
+}
+
+/**
+* expressao, monta as express�es matem�ticas e booleanas
+* @param g, nome do conjunto de tokens de sincroniza��o
+* @pre-condition: nenhuma
+* @post-condition: express�es matem�tica e booleanas s�o formadas
+*/
+void expressao(RecoverySet g) #EXPRESSAO: { }
+{
+  try { 
+	numexpr() [( < LT > | < GT > | < LE > | < GE > | < EQ > | < NEQ > | < AND > | < OR > ) numexpr()]
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "expressao");
+	}
+}
+
+/**
+* numexpr, indica a a��o de soma e subtra��o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void numexpr() #NUMERO_EXPRESSAO: { }
+{
+	term() ((< PLUS > | < MINUS >) term())*
+}
+
+/**
+* term, indica a a��o de multiplica��o e divis�o
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/ 
+void term() #TERM : { }
+{
+	unaryexpr() ((< MULTIPLY > | < DIVIDE >) unaryexpr())*
+}
+
+/**
+* unaryexpr, indica se o n�mero � positivo ou negativo
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/
+void unaryexpr() #UNARY_EXPR: { }
+{
+	[(< PLUS > | < MINUS >)] factor()
+}
+
+/**
+* factor, garate que a divis�o seja feita por primeiro
+* @pre-condition: nenhuma
+* @post-condition: nenhuma
+*/
+void factor() #FACTOR: { }
+{
+	[< NOT >]( < INT_CONSTANT > |  < CHAR_CONSTANT > |  < NULL_CONSTANT > | < IDENT > | < L_PAREN > expressao(null) < R_PAREN >)
+}
