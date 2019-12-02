@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+     
+    <ResourceLink name="jdbc/homebank"
+    global="jdbc/homebank"
+    type="javax.sql.DataSource"
+    />
+     
+</Context>
