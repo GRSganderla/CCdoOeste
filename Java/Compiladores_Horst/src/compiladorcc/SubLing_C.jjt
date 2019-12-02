@@ -13,6 +13,8 @@ package compiladorcc;
 import java.io.*;
 import recovery.*;
 import semantica.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SubLing_C
 {
@@ -28,7 +30,7 @@ public class SubLing_C
 
 	//nome do arquivo a ser lido
     String filename = "";
-    String arvore_arquivo;
+    String arvore_arquivo = "arquivo_";
     //analisador lexico e sintatico
     SubLing_C parser; 
     int i;
@@ -81,8 +83,17 @@ public class SubLing_C
 		System.err.println(e.getMessage());
 	}
 
+	arvore_arquivo += filename;
+	FileOutputStream fileOut = null;
+
+	try { 
+		fileOut = new FileOutputStream(arvore_arquivo);
+	}
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}
     SimpleNode print = root;
-	print.dump(filename); //imprime a arvore no arquivo
+	print.dump(filename, fileOut); //imprime a arvore no arquivo
 	  
 	SemanticRun parseSem = new SemanticRun();
 
@@ -421,7 +432,7 @@ void functype(RecoverySet g) #FUNCT_TYPE :
 } //tipos de variaveis
 {
   try { 
-  	tipo = < VOID > | tipo = < INT > | tipo = < CHAR > | tipo = < IDENT >
+  	( tipo = < VOID > | tipo = < INT > | tipo = < CHAR > | tipo = < IDENT >)
   	{
   	  jjtn000.value1 = tipo.image;
   	}
@@ -560,10 +571,17 @@ void comand_while(RecoverySet g) #WHILE: {
 * @pre-condition: nenhuma
 * @post-condition: nenhuma
 */
-void atrib(RecoverySet g) #ATRIBUICAO: {}
+void atrib(RecoverySet g) #ATRIBUICAO: {
+	Token t = null;
+	Token op = null;
+}
 {
   try { 
-	< IDENT > ( < ASSIGNMENT > | < ASSIGNMENT_PLUS > | < ASSIGNMENT_MINUS > | < ASSIGNMENT_MULTIPLY > | < ASSIGNMENT_DIVIDE >) expressao(g)
+	t = < IDENT > ( op = < ASSIGNMENT > | op = < ASSIGNMENT_PLUS > | op = < ASSIGNMENT_MINUS > | op =  < ASSIGNMENT_MULTIPLY > | op = < ASSIGNMENT_DIVIDE >) expressao(g)
+	{
+		if(t != null) jjtn000.value1 = t.image;
+		if(op != null) jjtn000.k = op;
+	}
 	}catch(ParseException e) {
 	  consumeUntil(g, e, "atrib");
 	} 
@@ -575,10 +593,16 @@ void atrib(RecoverySet g) #ATRIBUICAO: {}
 * @pre-condition: nenhuma
 * @post-condition: express�es matem�tica e booleanas s�o formadas
 */
-void expressao(RecoverySet g) #EXPRESSAO: { }
+void expressao(RecoverySet g) #EXPRESSAO: {
+	Token op = null;
+}
 {
   try { 
-	numexpr() [( < LT > | < GT > | < LE > | < GE > | < EQ > | < NEQ > | < AND > | < OR > ) numexpr()]
+	numexpr() [( op = < LT > | op = < GT > | op = < LE > | op = < GE > | op = < EQ > | op = < NEQ > | op = < AND > | op = < OR > ) numexpr()]
+	{
+	  	if(op != null)
+			jjtn000.k = op;
+	}
 	}catch(ParseException e) {
 	  consumeUntil(g, e, "expressao");
 	}
@@ -589,9 +613,15 @@ void expressao(RecoverySet g) #EXPRESSAO: { }
 * @pre-condition: nenhuma
 * @post-condition: nenhuma
 */ 
-void numexpr() #NUMERO_EXPRESSAO: { }
+void numexpr() #NUMERO_EXPRESSAO: {
+	Token op = null;
+}
 {
-	term() ((< PLUS > | < MINUS >) term())*
+	term() ((op = < PLUS > | op = < MINUS >) term())*
+	{
+		if(op != null)
+			jjtn000.value1 = op.image;
+	}
 }
 
 /**
@@ -599,9 +629,14 @@ void numexpr() #NUMERO_EXPRESSAO: { }
 * @pre-condition: nenhuma
 * @post-condition: nenhuma
 */ 
-void term() #TERM : { }
+void term() #TERM : {
+  Token op = null;
+}
 {
-	unaryexpr() ((< MULTIPLY > | < DIVIDE >) unaryexpr())*
+	unaryexpr() ((op=< MULTIPLY > | op=< DIVIDE >) unaryexpr())*
+	{
+		if(op != null) jjtn000.value1 = op.image;
+	}
 }
 
 /**
@@ -609,9 +644,15 @@ void term() #TERM : { }
 * @pre-condition: nenhuma
 * @post-condition: nenhuma
 */
-void unaryexpr() #UNARY_EXPR: { }
+void unaryexpr() #UNARY_EXPR: {
+	Token op = null;
+}
 {
-	[(< PLUS > | < MINUS >)] factor()
+	[(op = < PLUS > |op = < MINUS >)] factor()
+	{
+		if(op != null) jjtn000.k = op;
+		else jjtn000.value1 = "None";
+	}
 }
 
 /**
@@ -619,7 +660,16 @@ void unaryexpr() #UNARY_EXPR: { }
 * @pre-condition: nenhuma
 * @post-condition: nenhuma
 */
-void factor() #FACTOR: { }
+void factor() #FACTOR: {
+	Token not = null, op = null;
+}
 {
-	[< NOT >]( < INT_CONSTANT > |  < CHAR_CONSTANT > |  < NULL_CONSTANT > | < IDENT > | < L_PAREN > expressao(null) < R_PAREN >)
+	[not = < NOT >]( op = < INT_CONSTANT > | op= < CHAR_CONSTANT > | op= < NULL_CONSTANT > |op= < IDENT > | op= < L_PAREN > expressao(null) < R_PAREN >)
+	{
+	  if(not != null) jjtn000.value1 = not.image;
+	  else jjtn000.value1 = "None";
+	  if(op != null) { 
+	  	jjtn000.k = op;
+	 }
+	}
 }

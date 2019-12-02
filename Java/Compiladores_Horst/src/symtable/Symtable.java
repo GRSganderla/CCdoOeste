@@ -39,6 +39,18 @@ public class Symtable {
 		pos--;
 	}
 
+	public int find(String nome, String escopo) {
+		
+		for(EntryTable a: table) {
+			
+			if(a.getCadeia().equals(nome) && a.getEscopo().equals(escopo)) {
+				return 1;
+			}
+		}
+		
+		return 0;
+	}
+	
 	public int find(String nome) {
 		
 		for(EntryTable a: table) {
@@ -71,5 +83,20 @@ public class Symtable {
 		}
 		
 		return print;
+	}
+
+	public String getType(int pos2) {
+		return table.get(pos2).getTipo();
+	}
+
+	public String getValor(String image) {
+		
+		for(EntryTable a: table) {
+			if(a.getCadeia().equals(image)) {
+				return a.getValor();
+			}
+		}
+		
+		return "None";
 	}
 }

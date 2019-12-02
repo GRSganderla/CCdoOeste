@@ -14,6 +14,8 @@ package compiladorcc;
 import java.io.*;
 import recovery.*;
 import semantica.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants/*@egen*/
 {/*@bgen(jjtree)*/
@@ -32,7 +34,7 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants/*@egen*
 
 	//nome do arquivo a ser lido
     String filename = "";
-    String arvore_arquivo;
+    String arvore_arquivo = "arquivo_";
     //analisador lexico e sintatico
     SubLing_C parser; 
     int i;
@@ -85,8 +87,17 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants/*@egen*
 		System.err.println(e.getMessage());
 	}
 
+	arvore_arquivo += filename;
+	FileOutputStream fileOut = null;
+
+	try { 
+		fileOut = new FileOutputStream(arvore_arquivo);
+	}
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}
     SimpleNode print = root;
-	print.dump(filename); //imprime a arvore no arquivo
+	print.dump(filename, fileOut); //imprime a arvore no arquivo
 	  
 	SemanticRun parseSem = new SemanticRun();
 
@@ -552,7 +563,7 @@ void functype(RecoverySet g)             :
   try {
 /*@egen*/
   try { 
-  	tipo = < VOID > | tipo = < INT > | tipo = < CHAR > | tipo = < IDENT >
+  	( tipo = < VOID > | tipo = < INT > | tipo = < CHAR > | tipo = < IDENT >)
   	{
   	  jjtn000.value1 = tipo.image;
   	}
@@ -854,15 +865,22 @@ void comand_while(RecoverySet g)       : {/*@bgen(jjtree) WHILE */
 * @post-condition: nenhuma
 */
 void atrib(RecoverySet g)            : {/*@bgen(jjtree) ATRIBUICAO */
-  SimpleNode jjtn000 = new SimpleNode(JJTATRIBUICAO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+        SimpleNode jjtn000 = new SimpleNode(JJTATRIBUICAO);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token t = null;
+	Token op = null;
+}
 {/*@bgen(jjtree) ATRIBUICAO */
   try {
 /*@egen*/
   try { 
-	< IDENT > ( < ASSIGNMENT > | < ASSIGNMENT_PLUS > | < ASSIGNMENT_MINUS > | < ASSIGNMENT_MULTIPLY > | < ASSIGNMENT_DIVIDE >) expressao(g)
+	t = < IDENT > ( op = < ASSIGNMENT > | op = < ASSIGNMENT_PLUS > | op = < ASSIGNMENT_MINUS > | op =  < ASSIGNMENT_MULTIPLY > | op = < ASSIGNMENT_DIVIDE >) expressao(g)
+	{
+		if(t != null) jjtn000.value1 = t.image;
+		if(op != null) jjtn000.k = op;
+	}
 	}catch(ParseException e) {
 	  consumeUntil(g, e, "atrib");
 	}/*@bgen(jjtree)*/
@@ -895,15 +913,21 @@ void atrib(RecoverySet g)            : {/*@bgen(jjtree) ATRIBUICAO */
 * @post-condition: express\ufffdes matem\ufffdtica e booleanas s\ufffdo formadas
 */
 void expressao(RecoverySet g)           : {/*@bgen(jjtree) EXPRESSAO */
-  SimpleNode jjtn000 = new SimpleNode(JJTEXPRESSAO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/ }
+        SimpleNode jjtn000 = new SimpleNode(JJTEXPRESSAO);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token op = null;
+}
 {/*@bgen(jjtree) EXPRESSAO */
   try {
 /*@egen*/
   try { 
-	numexpr() [( < LT > | < GT > | < LE > | < GE > | < EQ > | < NEQ > | < AND > | < OR > ) numexpr()]
+	numexpr() [( op = < LT > | op = < GT > | op = < LE > | op = < GE > | op = < EQ > | op = < NEQ > | op = < AND > | op = < OR > ) numexpr()]
+	{
+	  	if(op != null)
+			jjtn000.k = op;
+	}
 	}catch(ParseException e) {
 	  consumeUntil(g, e, "expressao");
 	}/*@bgen(jjtree)*/
@@ -935,14 +959,25 @@ void expressao(RecoverySet g)           : {/*@bgen(jjtree) EXPRESSAO */
 * @post-condition: nenhuma
 */ 
 void numexpr()                  : {/*@bgen(jjtree) NUMERO_EXPRESSAO */
-  SimpleNode jjtn000 = new SimpleNode(JJTNUMERO_EXPRESSAO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/ }
+        SimpleNode jjtn000 = new SimpleNode(JJTNUMERO_EXPRESSAO);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token op = null;
+}
 {/*@bgen(jjtree) NUMERO_EXPRESSAO */
         try {
 /*@egen*/
-	term() ((< PLUS > | < MINUS >) term())*/*@bgen(jjtree)*/
+	term() ((op = < PLUS > | op = < MINUS >) term())*/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		if(op != null)
+			jjtn000.value1 = op.image;
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -974,11 +1009,21 @@ void term()       : {/*@bgen(jjtree) TERM */
   SimpleNode jjtn000 = new SimpleNode(JJTTERM);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/ }
+/*@egen*/
+  Token op = null;
+}
 {/*@bgen(jjtree) TERM */
         try {
 /*@egen*/
-	unaryexpr() ((< MULTIPLY > | < DIVIDE >) unaryexpr())*/*@bgen(jjtree)*/
+	unaryexpr() ((op=< MULTIPLY > | op=< DIVIDE >) unaryexpr())*/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		if(op != null) jjtn000.value1 = op.image;
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1007,14 +1052,25 @@ void term()       : {/*@bgen(jjtree) TERM */
 * @post-condition: nenhuma
 */
 void unaryexpr()            : {/*@bgen(jjtree) UNARY_EXPR */
-  SimpleNode jjtn000 = new SimpleNode(JJTUNARY_EXPR);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/ }
+        SimpleNode jjtn000 = new SimpleNode(JJTUNARY_EXPR);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token op = null;
+}
 {/*@bgen(jjtree) UNARY_EXPR */
         try {
 /*@egen*/
-	[(< PLUS > | < MINUS >)] factor()/*@bgen(jjtree)*/
+	[(op = < PLUS > |op = < MINUS >)] factor()/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+		if(op != null) jjtn000.k = op;
+		else jjtn000.value1 = "None";
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1043,14 +1099,28 @@ void unaryexpr()            : {/*@bgen(jjtree) UNARY_EXPR */
 * @post-condition: nenhuma
 */
 void factor()        : {/*@bgen(jjtree) FACTOR */
-  SimpleNode jjtn000 = new SimpleNode(JJTFACTOR);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/ }
+        SimpleNode jjtn000 = new SimpleNode(JJTFACTOR);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);
+/*@egen*/
+	Token not = null, op = null;
+}
 {/*@bgen(jjtree) FACTOR */
         try {
 /*@egen*/
-	[< NOT >]( < INT_CONSTANT > |  < CHAR_CONSTANT > |  < NULL_CONSTANT > | < IDENT > | < L_PAREN > expressao(null) < R_PAREN >)/*@bgen(jjtree)*/
+	[not = < NOT >]( op = < INT_CONSTANT > | op= < CHAR_CONSTANT > | op= < NULL_CONSTANT > |op= < IDENT > | op= < L_PAREN > expressao(null) < R_PAREN >)/*@bgen(jjtree)*/
+        {
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+        }
+/*@egen*/
+	{
+	  if(not != null) jjtn000.value1 = not.image;
+	  else jjtn000.value1 = "None";
+	  if(op != null) { 
+	  	jjtn000.k = op;
+	 }
+	}/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);

@@ -3,6 +3,8 @@ package compiladorcc;
 import java.io.*;
 import recovery.*;
 import semantica.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /** Token Manager. */
 public class SubLing_CTokenManager implements SubLing_CConstants

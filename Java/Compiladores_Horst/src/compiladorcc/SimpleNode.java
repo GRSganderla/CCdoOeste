@@ -2,12 +2,16 @@
 /* JavaCCOptions:MULTI=false,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package compiladorcc;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public
 class SimpleNode implements Node {
 
   protected Node parent;
   protected Node[] children;
   protected int id;
+  public Token k;
   public String value1, value2;
   protected SubLing_C parser;
 
@@ -61,22 +65,33 @@ class SimpleNode implements Node {
      toString(String), otherwise overriding toString() is probably all
      you need to do. */
 
-  public String toString() { return SubLing_CTreeConstants.jjtNodeName[id] +"( "+ value1 + ", "+ value2 +")"; }
+  public String toString() { return SubLing_CTreeConstants.jjtNodeName[id]; }
   public String toString(String prefix) { return prefix + toString(); }
 
   /* Override this method if you want to customize how the node dumps
      out its children. */
 
-  public void dump(String prefix) {
-    System.out.println(toString(prefix));
-    if (children != null) {
-      for (int i = 0; i < children.length; ++i) {
-        SimpleNode n = (SimpleNode)children[i];
-        if (n != null) {
-          n.dump(prefix + " ");
-        }
-      }
-    }
+  public void dump(String prefix, FileOutputStream fileOut) {
+	
+	String a = (toString(prefix) + "\n");
+	byte[] content = a.getBytes();
+	System.out.print(a);
+		
+	try {
+		if (children != null) {
+		      for (int i = 0; i < children.length; ++i) {
+		        SimpleNode n = (SimpleNode)children[i];
+		        if (n != null) {
+		          n.dump(prefix + " ", fileOut);
+		        }
+		      }
+		    }
+		fileOut.write(content);
+	} catch (IOException e) {
+
+		e.printStackTrace();
+	}
+ 
   }
 }
 

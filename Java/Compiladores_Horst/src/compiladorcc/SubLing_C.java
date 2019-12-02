@@ -3,6 +3,8 @@ package compiladorcc;
 import java.io.*;
 import recovery.*;
 import semantica.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLing_CConstants {/*@bgen(jjtree)*/
   protected JJTSubLing_CState jjtree = new JJTSubLing_CState();// contador de erros sint�ticos
@@ -17,7 +19,7 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
 
         //nome do arquivo a ser lido
     String filename = "";
-    String arvore_arquivo;
+    String arvore_arquivo = "arquivo_";
     //analisador lexico e sintatico
     SubLing_C parser;
     int i;
@@ -70,8 +72,17 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
                 System.err.println(e.getMessage());
         }
 
+        arvore_arquivo += filename;
+        FileOutputStream fileOut = null;
+
+        try {
+                fileOut = new FileOutputStream(arvore_arquivo);
+        }
+        catch(Exception e) {
+                System.err.println(e.getMessage());
+        }
     SimpleNode print = root;
-        print.dump(filename); //imprime a arvore no arquivo
+        print.dump(filename, fileOut); //imprime a arvore no arquivo
 
         SemanticRun parseSem = new SemanticRun();
 
@@ -517,13 +528,13 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
             break;
           case IDENT:
             tipo = jj_consume_token(IDENT);
-          jjtn000.value1 = tipo.image;
             break;
           default:
             jj_la1[10] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
+          jjtn000.value1 = tipo.image;
         } catch (ParseException e) {
    consumeUntil (g, e, "functype");
         }
@@ -984,27 +995,28 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
     trace_call("atrib");
     try {
                                         /*@bgen(jjtree) ATRIBUICAO */
-  SimpleNode jjtn000 = new SimpleNode(JJTATRIBUICAO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+        SimpleNode jjtn000 = new SimpleNode(JJTATRIBUICAO);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token t = null;
+        Token op = null;
       try {
         try {
-          jj_consume_token(IDENT);
+          t = jj_consume_token(IDENT);
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case ASSIGNMENT:
-            jj_consume_token(ASSIGNMENT);
+            op = jj_consume_token(ASSIGNMENT);
             break;
           case ASSIGNMENT_PLUS:
-            jj_consume_token(ASSIGNMENT_PLUS);
+            op = jj_consume_token(ASSIGNMENT_PLUS);
             break;
           case ASSIGNMENT_MINUS:
-            jj_consume_token(ASSIGNMENT_MINUS);
+            op = jj_consume_token(ASSIGNMENT_MINUS);
             break;
           case ASSIGNMENT_MULTIPLY:
-            jj_consume_token(ASSIGNMENT_MULTIPLY);
+            op = jj_consume_token(ASSIGNMENT_MULTIPLY);
             break;
           case ASSIGNMENT_DIVIDE:
-            jj_consume_token(ASSIGNMENT_DIVIDE);
+            op = jj_consume_token(ASSIGNMENT_DIVIDE);
             break;
           default:
             jj_la1[21] = jj_gen;
@@ -1012,6 +1024,8 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
             throw new ParseException();
           }
           expressao(g);
+                if(t != null) jjtn000.value1 = t.image;
+                if(op != null) jjtn000.k = op;
         } catch (ParseException e) {
           consumeUntil(g, e, "atrib");
         }
@@ -1049,9 +1063,9 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
     trace_call("expressao");
     try {
                                            /*@bgen(jjtree) EXPRESSAO */
-  SimpleNode jjtn000 = new SimpleNode(JJTEXPRESSAO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+        SimpleNode jjtn000 = new SimpleNode(JJTEXPRESSAO);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token op = null;
       try {
         try {
           numexpr();
@@ -1066,28 +1080,28 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           case NEQ:
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case LT:
-              jj_consume_token(LT);
+              op = jj_consume_token(LT);
               break;
             case GT:
-              jj_consume_token(GT);
+              op = jj_consume_token(GT);
               break;
             case LE:
-              jj_consume_token(LE);
+              op = jj_consume_token(LE);
               break;
             case GE:
-              jj_consume_token(GE);
+              op = jj_consume_token(GE);
               break;
             case EQ:
-              jj_consume_token(EQ);
+              op = jj_consume_token(EQ);
               break;
             case NEQ:
-              jj_consume_token(NEQ);
+              op = jj_consume_token(NEQ);
               break;
             case AND:
-              jj_consume_token(AND);
+              op = jj_consume_token(AND);
               break;
             case OR:
-              jj_consume_token(OR);
+              op = jj_consume_token(OR);
               break;
             default:
               jj_la1[22] = jj_gen;
@@ -1100,6 +1114,8 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
             jj_la1[23] = jj_gen;
             ;
           }
+                if(op != null)
+                        jjtn000.k = op;
         } catch (ParseException e) {
           consumeUntil(g, e, "expressao");
         }
@@ -1136,9 +1152,9 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
     trace_call("numexpr");
     try {
                                    /*@bgen(jjtree) NUMERO_EXPRESSAO */
-  SimpleNode jjtn000 = new SimpleNode(JJTNUMERO_EXPRESSAO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+        SimpleNode jjtn000 = new SimpleNode(JJTNUMERO_EXPRESSAO);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token op = null;
       try {
         term();
         label_10:
@@ -1154,10 +1170,10 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           }
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case PLUS:
-            jj_consume_token(PLUS);
+            op = jj_consume_token(PLUS);
             break;
           case MINUS:
-            jj_consume_token(MINUS);
+            op = jj_consume_token(MINUS);
             break;
           default:
             jj_la1[25] = jj_gen;
@@ -1166,6 +1182,10 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           }
           term();
         }
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                if(op != null)
+                        jjtn000.value1 = op.image;
       } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1201,7 +1221,7 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
                      /*@bgen(jjtree) TERM */
   SimpleNode jjtn000 = new SimpleNode(JJTTERM);
   boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+  jjtree.openNodeScope(jjtn000);Token op = null;
       try {
         unaryexpr();
         label_11:
@@ -1217,10 +1237,10 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           }
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case MULTIPLY:
-            jj_consume_token(MULTIPLY);
+            op = jj_consume_token(MULTIPLY);
             break;
           case DIVIDE:
-            jj_consume_token(DIVIDE);
+            op = jj_consume_token(DIVIDE);
             break;
           default:
             jj_la1[27] = jj_gen;
@@ -1229,6 +1249,9 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           }
           unaryexpr();
         }
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                if(op != null) jjtn000.value1 = op.image;
       } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1262,19 +1285,19 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
     trace_call("unaryexpr");
     try {
                                /*@bgen(jjtree) UNARY_EXPR */
-  SimpleNode jjtn000 = new SimpleNode(JJTUNARY_EXPR);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+        SimpleNode jjtn000 = new SimpleNode(JJTUNARY_EXPR);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token op = null;
       try {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case PLUS:
         case MINUS:
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case PLUS:
-            jj_consume_token(PLUS);
+            op = jj_consume_token(PLUS);
             break;
           case MINUS:
-            jj_consume_token(MINUS);
+            op = jj_consume_token(MINUS);
             break;
           default:
             jj_la1[28] = jj_gen;
@@ -1287,6 +1310,10 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           ;
         }
         factor();
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+                if(op != null) jjtn000.k = op;
+                else jjtn000.value1 = "None";
       } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -1320,13 +1347,13 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
     trace_call("factor");
     try {
                         /*@bgen(jjtree) FACTOR */
-  SimpleNode jjtn000 = new SimpleNode(JJTFACTOR);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+        SimpleNode jjtn000 = new SimpleNode(JJTFACTOR);
+        boolean jjtc000 = true;
+        jjtree.openNodeScope(jjtn000);Token not = null, op = null;
       try {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case NOT:
-          jj_consume_token(NOT);
+          not = jj_consume_token(NOT);
           break;
         default:
           jj_la1[30] = jj_gen;
@@ -1334,19 +1361,19 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case INT_CONSTANT:
-          jj_consume_token(INT_CONSTANT);
+          op = jj_consume_token(INT_CONSTANT);
           break;
         case CHAR_CONSTANT:
-          jj_consume_token(CHAR_CONSTANT);
+          op = jj_consume_token(CHAR_CONSTANT);
           break;
         case NULL_CONSTANT:
-          jj_consume_token(NULL_CONSTANT);
+          op = jj_consume_token(NULL_CONSTANT);
           break;
         case IDENT:
-          jj_consume_token(IDENT);
+          op = jj_consume_token(IDENT);
           break;
         case L_PAREN:
-          jj_consume_token(L_PAREN);
+          op = jj_consume_token(L_PAREN);
           expressao(null);
           jj_consume_token(R_PAREN);
           break;
@@ -1355,6 +1382,13 @@ public class SubLing_C/*@bgen(jjtree)*/implements SubLing_CTreeConstants, SubLin
           jj_consume_token(-1);
           throw new ParseException();
         }
+          jjtree.closeNodeScope(jjtn000, true);
+          jjtc000 = false;
+          if(not != null) jjtn000.value1 = not.image;
+          else jjtn000.value1 = "None";
+          if(op != null) {
+                jjtn000.k = op;
+         }
       } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
