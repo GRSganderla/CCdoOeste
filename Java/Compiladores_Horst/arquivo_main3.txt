@@ -1,0 +1,24 @@
+main3.txt   FUNCT_TYPE
+main3.txt    FUNCT_TYPE
+main3.txt    FUNCT_TYPE
+main3.txt   PARAM_LIST
+main3.txt    VAR_LIST
+main3.txt    VAR_LIST
+main3.txt   FUNCT_BODY
+main3.txt  FUNCT_DECL
+main3.txt    FUNCT_TYPE
+main3.txt    PARAM_LIST
+main3.txt     VAR_LIST
+main3.txt     VAR_LIST
+main3.txt          FACTOR
+main3.txt         UNARY_EXPR
+main3.txt        TERM
+main3.txt       NUMERO_EXPRESSAO
+main3.txt      EXPRESSAO
+main3.txt     RETURN
+main3.txt    FUNCT_BODY
+main3.txt   FUNCT_DECL
+main3.txt  FUNCT_LIST
+main3.txt FUNCT_LIST
+main3.txt PROGRAMA
+main3.txtPROGRAMA

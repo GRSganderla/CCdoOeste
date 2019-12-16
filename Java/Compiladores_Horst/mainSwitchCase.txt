@@ -1,0 +1,19 @@
+int main ()
+{
+
+	int n;
+	int i;
+	char a;
+
+	switch (n){
+		case 1:
+			i = i + 1;
+			break;
+		case 2:
+			i += 2;
+			break;
+		default:
+			i *= n;
+	}
+	return i;
+}
