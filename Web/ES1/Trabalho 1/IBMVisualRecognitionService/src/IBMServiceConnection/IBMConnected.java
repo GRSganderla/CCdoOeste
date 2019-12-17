@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.google.gson.Gson;
-import com.ibm.cloud.sdk.core.service.security.IamOptions;
+import com.ibm.watson.language_translator.v3.model.IdentifyOptions;
 import com.ibm.watson.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.visual_recognition.v3.model.ClassifiedImages;
 import com.ibm.watson.visual_recognition.v3.model.ClassifyOptions;
@@ -22,7 +22,7 @@ public class IBMConnected {
 		try {
 			
 		   	VisualRecognition service = new VisualRecognition("2018-03-19");  
-		    IamOptions iamOptions = new IamOptions.Builder().apiKey("LJBTYa4_djJyv8zP_RjnVKtzgb6jQgLbj3uSbSkd42fK").build();
+		    IdentifyOptions iamOptions = new IdentifyOptions.Builder().apiKey("LJBTYa4_djJyv8zP_RjnVKtzgb6jQgLbj3uSbSkd42fK").build();
 		    service.setIamCredentials(iamOptions);
 
 		    ClassifyOptions options = new ClassifyOptions.Builder().imagesFile(new File(path)).imagesFilename("industrialEq.png").build();

@@ -7,7 +7,11 @@
 <title>Chat</title>
 
 <link rel="stylesheet" type="text/css" href="./css/foundation.css" />
-
+<script>
+	function alerta(){
+		alert("Só um instante enquanto a pagina com o resultado da consulta é gerado...");
+	}
+</script>
 </head>
 <body>
 
@@ -29,6 +33,31 @@
 			</ul>
 		</div>
 	</div>
+
+	<form action="chat" method="post">
+		<h1 class="text-center">Chat</h1>
+
+		<div class="grid-container">
+			
+			<div class="grid-x grid-padding-x">
+
+				<h3>Olá, Sou a IA de Consulta do Controle de Estoque, o que deseja?</h3>
+
+			</div>
+
+			<div class="row">
+				<div class="columns uncentered">
+					<div class="input-group">
+						<span class="input-group-label">Mensagem:</span> <input
+							id="msg" class="input-group-field" type="text"
+							name="msg" step="0.01">
+					</div>
+				</div>
+			</div>
+			
+			<input type="submit" class="button float-right" value="Enviar" onclick="alerta()"></input>
+		</div>
+	</form>
 
 	<!-- 	<div class="grid-container text-center"> -->
 	<!-- 		<div class="grid-x grid-margin-x grid-margin-y grid-padding-y"> -->

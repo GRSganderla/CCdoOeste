@@ -123,7 +123,7 @@ var Msg ='<%=session.getAttribute("Alert")%>';
 				</div>
 			</div>
 
-			<input type="submit" class="button" value="Registrar" onclick=clear()></input>
+			<input type="submit" class="button" value="Registrar" onclick="clear()"></input>
 			<input type="reset" class="button float-right" value="Cancelar"></input>
 
 		</div>
