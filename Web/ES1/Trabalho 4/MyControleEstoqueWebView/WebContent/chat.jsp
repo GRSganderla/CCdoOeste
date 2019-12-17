@@ -22,8 +22,6 @@
 			<ul class="dropdown menu" data-dropdown-menu>
 				<li><a class="button" href="index.jsp"
 					style="margin-right: 5px;">Nota de Venda</a></li>
-				<li><a class="button" href="notaCompra.jsp"
-					style="margin-right: 5px;">Nota de Compra</a></li>
 				<li><a class="button" href="produto.jsp"
 					style="margin-right: 5px;">Produto</a></li>
 				<li><a class="button" href="" style="margin-right: 5px;">Chat</a></li>

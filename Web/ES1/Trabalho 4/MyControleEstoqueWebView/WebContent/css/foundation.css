@@ -5101,6 +5101,7 @@ table {
     padding: 0.5rem 0.625rem 0.625rem; }
   tbody tr:nth-child(even) {
     border-bottom: 0;
+	text-align: center;
     background-color: #f1f1f1; }
   table.unstriped tbody {
     background-color: #fefefe; }

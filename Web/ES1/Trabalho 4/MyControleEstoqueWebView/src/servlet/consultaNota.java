@@ -41,34 +41,30 @@ public class consultaNota extends HttpServlet {
 		doGet(request, response);
 		request.setCharacterEncoding("UTF-8");
 		UCControleEstoqueServicos ucCE = new UCControleEstoqueServicos();
-	
-		String tipo = request.getParameter("tipo");
 		
 		String[][] res = null;
 		String numNota = request.getParameter("numNota");
 		
-		if(tipo.equals("Venda")) {
-			res = ucCE.ConsultarNotaVenda(Integer.parseInt(numNota));
-		
-			String [][] tabela = new String[res.length-2][5];
-			int i;
-			for(i = 1; i < res.length-1; i++) {
-				tabela[i-1][0] = res[i][0];
-				tabela[i-1][1] = res[i][1];
-				tabela[i-1][2] = res[i][2];
-				tabela[i-1][3] = res[i][3];
-				tabela[i-1][4] = res[i][4];
-			}
-			
-			request.setAttribute("numNota", res[0][0]);
-			request.setAttribute("data", res[0][1]);
-			request.setAttribute("cliente", res[0][2]);
-			request.setAttribute("totNota", res[i][0]);
-			request.setAttribute("descTot", res[i][1]);
-			request.setAttribute("valorLiq", res[i][2]);
-			request.setAttribute("tabela", tabela);
-			request.getRequestDispatcher("/consultaNota.jsp").forward(request, response);
+		res = ucCE.ConsultarNotaVenda(Integer.parseInt(numNota));
+	
+		String [][] tabela = new String[res.length-2][5];
+		int i;
+		for(i = 1; i < res.length-1; i++) {
+			tabela[i-1][0] = res[i][0];
+			tabela[i-1][1] = res[i][1];
+			tabela[i-1][2] = res[i][2];
+			tabela[i-1][3] = res[i][3];
+			tabela[i-1][4] = res[i][4];
 		}
+		
+		request.setAttribute("numNota", res[0][0]);
+		request.setAttribute("data", res[0][1]);
+		request.setAttribute("cliente", res[0][2]);
+		request.setAttribute("totNota", res[i][0]);
+		request.setAttribute("descTot", res[i][1]);
+		request.setAttribute("valorLiq", res[i][2]);
+		request.setAttribute("tabela", tabela);
+		request.getRequestDispatcher("/consultaNota.jsp").forward(request, response);
 	}
 
 }
