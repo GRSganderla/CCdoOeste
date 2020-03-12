@@ -1,0 +1,19 @@
+char meuProc(int a, int b) {
+     int a;
+     char p;
+
+     a = p+b;
+     
+     return b;
+}
+int main(){
+
+    a = 120;
+    int c = "p";
+    for(i = 0; i < 100, i += 1){
+	a += 210;
+	if("a" > c){ c += 20;}
+	else {
+	      a = "o";	
+    }
+}

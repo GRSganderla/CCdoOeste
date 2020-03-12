@@ -1,0 +1,23 @@
+char funcChar(int a, int b){
+     char res;
+     if(a < b){ return res; }
+     else {return "e";}
+}
+int main(){
+    int a;
+    int b;
+    
+    while(b < a){
+       int c;
+       int d; 
+       c = 120;
+       d = 20 + c;
+       
+       int i;
+       for(i = 0; i < d; i+=1){
+          c += 2;
+       }
+    }
+
+    return 0;
+}

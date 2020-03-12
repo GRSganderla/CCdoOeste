@@ -1,0 +1,511 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  STATIC = false;
+  DEBUG_PARSER = true;
+  DEBUG_LOOKAHEAD = true;
+}
+
+PARSER_BEGIN(Anansi)
+package javacc;
+import java.io.*;
+import sintatic.recovery.*;
+import semantica.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class Anansi
+{
+
+  int contParseError = 0;
+
+  boolean debug_recovery; 
+  
+  public static void main(String args []) throws ParseException
+  {
+    boolean debug_as = false;
+    boolean debug_recovery = false;
+
+    String filename = "";
+    String arvore_arquivo = "arquivo_";
+
+    Anansi parser; 
+    int i;
+    boolean ms = false;
+
+    for ( i = 0; i < args.length-1; i++) {
+		if(args[i].equals("-debug_AS")) {
+		  debug_as = true;
+		  break;
+		}else {
+		  System.out.println("Usage is: " + "java SubLing_C [-degub_AS] inputfile");
+		  System.exit(0);
+		}
+    }
+
+	if(args[i].equals("-")) { 
+		 System.out.println("Reading from standard input...");
+		 parser = new Anansi(System.in); //cria o analisador sint�tico
+		 
+	}else {
+
+	   filename = args[args.length-1];
+	   System.out.println("Reading from file " + filename + ". . .");
+	   
+	   try {
+	     parser = new Anansi(new java.io.FileInputStream(filename));
+	     
+	   } catch (java.io.FileNotFoundException e) {
+	     System.out.println("File " + filename + " not found.");
+	     return;
+	   }catch (IOException e) {
+	     System.out.println("Erro ao abrir o aquivo." + e.getMessage());
+	     return;
+	   }
+	 }
+
+	parser.debug_recovery = debug_recovery;
+	if(!debug_as) parser.disable_tracing(); 
+	
+	SimpleNode root = null;
+
+	try { 
+		root = parser.program();
+	}
+	catch(ParseException e) {
+		System.err.println(e.getMessage());
+	}
+
+	arvore_arquivo += filename;
+	FileOutputStream fileOut = null;
+
+	try { 
+		fileOut = new FileOutputStream(arvore_arquivo);
+	}
+	catch(Exception e) {
+		System.err.println(e.getMessage());
+	}
+    SimpleNode print = root;
+	print.dump(filename, fileOut); //imprime a arvore no arquivo
+	  
+	SemanticRun parseSem = new SemanticRun();
+
+	try {
+		parseSem.programCheck(root);
+	}
+	catch(SemanticException e) {
+		System.out.println(e.getMessage());
+	}
+
+	finally {
+	  System.out.println(parser.token_source.foundLexError() + " Lexical Errors found");
+	  System.out.println(parser.contParseError + " Syntactic Errors found");
+	  if(parseSem.getFoundSemanticError() == 0) System.out.println("0 Semantic Errors found");
+	}
+  }//main
+
+  static public String im  (int x) {
+    int k;
+    String s;
+
+    s = tokenImage[x];
+    k = s.lastIndexOf("\"");
+
+    try { s = s.substring(1,k); }
+    catch (StringIndexOutOfBoundsException e) { }
+    return s;
+  }
+
+  boolean eof; 
+ 
+ void consumeUntil(RecoverySet g, ParseException e, String met) throws /*/*ParseEOFException*/ ParseException{
+ 	Token tok;
+ 		if(debug_recovery){ 
+ 			System.out.println();
+ 			System.out.println("*** " + met+ "***");
+ 			System.out.println("	Syncronizing Set: " + g);
+ 		}
+ 		if(g == null) throw e; 
+
+ 		tok = getToken(1); 
+ 		while(!eof){
+ 			if(g.contains(tok.kind)) { 
+ 				if(debug_recovery){
+ 					System.out.println("	found Syncronizing token: " + im(tok.kind));
+ 					break;
+ 				}
+ 			}
+ 			if(debug_recovery){
+ 					System.out.println("	ignoring token: " + im(tok.kind));
+ 			}
+ 			getNextToken(); 
+ 			tok = getToken(1);
+ 			if(tok.kind == EOF && !g.contains(EOF)) eof = true;
+ 		}
+ 		System.out.println(e.getMessage());
+ 		contParseError++;
+ 		
+ }
+}
+
+PARSER_END(Anansi)
+
+TOKEN_MGR_DECLS : {
+	int countLexError= 0;
+
+	public int foundLexError() {
+		return countLexError;
+	}
+}
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* OPERATORS */
+{
+  < PLUS : "+" >
+| < MINUS : "-" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
+| < AND : "&&" >
+| < OR : "||" >
+| < NOT : "!" >
+| < ASSIGNMENT : "=" >
+| < ASSIGNMENT_PLUS : "+=" >
+| < ASSIGNMENT_MINUS : "-=" >
+| < ASSIGNMENT_MULTIPLY : "*=" >
+| < ASSIGNMENT_DIVIDE : "/=" >
+| < GT : ">" >
+| < LT : "<" >
+| < GE : ">=" >
+| < LE : "<=" >
+| < EQ : "==" >
+| < NEQ : "!=" >
+}
+
+TOKEN : /*PALAVRA RESERVADA*/
+{
+  < INT : "int" >
+| < CHAR : "char" >
+| < IF : "if" >
+| < ELSE : "else" >
+| < SWITCH : "switch" >
+| < CASE : "case" >
+| < BREAK : "break" >
+| < FOR : "for" >
+| < WHILE : "while" >
+| < VOID : "void" >
+| < RETURN : "return" >
+| < DEFAULTT : "default" >
+}
+
+TOKEN : /*SIMBOLOS ESPECIAIS*/
+{
+  < L_PAREN : "(" >
+| < R_PAREN : ")" >
+| < L_CHAV : "[" >
+| < R_CHAV : "]" >
+| < L_COLC : "{" >
+| < R_COLC : "}" >
+| < PONT_VIRG : ";" >
+| < TWO_PONT : ":" >
+| < VIRG : "," >
+}
+
+TOKEN : /*CONSTANTES*/
+{
+  < INT_CONSTANT : (< DIGIT >)+ >
+
+  // constantes string 
+| < CHAR_CONSTANT : "\""( ~["\"","\n","\r"])* "\"" >
+| < NULL_CONSTANT : "null" >
+| < #DIGIT : [ "0"-"9" ] >
+| < #CARACTERES : ["A" - "Z","a"-"z"] >
+}
+
+TOKEN : /*IDENTIFICADORES*/
+{
+  < IDENT : < CARACTERES > (< CARACTERES > | < DIGIT >)* >
+}
+
+SPECIAL_TOKEN : /*TRATA OS ERROS LEXICOS*/
+{
+  < INVALID_LEXICAL :
+  (
+    ~["a"-"z" , "A"-"Z",
+    "0"-"9",
+    "\"",
+    "(", ")",
+    "[", "]",
+    "{", "}",
+    ";", ":", ",",
+    ">", "<",
+    "=", "!",
+    "+", "-", "*", "/",
+    " ", "\t", "\n", "\r"]
+  )+ >
+	{
+	  System.err.println("Line " + input_stream.getEndLine() + " - Invalid string found: " + image);
+	  countLexError++;
+	}
+}
+
+SimpleNode program() #PROGRAMA: {
+	RecoverySet g = First.program;
+}
+{
+ (
+    < EOF > |  functlist(g)
+	try{
+		< EOF > 
+	}catch(ParseException e){
+		consumeUntil(g, e, "program");
+	}
+	[program()]
+) { return jjtThis; }
+}
+
+void functlist(RecoverySet g) #FUNCT_LIST: {
+	RecoverySet f = First.functlist.union(g);
+}
+{
+  (
+  functdecl(f) [functlist(g)]
+) 
+}
+
+void functdecl(RecoverySet g) #FUNCT_DECL: { //assinatura da fun��o
+	RecoverySet f = new RecoverySet (R_PAREN);
+	RecoverySet h = new RecoverySet (IDENT);
+	Token t;
+}
+{
+  try { 
+		functype(h) t = <IDENT> <L_PAREN> paramlist(f) < R_PAREN >  < L_COLC > functbody(g) < R_COLC >
+		{
+		  jjtn000.value1 = t.image;
+		}
+	}catch (ParseException e) {
+	  consumeUntil(g, e, "functdecl");
+	}
+}
+
+void paramlist(RecoverySet g) #PARAM_LIST: { // lista de parametros
+	RecoverySet f = new RecoverySet (IDENT);
+	Token t1 = null, t2 = null;
+}
+{
+  try { 
+  	[functype(f) t1 = <IDENT> (< L_CHAV > <R_CHAV >)* (< VIRG > functype(f) t2 = < IDENT > (< L_CHAV ><R_CHAV >)*)*]
+  	{
+  	  if(t1 != null) { 
+  	  	jjtn000.value1 = t1.image;
+	  	if(t2 != null) jjtn000.value2 = t2.image;
+		}
+  	}
+  }catch(ParseException e) {
+    consumeUntil(g, e, "paramlist");
+  }
+}
+
+void varlist(RecoverySet g) #VAR_LIST: { //declara��o de variavel
+	Token tipo, nome;
+}
+{
+  	try { 
+    	(tipo = < VOID > | tipo = < INT > | tipo = < CHAR > ) nome = <IDENT> (< L_CHAV >(<INT_CONSTANT>)+<R_CHAV >)*
+    	{
+    	  jjtn000.value1 = tipo.image;
+    	  jjtn000.value2 = nome.image;
+    	}
+   }catch(ParseException e) {
+     consumeUntil (g, e, "varlist");
+   }
+}
+
+void functype(RecoverySet g) #FUNCT_TYPE :
+{
+  Token tipo;
+} //tipos de variaveis
+{
+  try { 
+  	( tipo = < VOID > | tipo = < INT > | tipo = < CHAR > | tipo = < IDENT >)
+  	{
+  	  jjtn000.value1 = tipo.image;
+  	}
+ }catch(ParseException e) {
+   consumeUntil (g, e, "functype");
+ }
+}
+
+void functbody(RecoverySet g) #FUNCT_BODY: {
+	RecoverySet f = new RecoverySet(PONT_VIRG);
+}
+{
+try {  	
+  	(
+  	varlist(f) <PONT_VIRG>
+|	comand_if(g)
+|	comand_switch(g)
+| 	comand_for(g)
+| 	comand_while(g)
+| 	atrib(f) < PONT_VIRG >
+| 	< BREAK > <PONT_VIRG >
+| 	Return(f)< PONT_VIRG >
+	)*
+	}catch(ParseException e) {
+		consumeUntil (g, e, "functbody");
+	}
+}
+
+void Return(RecoverySet g) #RETURN : { }
+{
+  try { 
+  	< RETURN > expressao(g)
+ }catch(ParseException e) {
+   consumeUntil (g, e, "Return");
+ }
+}
+
+void comand_if(RecoverySet g) #IF: {
+	RecoverySet f1 = new RecoverySet(R_PAREN), f2 = new RecoverySet(ELSE).union(g);
+}
+{
+  try { 
+  	< IF > <L_PAREN > expressao(f1) < R_PAREN > <L_COLC> functbody(f2) <R_COLC> [< ELSE > <L_COLC>functbody(g)<R_COLC>]
+ }catch(ParseException e) {
+	consumeUntil(g, e, "comand_if");
+ }
+}
+
+void comand_switch(RecoverySet g) #SWITCH: {
+	RecoverySet f = new RecoverySet(PONT_VIRG);
+	Token t;
+}
+{
+  try { 
+	  < SWITCH > < L_PAREN > t= < IDENT > < R_PAREN > <L_COLC >
+	  (
+	    < CASE > (< INT_CONSTANT > | < CHAR_CONSTANT >) < TWO_PONT >
+		(atrib(f)<PONT_VIRG >)+
+	  < BREAK > <PONT_VIRG >
+	  )+
+	  < DEFAULTT > < TWO_PONT >(atrib(f) < PONT_VIRG >)+
+	  < R_COLC >
+	  {
+	    jjtn000.value1 = t.image;
+	  }
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "comand_switch");
+	}
+}
+
+void comand_for(RecoverySet g) #FOR : {
+	RecoverySet f1 = new RecoverySet(PONT_VIRG), f2 = new RecoverySet(R_COLC);
+}
+{
+  try { 
+		<FOR> <L_PAREN> [atrib(f1)] <PONT_VIRG>
+						[expressao(f1)] <PONT_VIRG>
+						[atrib(f2)] <R_PAREN>
+		<L_COLC> functbody(g) <R_COLC>
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "comand_for");
+	}
+}
+
+void comand_while(RecoverySet g) #WHILE: {
+	RecoverySet f = new RecoverySet(R_PAREN);
+}
+{
+  try { 
+		<WHILE> <L_PAREN> expressao(f) <R_PAREN>
+		<L_COLC> functbody(g) <R_COLC>
+	}catch(ParseException e) {
+		consumeUntil(g, e, "comand_while");
+	}
+}
+
+void atrib(RecoverySet g) #ATRIBUICAO: {
+	Token t = null;
+	Token op = null;
+}
+{
+  try { 
+	t = < IDENT > ( op = < ASSIGNMENT > | op = < ASSIGNMENT_PLUS > | op = < ASSIGNMENT_MINUS > | op =  < ASSIGNMENT_MULTIPLY > | op = < ASSIGNMENT_DIVIDE >) expressao(g)
+	{
+		if(t != null) jjtn000.value1 = t.image;
+		if(op != null) jjtn000.k = op;
+	}
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "atrib");
+	} 
+}
+
+void expressao(RecoverySet g) #EXPRESSAO: {
+	Token op = null;
+}
+{
+  try { 
+	numexpr() [( op = < LT > | op = < GT > | op = < LE > | op = < GE > | op = < EQ > | op = < NEQ > | op = < AND > | op = < OR > ) numexpr()]
+	{
+	  	if(op != null)
+			jjtn000.k = op;
+	}
+	}catch(ParseException e) {
+	  consumeUntil(g, e, "expressao");
+	}
+}
+
+void numexpr() #NUMERO_EXPRESSAO: {
+	Token op = null;
+}
+{
+	term() ((op = < PLUS > | op = < MINUS >) term())*
+	{
+		if(op != null)
+			jjtn000.value1 = op.image;
+	}
+}
+
+void term() #TERM : {
+  Token op = null;
+}
+{
+	unaryexpr() ((op=< MULTIPLY > | op=< DIVIDE >) unaryexpr())*
+	{
+		if(op != null) jjtn000.value1 = op.image;
+	}
+}
+
+void unaryexpr() #UNARY_EXPR: {
+	Token op = null;
+}
+{
+	[(op = < PLUS > |op = < MINUS >)] factor()
+	{
+		if(op != null) jjtn000.k = op;
+		else jjtn000.value1 = "None";
+	}
+}
+
+void factor() #FACTOR: {
+	Token not = null, op = null;
+}
+{
+	[not = < NOT >]( op = < INT_CONSTANT > | op= < CHAR_CONSTANT > | op= < NULL_CONSTANT > |op= < IDENT > | op= < L_PAREN > expressao(null) < R_PAREN >)
+	{
+	  if(not != null) jjtn000.value1 = not.image;
+	  else jjtn000.value1 = "None";
+	  if(op != null) { 
+	  	jjtn000.k = op;
+	 }
+	}
+}
