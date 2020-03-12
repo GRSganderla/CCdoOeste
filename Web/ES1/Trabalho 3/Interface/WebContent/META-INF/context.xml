@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context>
-     
-    <ResourceLink name="jdbc/homebank"
-    global="jdbc/homebank"
-    type="javax.sql.DataSource"
-    />
+<Context auth="Container">
+	<Resource
+	name="jdbc/homebank"
+	type="javax.sql.DataSource"
+	url="jdbc:mysql://localhost:3306"
+	driverClassName="com.mysql.jdbc.Driver"
+	username="root"
+	password="Guilherme1702"
+	maxTotal="100"
+	maxIdle="20"/>
      
 </Context>
