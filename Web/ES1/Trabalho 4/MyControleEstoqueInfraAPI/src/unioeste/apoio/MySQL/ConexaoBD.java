@@ -15,7 +15,7 @@ public class ConexaoBD {
 			
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/controleestoque?useTimezone=true&serverTimezone=UTC", "root", "Guilherme1702");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/controleestoque?useTimezone=true&serverTimezone=UTC", "root", " ");
 			
 			return conn;
 			
